@@ -28,16 +28,32 @@
 
 <title>Live Beats WebRadio Player</title>
 
-    <!-- Install Prompt Handler -->
-    <script>
-    window.addEventListener('beforeinstallprompt', (e) => {
-        e.preventDefault();
-        console.log('PWA installable');
-        // Store event for later use
-        window.deferredInstallPrompt = e;
-        // Optionally show install button
+<script>
+  // Service Worker Registration
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('./sw.js')
+        .then(reg => console.log('ServiceWorker registered (scope: ' + reg.scope + ')'))
+        .catch(err => console.log('ServiceWorker registration failed: ', err));
     });
-    </script>
+  }
+
+  // Install Prompt Handler
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    console.log('PWA installable');
+    window.deferredInstallPrompt = e;
+    
+    // Show install button (add this HTML element somewhere in your page)
+    const installButton = document.getElementById('installButton');
+    if (installButton) {
+      installButton.style.display = 'block';
+      installButton.addEventListener('click', () => {
+        e.prompt();
+      });
+    }
+  });
+</script>
     
     <!-- Your other assets -->
     <script src="https://cdn.tailwindcss.com"></script>
