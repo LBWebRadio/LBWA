@@ -32,235 +32,12 @@
         aria-label="Install Live Beats App">
   <i class="fas fa-download mr-2"></i> Install
 </button>
-<script>
-
-   // DOM Elements
-const importFavoritesBtn = document.getElementById('importFavoritesBtn');
-const fileImportInput = document.getElementById('fileImportInput');
-
-// Event listener for import button
-importFavoritesBtn.addEventListener('click', () => {
-    fileImportInput.click(); // Trigger the hidden file input
-});
-
-// Handle file selection
-fileImportInput.addEventListener('change', handleFileImport);
-
-async function handleFileImport(event) {
-    const file = event.target.files[0];
-    if (!file) return;
-
-    try {
-        const content = await readFileAsText(file);
-        const importedStations = parseLBRXFile(content);
-        
-        if (importedStations.length === 0) {
-            showMessage('No valid stations found in the import file.', 'info');
-            return;
-        }
-
-        // Show confirmation dialog
-        const confirmed = await showImportConfirmation(importedStations.length);
-        if (!confirmed) return;
-
-        // Process imported stations
-        const results = processImportedStations(importedStations);
-        
-        // Show results
-        showImportResults(results);
-        
-        // Save and refresh
-        saveFavorites();
-    } catch (error) {
-        console.error('Import error:', error);
-        showMessage('Failed to import stations: ' + error.message, 'error');
-    } finally {
-        // Reset file input
-        fileImportInput.value = '';
-    }
-}
-
-function readFileAsText(file) {
-    return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = (e) => resolve(e.target.result);
-        reader.onerror = (e) => reject(new Error('File reading failed'));
-        reader.readAsText(file);
-    });
-}
-
-function parseLBRXFile(content) {
-    const lines = content.split('\n');
-    const stations = [];
-    let currentStation = null;
-    let inFavoritesSection = false;
-
-    for (const line of lines) {
-        const trimmed = line.trim();
-        
-        // Skip empty lines and comments
-        if (!trimmed || trimmed.startsWith('##')) continue;
-        
-        // Check for favorites section
-        if (trimmed.startsWith('=== FAVORITE STATIONS')) {
-            inFavoritesSection = true;
-            continue;
-        }
-        
-        if (inFavoritesSection) {
-            if (!currentStation) {
-                // First non-empty line is station name
-                currentStation = { name: trimmed };
-            } else {
-                // Second non-empty line is URL
-                currentStation.url = trimmed;
-                
-                // Validate URL before adding
-                try {
-                    new URL(currentStation.url);
-                    stations.push({
-                        id: Date.now().toString() + Math.random().toString(36).substr(2, 5),
-                        name: currentStation.name,
-                        url: currentStation.url
-                    });
-                } catch (e) {
-                    console.warn('Invalid URL skipped:', currentStation.url);
-                }
-                
-                currentStation = null; // Reset for next station
-            }
-        }
-    }
-    
-    return stations;
-}
-
-async function showImportConfirmation(stationCount) {
-    return new Promise((resolve) => {
-        // Create a modal-like confirmation
-        const modal = document.createElement('div');
-        modal.className = 'fixed inset-0 bg-black bg-opacity-60 dark:bg-opacity-75 flex items-center justify-center p-4 z-[100]';
-        
-        modal.innerHTML = `
-            <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-xl w-full max-w-md">
-                <h3 class="text-xl font-semibold mb-4">Import ${stationCount} Stations</h3>
-                <p class="mb-6">You're about to import ${stationCount} stations. Existing stations with the same name will be skipped.</p>
-                <div class="flex justify-end space-x-3">
-                    <button id="cancelImportBtn" class="btn-secondary">Cancel</button>
-                    <button id="confirmImportBtn" class="btn-primary">Import</button>
-                </div>
-            </div>
-        `;
-        
-        document.body.appendChild(modal);
-        
-        const cancelBtn = modal.querySelector('#cancelImportBtn');
-        const confirmBtn = modal.querySelector('#confirmImportBtn');
-        
-        cancelBtn.addEventListener('click', () => {
-            document.body.removeChild(modal);
-            resolve(false);
-        });
-        
-        confirmBtn.addEventListener('click', () => {
-            document.body.removeChild(modal);
-            resolve(true);
-        });
-    });
-}
-
-function processImportedStations(importedStations) {
-    const results = {
-        added: 0,
-        skipped: 0,
-        updated: 0
-    };
-    
-    for (const imported of importedStations) {
-        // Check if URL already exists
-        const existingByUrl = favorites.find(f => f.url === imported.url);
-        
-        if (existingByUrl) {
-            // Update name if different
-            if (existingByUrl.name !== imported.name) {
-                existingByUrl.name = imported.name;
-                results.updated++;
-            } else {
-                results.skipped++;
-            }
-            continue;
-        }
-        
-        // Check if name exists but URL is different
-        const existingByName = favorites.find(f => f.name === imported.name);
-        if (existingByName) {
-            results.skipped++;
-            continue;
-        }
-        
-        // Add new station
-        favorites.push(imported);
-        results.added++;
-    }
-    
-    return results;
-}
-
-function showImportResults(results) {
-    let message = '';
-    
-    if (results.added > 0) {
-        message += `Added ${results.added} new stations. `;
-    }
-    if (results.updated > 0) {
-        message += `Updated ${results.updated} existing stations. `;
-    }
-    if (results.skipped > 0) {
-        message += `Skipped ${results.skipped} duplicates.`;
-    }
-    
-    showMessage(message.trim(), 'success', 5000);
-}
-  // Service Worker Registration
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('./sw.js')
-        .then(reg => console.log('ServiceWorker registered (scope: ' + reg.scope + ')'))
-        .catch(err => console.log('ServiceWorker registration failed: ', err));
-    });
-  }
-
-  // Install Prompt Handler
-  window.addEventListener('beforeinstallprompt', (e) => {
-    e.preventDefault();
-    console.log('PWA installable');
-    window.deferredInstallPrompt = e;
-    
-    // Show install button (add this HTML element somewhere in your page)
-    const installButton = document.getElementById('installButton');
-    if (installButton) {
-      installButton.style.display = 'block';
-      installButton.addEventListener('click', () => {
-        e.prompt();
-      });
-    }
-  });
-</script>
     
     <!-- Your other assets -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-<script>
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('/sw.js')
-        .then(reg => console.log('ServiceWorker registered'))
-        .catch(err => console.log('ServiceWorker failed: ', err));
-    });
-  }
-</script>
         body {
             font-family: 'Inter', sans-serif;
             transition: background-color 0.3s ease, color 0.3s ease;
@@ -494,6 +271,10 @@ function showImportResults(results) {
         const playDirectUrlBtn = document.getElementById('playDirectUrlBtn');
         const addCurrentToFavoritesBtn = document.getElementById('addCurrentToFavoritesBtn');
 
+        // Import/Export Elements
+        const importFavoritesBtn = document.getElementById('importFavoritesBtn');
+        const fileImportInput = document.getElementById('fileImportInput');
+
         // Message Box Elements
         const messageBox = document.getElementById('messageBox');
         const messageText = document.getElementById('messageText');
@@ -509,7 +290,6 @@ function showImportResults(results) {
             messageText.textContent = message;
             messageBox.classList.remove('hidden', 'bg-red-600', 'bg-green-600', 'bg-blue-600', 'opacity-0', 'invisible');
             messageBox.classList.add('opacity-100');
-
 
             if (type === 'success') {
                 messageBox.classList.add('bg-green-600');
@@ -737,6 +517,189 @@ function showImportResults(results) {
             }
         }
 
+        // --- Import/Export Functions ---
+        importFavoritesBtn.addEventListener('click', () => {
+            fileImportInput.click(); // Trigger the hidden file input
+        });
+
+        fileImportInput.addEventListener('change', handleFileImport);
+
+        async function handleFileImport(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            try {
+                const content = await readFileAsText(file);
+                const importedStations = parseLBRXFile(content);
+                
+                if (importedStations.length === 0) {
+                    showMessage('No valid stations found in the import file.', 'info');
+                    return;
+                }
+
+                // Show confirmation dialog
+                const confirmed = await showImportConfirmation(importedStations.length);
+                if (!confirmed) return;
+
+                // Process imported stations
+                const results = processImportedStations(importedStations);
+                
+                // Show results
+                showImportResults(results);
+                
+                // Save and refresh
+                saveFavorites();
+            } catch (error) {
+                console.error('Import error:', error);
+                showMessage('Failed to import stations: ' + error.message, 'error');
+            } finally {
+                // Reset file input
+                fileImportInput.value = '';
+            }
+        }
+
+        function readFileAsText(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = (e) => resolve(e.target.result);
+                reader.onerror = (e) => reject(new Error('File reading failed'));
+                reader.readAsText(file);
+            });
+        }
+
+        function parseLBRXFile(content) {
+            const lines = content.split('\n');
+            const stations = [];
+            let currentStation = null;
+            let inFavoritesSection = false;
+
+            for (const line of lines) {
+                const trimmed = line.trim();
+                
+                // Skip empty lines and comments
+                if (!trimmed || trimmed.startsWith('##')) continue;
+                
+                // Check for favorites section
+                if (trimmed.startsWith('=== FAVORITE STATIONS')) {
+                    inFavoritesSection = true;
+                    continue;
+                }
+                
+                if (inFavoritesSection) {
+                    if (!currentStation) {
+                        // First non-empty line is station name
+                        currentStation = { name: trimmed };
+                    } else {
+                        // Second non-empty line is URL
+                        currentStation.url = trimmed;
+                        
+                        // Validate URL before adding
+                        try {
+                            new URL(currentStation.url);
+                            stations.push({
+                                id: Date.now().toString() + Math.random().toString(36).substr(2, 5),
+                                name: currentStation.name,
+                                url: currentStation.url
+                            });
+                        } catch (e) {
+                            console.warn('Invalid URL skipped:', currentStation.url);
+                        }
+                        
+                        currentStation = null; // Reset for next station
+                    }
+                }
+            }
+            
+            return stations;
+        }
+
+        async function showImportConfirmation(stationCount) {
+            return new Promise((resolve) => {
+                // Create a modal-like confirmation
+                const modal = document.createElement('div');
+                modal.className = 'fixed inset-0 bg-black bg-opacity-60 dark:bg-opacity-75 flex items-center justify-center p-4 z-[100]';
+                
+                modal.innerHTML = `
+                    <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-xl w-full max-w-md">
+                        <h3 class="text-xl font-semibold mb-4">Import ${stationCount} Stations</h3>
+                        <p class="mb-6">You're about to import ${stationCount} stations. Existing stations with the same name will be skipped.</p>
+                        <div class="flex justify-end space-x-3">
+                            <button id="cancelImportBtn" class="btn-secondary">Cancel</button>
+                            <button id="confirmImportBtn" class="btn-primary">Import</button>
+                        </div>
+                    </div>
+                `;
+                
+                document.body.appendChild(modal);
+                
+                const cancelBtn = modal.querySelector('#cancelImportBtn');
+                const confirmBtn = modal.querySelector('#confirmImportBtn');
+                
+                cancelBtn.addEventListener('click', () => {
+                    document.body.removeChild(modal);
+                    resolve(false);
+                });
+                
+                confirmBtn.addEventListener('click', () => {
+                    document.body.removeChild(modal);
+                    resolve(true);
+                });
+            });
+        }
+
+        function processImportedStations(importedStations) {
+            const results = {
+                added: 0,
+                skipped: 0,
+                updated: 0
+            };
+            
+            for (const imported of importedStations) {
+                // Check if URL already exists
+                const existingByUrl = favorites.find(f => f.url === imported.url);
+                
+                if (existingByUrl) {
+                    // Update name if different
+                    if (existingByUrl.name !== imported.name) {
+                        existingByUrl.name = imported.name;
+                        results.updated++;
+                    } else {
+                        results.skipped++;
+                    }
+                    continue;
+                }
+                
+                // Check if name exists but URL is different
+                const existingByName = favorites.find(f => f.name === imported.name);
+                if (existingByName) {
+                    results.skipped++;
+                    continue;
+                }
+                
+                // Add new station
+                favorites.push(imported);
+                results.added++;
+            }
+            
+            return results;
+        }
+
+        function showImportResults(results) {
+            let message = '';
+            
+            if (results.added > 0) {
+                message += `Added ${results.added} new stations. `;
+            }
+            if (results.updated > 0) {
+                message += `Updated ${results.updated} existing stations. `;
+            }
+            if (results.skipped > 0) {
+                message += `Skipped ${results.skipped} duplicates.`;
+            }
+            
+            showMessage(message.trim(), 'success', 5000);
+        }
+
         // --- Audio Player Logic ---
         function playStation(station, isDirect = false) {
             try {
@@ -918,5 +881,31 @@ function showImportResults(results) {
         });
 
     </script>
+
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('/sw.js')
+        .then(reg => console.log('ServiceWorker registered'))
+        .catch(err => console.log('ServiceWorker failed: ', err));
+    });
+  }
+
+  // Install Prompt Handler
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    console.log('PWA installable');
+    window.deferredInstallPrompt = e;
+    
+    // Show install button (add this HTML element somewhere in your page)
+    const installButton = document.getElementById('installButton');
+    if (installButton) {
+      installButton.style.display = 'block';
+      installButton.addEventListener('click', () => {
+        e.prompt();
+      });
+    }
+  });
+</script>
 </body>
 </html>
