@@ -3,21 +3,39 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- Primary PWA and icon declarations -->
-    <link rel="manifest" href="/manifest.json">
+    
+    <!-- Primary PWA Configuration -->
+    <link rel="manifest" href="/manifest.json" crossorigin="use-credentials">
     <meta name="theme-color" content="#000000">
-    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="application-name" content="Live Beats">
+    
+    <!-- Cross-platform Icons -->
+    <!-- Modern browsers -->
+    <link rel="icon" href="/icons/icon-192.png" type="image/png" sizes="192x192">
+    <link rel="icon" href="/icons/icon-32.png" type="image/png" sizes="32x32">
+    
+    <!-- iOS/Safari -->
+    <link rel="apple-touch-icon" href="/icons/icon-180.png">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Live Beats">
     
-    <!-- Icon declarations (remove duplicates) -->
-    <link rel="icon" href="icons/lb no background 192.png" type="image/png">
-    <link rel="apple-touch-icon" href="icons/lb no background 192.png">
-    <!-- Fallback icon (only if needed) -->
-    <link rel="alternate icon" href="icons/lb no background.png" type="image/png">
+    <!-- Windows -->
+    <meta name="msapplication-TileImage" content="/icons/icon-144.png">
+    <meta name="msapplication-TileColor" content="#000000">
     
     <title>Live Beats WebRadio Player</title>
+
+    <!-- Install Prompt Handler -->
+    <script>
+    window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        console.log('PWA installable');
+        // Store event for later use
+        window.deferredInstallPrompt = e;
+        // Optionally show install button
+    });
+    </script>
     
     <!-- Your other assets -->
     <script src="https://cdn.tailwindcss.com"></script>
