@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="en" class="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#000000"> <!-- Match your app's theme -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="apple-touch-icon" href="icons/lb no background 192.png">
+    <title>Live Beats WebRadio Player</title>
+    <link rel="icon" href="lb no background.png" type="image/png">
+    <link rel="alternate icon" href="https://placehold.co/32x32/007bff/FFFFFF?text=LB&font=sans-serif" type="image/png">
+
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('/sw.js')
+        .then(reg => console.log('ServiceWorker registered'))
+        .catch(err => console.log('ServiceWorker failed: ', err));
+    });
+  }
+</script>
+        body {
+            font-family: 'Inter', sans-serif;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+        /* Custom scrollbar for webkit browsers */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent; /* Or use dark:bg-gray-800 for dark theme track */
+        }
+        ::-webkit-scrollbar-thumb {
+            background-color: #a0aec0; /* gray-500 */
+            border-radius: 10px;
+            border: 2px solid transparent; /* Or match body bg for seamless look */
+            background-clip: content-box;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background-color: #718096; /* gray-600 */
+        }
+
+        .dark ::-webkit-scrollbar-thumb {
+            background-color: #4a5568; /* gray-700 */
+        }
+        .dark ::-webkit-scrollbar-thumb:hover {
+            background-color: #2d3748; /* gray-800 */
+        }
+
+
+        /* Player controls fixed at bottom */
+        .player-controls {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 50; /* Ensure it's above other content but below modals */
+        }
+
+        /* Modal styles */
+        .modal {
+            transition: opacity 0.2s ease-in-out, visibility 0.2s ease-in-out;
+        }
+        .modal-content {
+            transition: transform 0.2s ease-in-out;
+        }
+        .modal.open {
+            opacity: 1;
+            visibility: visible;
+        }
+        .modal.open .modal-content {
+            transform: translateY(0) scale(1);
+        }
+        .modal .modal-content {
+            transform: translateY(-10px) scale(0.98);
+        }
+
+        /* Input focus states */
+        input[type="text"]:focus, input[type="url"]:focus, button:focus-visible {
+            outline: 2px solid #2563eb; /* Tailwind's blue-600 */
+            outline-offset: 1px;
+        }
+        .dark input[type="text"]:focus, .dark input[type="url"]:focus, .dark button:focus-visible {
+            outline: 2px solid #3b82f6; /* Tailwind's blue-500 */
+        }
+
+        /* Button styles & hover effects */
+        .btn {
+            @apply font-semibold py-2 px-4 rounded-lg shadow-md transition-all duration-200 ease-in-out transform focus:outline-none;
+        }
+        .btn-primary {
+            @apply btn bg-blue-600 hover:bg-blue-700 text-white hover:scale-105;
+        }
+        .btn-secondary {
+            @apply btn bg-gray-200 hover:bg-gray-300 text-gray-800 hover:scale-105;
+        }
+        .dark .btn-secondary {
+            @apply bg-gray-700 hover:bg-gray-600 text-gray-200;
+        }
+        .icon-btn {
+            @apply p-3 rounded-full transition-all duration-200 ease-in-out transform hover:scale-110 focus:outline-none;
+        }
+        .icon-btn:hover {
+             @apply bg-gray-200 dark:bg-gray-700;
+        }
+        .icon-btn:focus-visible {
+            @apply ring-2 ring-offset-1 ring-blue-500 dark:ring-blue-400;
+        }
+
+        /* Message Box */
+        #messageBox {
+            transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+        }
+        #messageBox.opacity-0 {
+            transform: translateY(-20px);
+        }
+         #messageBox.opacity-100 {
+            transform: translateY(0);
+        }
+
+    </style>
+</head>
+<body class="bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100 min-h-screen flex flex-col">
+
+    <audio id="audioPlayer"></audio>
+
+    <header class="bg-white dark:bg-gray-800 shadow-md p-4 sticky top-0 z-40">
+        <div class="container mx-auto flex justify-between items-center max-w-4xl px-4">
+            <h1 class="text-xl sm:text-2xl font-bold text-blue-600 dark:text-blue-400">Live Beats WebRadio Player</h1>
+            <button id="themeToggleBtn" class="icon-btn text-xl" aria-label="Toggle theme">
+                <i class="fas fa-moon"></i> </button>
+        </div>
+    </header>
+
+    <main class="container mx-auto max-w-4xl p-4 flex-grow mb-36"> <div id="playUrlSection" class="mb-6 bg-white dark:bg-gray-800 p-4 sm:p-6 rounded-xl shadow-lg">
+            <h2 class="text-xl font-semibold mb-4 border-b pb-2 border-gray-300 dark:border-gray-700">Play from URL</h2>
+            <div class="flex flex-col sm:flex-row items-stretch gap-3">
+                <input type="url" id="directUrlInput" class="flex-grow w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white placeholder-gray-400 dark:placeholder-gray-500" placeholder="Enter radio stream URL">
+                <button id="playDirectUrlBtn" class="btn-primary whitespace-nowrap">
+                    <i class="fas fa-play-circle mr-2"></i>Play URL
+                </button>
+            </div>
+        </div>
+
+        <div class="mb-6 text-center">
+            <button id="openAddModalBtn" class="btn-primary">
+                <i class="fas fa-plus-circle mr-2"></i>Add New Favorite
+            </button>
+        </div>
+
+        <div id="favoritesSection" class="bg-white dark:bg-gray-800 p-4 sm:p-6 rounded-xl shadow-lg">
+            <h2 class="text-xl font-semibold mb-4 border-b pb-2 border-gray-300 dark:border-gray-700">My Favorite Stations</h2>
+            <div id="favoritesList" class="space-y-3 max-h-[45vh] sm:max-h-[50vh] overflow-y-auto pr-2">
+                <p id="noFavoritesMsg" class="text-gray-500 dark:text-gray-400">No favorite stations yet. Add some, or play directly from a URL!</p>
+            </div>
+        </div>
+    </main>
+
+    <div class="player-controls bg-white dark:bg-gray-800 shadow-[0_-2px_10px_-3px_rgba(0,0,0,0.1)] dark:shadow-[0_-2px_10px_-3px_rgba(0,0,0,0.5)] border-t border-gray-200 dark:border-gray-700 p-3 sm:p-4">
+        <div class="container mx-auto max-w-4xl flex flex-col sm:flex-row items-center justify-between space-y-3 sm:space-y-0">
+            <div class="w-full sm:w-auto flex items-center space-x-2 text-center sm:text-left mb-2 sm:mb-0">
+                <div class="flex-grow">
+                    <p class="text-xs sm:text-sm text-gray-500 dark:text-gray-400">Now Playing:</p>
+                    <p id="currentStationName" class="font-semibold truncate text-sm sm:text-base" title="No station selected">---</p>
+                </div>
+                <button id="addCurrentToFavoritesBtn" class="icon-btn text-yellow-500 dark:text-yellow-400 hidden text-lg" title="Add current station to favorites" aria-label="Add to favorites">
+                    <i class="fas fa-star"></i>
+                </button>
+            </div>
+
+            <div class="flex items-center space-x-2 sm:space-x-3">
+                <button id="stopBtn" class="icon-btn text-xl sm:text-2xl text-red-500 dark:text-red-400" aria-label="Stop">
+                    <i class="fas fa-stop"></i>
+                </button>
+                <button id="playPauseBtn" class="icon-btn text-2xl sm:text-3xl text-blue-600 dark:text-blue-400" aria-label="Play">
+                    <i class="fas fa-play"></i>
+                </button>
+                <div class="flex items-center space-x-1 sm:space-x-2">
+                    <i class="fas fa-volume-down text-gray-600 dark:text-gray-300 text-sm sm:text-base"></i>
+                    <input type="range" id="volumeControl" min="0" max="1" step="0.01" value="0.5" class="w-20 sm:w-24 h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700 accent-blue-600 dark:accent-blue-400">
+                    <i class="fas fa-volume-up text-gray-600 dark:text-gray-300 text-sm sm:text-base"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="stationModal" class="modal fixed inset-0 bg-black bg-opacity-60 dark:bg-opacity-75 flex items-center justify-center p-4 opacity-0 invisible z-[100]">
+        <div class="modal-content bg-white dark:bg-gray-800 p-6 rounded-lg shadow-xl w-full max-w-md">
+            <h3 id="modalTitle" class="text-xl font-semibold mb-5">Add Favorite Station</h3>
+            <form id="stationForm">
+                <input type="hidden" id="stationId">
+                <div class="mb-4">
+                    <label for="stationNameInput" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Station Name</label>
+                    <input type="text" id="stationNameInput" required class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white placeholder-gray-400 dark:placeholder-gray-500" placeholder="E.g., My Favorite Hits">
+                </div>
+                <div class="mb-6">
+                    <label for="stationUrlInput" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Station Stream URL</label>
+                    <input type="url" id="stationUrlInput" required class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white placeholder-gray-400 dark:placeholder-gray-500" placeholder="https://stream.example.com/radio">
+                </div>
+                <div class="flex justify-end space-x-3">
+                    <button type="button" id="cancelModalBtn" class="btn-secondary">Cancel</button>
+                    <button type="submit" id="saveStationBtn" class="btn-primary">Save Station</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="messageBox" class="fixed top-5 right-5 p-3 rounded-lg shadow-md text-white opacity-0 invisible z-[150] max-w-xs sm:max-w-sm text-sm">
+        <div class="flex items-center justify-between">
+            <p id="messageText" class="mr-2"></p>
+            <button id="closeMessageBtn" class="text-lg font-bold leading-none hover:opacity-75">&times;</button>
+        </div>
+    </div>
+
+    <script>
+        // DOM Elements
+        const audioPlayer = document.getElementById('audioPlayer');
+        const themeToggleBtn = document.getElementById('themeToggleBtn');
+        const openAddModalBtn = document.getElementById('openAddModalBtn');
+        const stationModal = document.getElementById('stationModal');
+        const modalTitle = document.getElementById('modalTitle');
+        const cancelModalBtn = document.getElementById('cancelModalBtn');
+        const stationForm = document.getElementById('stationForm');
+        const stationIdInput = document.getElementById('stationId');
+        const stationNameInput = document.getElementById('stationNameInput');
+        const stationUrlInput = document.getElementById('stationUrlInput');
+        const favoritesList = document.getElementById('favoritesList');
+        const noFavoritesMsg = document.getElementById('noFavoritesMsg');
+        const playPauseBtn = document.getElementById('playPauseBtn');
+        const stopBtn = document.getElementById('stopBtn');
+        const volumeControl = document.getElementById('volumeControl');
+        const currentStationName = document.getElementById('currentStationName');
+        
+        // New DOM Elements for direct URL play
+        const directUrlInput = document.getElementById('directUrlInput');
+        const playDirectUrlBtn = document.getElementById('playDirectUrlBtn');
+        const addCurrentToFavoritesBtn = document.getElementById('addCurrentToFavoritesBtn');
+
+        // Message Box Elements
+        const messageBox = document.getElementById('messageBox');
+        const messageText = document.getElementById('messageText');
+        const closeMessageBtn = document.getElementById('closeMessageBtn');
+        let messageTimeout;
+
+        let favorites = [];
+        let currentPlayingStation = null; // Stores { id, name, url } of current station
+        let isDirectUrlStream = false; // Tracks if current station is from direct URL and not yet a favorite
+
+        // --- Message Box Logic ---
+        function showMessage(message, type = 'error', duration = 3000) {
+            messageText.textContent = message;
+            messageBox.classList.remove('hidden', 'bg-red-600', 'bg-green-600', 'bg-blue-600', 'opacity-0', 'invisible');
+            messageBox.classList.add('opacity-100');
+
+
+            if (type === 'success') {
+                messageBox.classList.add('bg-green-600');
+            } else if (type === 'info') {
+                messageBox.classList.add('bg-blue-600');
+            } else { // error
+                messageBox.classList.add('bg-red-600');
+            }
+            
+            clearTimeout(messageTimeout);
+            messageTimeout = setTimeout(() => {
+                hideMessage();
+            }, duration);
+        }
+
+        function hideMessage() {
+            messageBox.classList.remove('opacity-100');
+            messageBox.classList.add('opacity-0');
+            setTimeout(() => {
+                 messageBox.classList.add('invisible', 'hidden');
+            }, 300); // Match transition duration
+        }
+        closeMessageBtn.addEventListener('click', hideMessage);
+
+
+        // --- Theme Management ---
+        function setLightTheme() {
+            document.documentElement.classList.remove('dark');
+            document.documentElement.classList.add('light');
+            themeToggleBtn.innerHTML = '<i class="fas fa-moon"></i>';
+            localStorage.setItem('theme', 'light');
+        }
+
+        function setDarkTheme() {
+            document.documentElement.classList.add('dark');
+            document.documentElement.classList.remove('light');
+            themeToggleBtn.innerHTML = '<i class="fas fa-sun"></i>';
+            localStorage.setItem('theme', 'dark');
+        }
+
+        themeToggleBtn.addEventListener('click', () => {
+            if (document.documentElement.classList.contains('dark')) {
+                setLightTheme();
+            } else {
+                setDarkTheme();
+            }
+        });
+
+        function loadTheme() {
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'dark') {
+                setDarkTheme();
+            } else {
+                setLightTheme(); // Default to light
+            }
+        }
+
+        // --- Modal Management ---
+        function openModal(mode = 'add', station = null) {
+            stationModal.classList.remove('invisible', 'opacity-0');
+            stationModal.classList.add('open');
+            stationForm.reset(); // Clear previous form data
+            stationIdInput.value = ''; // Clear hidden ID field
+
+            if (mode === 'edit' && station) {
+                modalTitle.textContent = 'Edit Favorite Station';
+                stationIdInput.value = station.id;
+                stationNameInput.value = station.name;
+                stationUrlInput.value = station.url;
+            } else { // Covers 'add' and pre-filling for 'add from direct play'
+                modalTitle.textContent = 'Add Favorite Station';
+                if (station && station.url) { // Pre-fill for "add current to favorites"
+                    stationUrlInput.value = station.url;
+                    // Suggest a name if the current one is generic
+                    if (station.name && station.name !== "Direct Stream" && !station.name.startsWith("http")) {
+                        stationNameInput.value = station.name;
+                    } else {
+                         try {
+                            const urlObj = new URL(station.url);
+                            stationNameInput.value = urlObj.hostname.replace(/^www\./, ''); // Basic name suggestion
+                        } catch (e) {
+                            stationNameInput.value = ''; // Clear if URL is weird
+                        }
+                    }
+                }
+            }
+            stationNameInput.focus(); // Focus the first input field
+        }
+
+        function closeModal() {
+            stationModal.classList.add('opacity-0');
+             setTimeout(() => {
+                stationModal.classList.add('invisible');
+                stationModal.classList.remove('open');
+            }, 200); // Match transition
+        }
+
+        openAddModalBtn.addEventListener('click', () => openModal('add'));
+        cancelModalBtn.addEventListener('click', closeModal);
+        stationModal.addEventListener('click', (e) => {
+            if (e.target === stationModal) { // Click on backdrop
+                closeModal();
+            }
+        });
+
+        // --- Favorites Management ---
+        function loadFavorites() {
+            const storedFavorites = localStorage.getItem('radioFavorites');
+            favorites = storedFavorites ? JSON.parse(storedFavorites) : []; // No default stations
+            renderFavorites();
+        }
+
+        function saveFavorites() {
+            localStorage.setItem('radioFavorites', JSON.stringify(favorites));
+            renderFavorites();
+        }
+
+        function renderFavorites() {
+            favoritesList.innerHTML = '';
+            if (favorites.length === 0) {
+                noFavoritesMsg.style.display = 'block';
+            } else {
+                noFavoritesMsg.style.display = 'none';
+                favorites.forEach(station => {
+                    const div = document.createElement('div');
+                    div.className = 'flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg shadow hover:shadow-md transition-shadow duration-200';
+                    
+                    const nameSpan = document.createElement('span');
+                    nameSpan.textContent = station.name;
+                    nameSpan.className = 'font-medium cursor-pointer hover:text-blue-600 dark:hover:text-blue-400 flex-grow truncate mr-2 text-sm sm:text-base';
+                    nameSpan.title = `Play ${station.name}`;
+                    nameSpan.addEventListener('click', () => playStation(station, false)); // false for isDirect
+                    
+                    const controlsDiv = document.createElement('div');
+                    controlsDiv.className = 'flex items-center space-x-1 sm:space-x-2 flex-shrink-0';
+
+                    const playBtnItem = document.createElement('button');
+                    playBtnItem.className = 'icon-btn text-green-500 dark:text-green-400 text-base sm:text-lg';
+                    playBtnItem.innerHTML = '<i class="fas fa-play-circle"></i>';
+                    playBtnItem.title = `Play ${station.name}`;
+                    playBtnItem.setAttribute('aria-label', `Play ${station.name}`);
+                    playBtnItem.addEventListener('click', () => playStation(station, false));
+
+                    const editBtn = document.createElement('button');
+                    editBtn.className = 'icon-btn text-yellow-500 dark:text-yellow-400 text-xs sm:text-sm';
+                    editBtn.innerHTML = '<i class="fas fa-edit"></i>';
+                    editBtn.title = `Edit ${station.name}`;
+                    editBtn.setAttribute('aria-label', `Edit ${station.name}`);
+                    editBtn.addEventListener('click', () => openModal('edit', station));
+
+                    const deleteBtn = document.createElement('button');
+                    deleteBtn.className = 'icon-btn text-red-500 dark:text-red-400 text-xs sm:text-sm';
+                    deleteBtn.innerHTML = '<i class="fas fa-trash-alt"></i>';
+                    deleteBtn.title = `Delete ${station.name}`;
+                    deleteBtn.setAttribute('aria-label', `Delete ${station.name}`);
+                    deleteBtn.addEventListener('click', () => deleteFavorite(station.id));
+                    
+                    controlsDiv.appendChild(playBtnItem);
+                    controlsDiv.appendChild(editBtn);
+                    controlsDiv.appendChild(deleteBtn);
+                    
+                    div.appendChild(nameSpan);
+                    div.appendChild(controlsDiv);
+                    favoritesList.appendChild(div);
+                });
+            }
+        }
+
+        stationForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const id = stationIdInput.value;
+            const name = stationNameInput.value.trim();
+            const url = stationUrlInput.value.trim();
+
+            if (!name || !url) {
+                showMessage('Station Name and URL are required.', 'error');
+                return;
+            }
+            try { // Validate URL
+                new URL(url);
+            } catch (_) {
+                showMessage('Please enter a valid Stream URL.', 'error');
+                return;
+            }
+
+
+            if (id) { // Editing existing
+                const index = favorites.findIndex(s => s.id.toString() === id);
+                if (index > -1) {
+                    favorites[index] = { ...favorites[index], name, url };
+                     showMessage('Station updated successfully!', 'success');
+                }
+            } else { // Adding new
+                // Check if URL already exists in favorites
+                if (favorites.some(fav => fav.url === url)) {
+                    showMessage('This station URL is already in your favorites.', 'info');
+                    closeModal();
+                    return;
+                }
+                favorites.push({ id: Date.now().toString(), name, url });
+                showMessage('Station added to favorites!', 'success');
+            }
+            saveFavorites();
+            closeModal();
+
+            // If the newly added station is the one currently playing from a direct URL, update UI
+            if (currentPlayingStation && currentPlayingStation.url === url && isDirectUrlStream) {
+                isDirectUrlStream = false; 
+                addCurrentToFavoritesBtn.classList.add('hidden');
+                const newFavorite = favorites.find(fav => fav.url === url);
+                if (newFavorite) currentPlayingStation = newFavorite; // Update to persisted favorite
+            }
+        });
+
+        function deleteFavorite(id) {
+            // Using confirm for simplicity, could be replaced with a custom modal
+            if (confirm('Are you sure you want to delete this station?')) {
+                const stationToDelete = favorites.find(s => s.id === id);
+                favorites = favorites.filter(s => s.id !== id);
+                saveFavorites();
+                showMessage('Station deleted.', 'info');
+                if (currentPlayingStation && stationToDelete && currentPlayingStation.url === stationToDelete.url) {
+                    stopPlayback(); // Stop if the deleted station was playing
+                }
+            }
+        }
+
+        // --- Audio Player Logic ---
+        function playStation(station, isDirect = false) {
+            try {
+                if (!station || !station.url) {
+                    showMessage('Invalid station data.', 'error');
+                    return;
+                }
+                audioPlayer.src = station.url;
+                audioPlayer.play()
+                    .then(() => {
+                        currentPlayingStation = station;
+                        currentStationName.textContent = station.name;
+                        currentStationName.title = station.name;
+                        playPauseBtn.innerHTML = '<i class="fas fa-pause"></i>';
+                        playPauseBtn.setAttribute('aria-label', 'Pause');
+
+                        isDirectUrlStream = isDirect;
+                        const isAlreadyFavorite = favorites.some(fav => fav.url === station.url);
+
+                        if (isDirect && !isAlreadyFavorite) {
+                            addCurrentToFavoritesBtn.classList.remove('hidden');
+                        } else {
+                            addCurrentToFavoritesBtn.classList.add('hidden');
+                        }
+                    })
+                    .catch(error => {
+                        console.error("Error initiating playback:", error);
+                        showMessage(`Cannot play: ${station.name}. Stream might be offline or URL invalid.`, 'error');
+                        currentStationName.textContent = "Playback Error";
+                        currentStationName.title = `Error playing ${station.name}`;
+                        playPauseBtn.innerHTML = '<i class="fas fa-play"></i>';
+                        playPauseBtn.setAttribute('aria-label', 'Play');
+                        addCurrentToFavoritesBtn.classList.add('hidden');
+                    });
+            } catch (error) {
+                console.error("Error setting up station:", error);
+                showMessage(`Error with station: ${station.name}. URL might be malformed.`, 'error');
+                addCurrentToFavoritesBtn.classList.add('hidden');
+            }
+        }
+        
+        // Event listener for playDirectUrlBtn
+        playDirectUrlBtn.addEventListener('click', () => {
+            const url = directUrlInput.value.trim();
+            if (url) {
+                try { // Validate URL format before playing
+                    new URL(url);
+                } catch (_) {
+                    showMessage('Please enter a valid stream URL format (e.g., https://...).', 'error');
+                    return;
+                }
+
+                let name = "Direct Stream";
+                try {
+                    const urlObj = new URL(url);
+                    name = urlObj.hostname.replace(/^www\./, '') || "Direct Stream"; // Basic name from hostname
+                } catch (e) { /* ignore if URL is not standard for hostname extraction */ }
+
+                playStation({ id: 'direct_' + Date.now(), name: name, url: url }, true);
+                // directUrlInput.value = ''; // Optional: Clear input after attempting to play
+            } else {
+                showMessage('Please enter a stream URL.', 'error');
+            }
+        });
+
+        // Event listener for addCurrentToFavoritesBtn
+        addCurrentToFavoritesBtn.addEventListener('click', () => {
+            if (currentPlayingStation && isDirectUrlStream) {
+                const isAlreadyFavorite = favorites.some(fav => fav.url === currentPlayingStation.url);
+                if (!isAlreadyFavorite) {
+                    // Pass current station details to pre-fill the modal
+                    openModal('add', { name: currentPlayingStation.name, url: currentPlayingStation.url });
+                } else {
+                    showMessage('This station is already in your favorites.', 'info');
+                    addCurrentToFavoritesBtn.classList.add('hidden');
+                }
+            }
+        });
+
+
+        function togglePlayPause() {
+            if (!currentPlayingStation && favorites.length > 0) {
+                playStation(favorites[0], false); // Play first favorite if nothing selected
+                return;
+            }
+            if (!currentPlayingStation) {
+                 showMessage('No station selected to play.', 'info');
+                 return;
+            }
+
+            if (audioPlayer.paused) {
+                audioPlayer.play().catch(e => {
+                    showMessage('Error resuming playback.', 'error');
+                    console.error("Play error:", e);
+                });
+                playPauseBtn.innerHTML = '<i class="fas fa-pause"></i>';
+                playPauseBtn.setAttribute('aria-label', 'Pause');
+            } else {
+                audioPlayer.pause();
+                playPauseBtn.innerHTML = '<i class="fas fa-play"></i>';
+                playPauseBtn.setAttribute('aria-label', 'Play');
+            }
+        }
+
+        function stopPlayback() {
+            audioPlayer.pause();
+            audioPlayer.currentTime = 0;
+            if (audioPlayer.src) audioPlayer.src = ""; // Fully unload
+            
+            currentPlayingStation = null;
+            isDirectUrlStream = false;
+            currentStationName.textContent = '---';
+            currentStationName.title = 'No station selected';
+            playPauseBtn.innerHTML = '<i class="fas fa-play"></i>';
+            playPauseBtn.setAttribute('aria-label', 'Play');
+            addCurrentToFavoritesBtn.classList.add('hidden');
+        }
+
+        playPauseBtn.addEventListener('click', togglePlayPause);
+        stopBtn.addEventListener('click', stopPlayback);
+
+        volumeControl.addEventListener('input', (e) => {
+            audioPlayer.volume = parseFloat(e.target.value);
+        });
+        audioPlayer.volume = parseFloat(volumeControl.value);
+
+
+        audioPlayer.addEventListener('error', (e) => {
+            console.error('Audio Player Error Event:', e);
+            let errorMessage = "Error playing audio.";
+            if (currentPlayingStation) {
+                errorMessage = `Playback error for: ${currentPlayingStation.name}. The stream might be offline or the URL incorrect.`;
+            }
+            showMessage(errorMessage, 'error', 5000);
+            currentStationName.textContent = "Playback Error";
+            currentStationName.title = errorMessage;
+            playPauseBtn.innerHTML = '<i class="fas fa-play"></i>';
+            playPauseBtn.setAttribute('aria-label', 'Play');
+            // Consider stopping playback fully if an error occurs
+            // stopPlayback(); // This might be too aggressive for intermittent network issues
+        });
+
+        audioPlayer.addEventListener('ended', () => {
+            playPauseBtn.innerHTML = '<i class="fas fa-play"></i>';
+            playPauseBtn.setAttribute('aria-label', 'Play');
+            // For radio streams, 'ended' might mean the stream dropped.
+            // You could try to auto-replay, but this can be complex.
+            showMessage('Stream ended or was interrupted.', 'info');
+        });
+        
+        // Update play/pause button based on actual audio state changes (e.g., external controls, auto-pause)
+        audioPlayer.onplaying = () => {
+            playPauseBtn.innerHTML = '<i class="fas fa-pause"></i>';
+            playPauseBtn.setAttribute('aria-label', 'Pause');
+        };
+        audioPlayer.onpause = () => {
+            // Don't change icon if it's due to an error or stop action that already handled it
+            if (audioPlayer.readyState > 0 && !audioPlayer.error && audioPlayer.currentTime > 0) {
+                 playPauseBtn.innerHTML = '<i class="fas fa-play"></i>';
+                 playPauseBtn.setAttribute('aria-label', 'Play');
+            }
+        };
+
+
+        // --- Initial Load ---
+        document.addEventListener('DOMContentLoaded', () => {
+            loadTheme();
+            loadFavorites();
+            // Initial state for play/pause button
+            if (audioPlayer.paused) {
+                 playPauseBtn.innerHTML = '<i class="fas fa-play"></i>';
+                 playPauseBtn.setAttribute('aria-label', 'Play');
+            } else {
+                 playPauseBtn.innerHTML = '<i class="fas fa-pause"></i>';
+                 playPauseBtn.setAttribute('aria-label', 'Pause');
+            }
+            // Ensure message box is initially hidden and prepared for transitions
+            messageBox.classList.add('opacity-0', 'invisible', 'hidden');
+        });
+
+    </script>
+</body>
+</html>
