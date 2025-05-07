@@ -1,6 +1,6 @@
 {
   "name": "Live Beats WebRadio",
-  "short_name": "Live Beats",  // Max 12 characters recommended
+  "short_name": "Live Beats",  
   "description": "WebRadio Player",
   "start_url": "/?source=pwa",
   "display": "standalone",
