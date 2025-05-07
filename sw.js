@@ -1,9 +1,10 @@
 const CACHE_NAME = 'lbwa-v2'; // Changed version
 const ASSETS = [
-  '/',
-  '/index.html',
-  '/manifest.json',
-  '/icons/icon-192.png',
+  './',
+  './index.html',
+  './manifest.json',
+  './icons/icon-72.png',
+  './icons/icon-192.png',
   '/icons/icon-512.png',
   '/sw.js'
 ];
