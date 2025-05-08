@@ -155,19 +155,13 @@
 
     <audio id="audioPlayer"></audio>
 
-<header class="bg-white dark:bg-gray-800 shadow-md p-4 sticky top-0 z-40">
-    <div class="container mx-auto flex justify-between items-center max-w-4xl px-4">
-        <div class="flex items-center space-x-3">
-            <img src="icons/icon-192.png" alt="Live Beats Icon" 
-                 class="w-8 h-8 sm:w-10 sm:h-10 rounded-lg">
-            <h1 class="text-xl sm:text-2xl font-bold text-blue-600 dark:text-blue-400">
-                Live Beats WebRadio Player
-            </h1>
+ <header class="bg-white dark:bg-gray-800 shadow-md p-4 sticky top-0 z-40">
+        <div class="container mx-auto flex justify-between items-center max-w-4xl px-4">
+            <h1 class="text-xl sm:text-2xl font-bold text-blue-600 dark:text-blue-400">Live Beats WebRadio Player</h1>
+            <button id="themeToggleBtn" class="icon-btn text-xl" aria-label="Toggle theme">
+                <i class="fas fa-moon"></i> </button>
         </div>
-        <!-- Empty div to maintain space balance (can remove if not needed) -->
-        <div class="w-8 h-8"></div>
-    </div>
-</header>
+    </header>
 
     <main class="container mx-auto max-w-4xl p-4 flex-grow mb-36"> <div id="playUrlSection" class="mb-6 bg-white dark:bg-gray-800 p-4 sm:p-6 rounded-xl shadow-lg">
             <h2 class="text-xl font-semibold mb-4 border-b pb-2 border-gray-300 dark:border-gray-700">Play from URL</h2>
