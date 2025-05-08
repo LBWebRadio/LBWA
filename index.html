@@ -117,9 +117,9 @@
         .dark .btn-secondary {
             @apply bg-gray-700 hover:bg-gray-600 text-gray-200;
         }
-        .icon-btn {
-            @apply p-3 rounded-full transition-all duration-200 ease-in-out transform hover:scale-110 focus:outline-none;
-        }
+     .icon-btn {
+    @apply p-3 sm:p-4 rounded-full transition-all duration-200 ease-in-out transform hover:scale-110 focus:outline-none;
+}
         .icon-btn:hover {
              @apply bg-gray-200 dark:bg-gray-700;
         }
@@ -199,9 +199,9 @@
         <div class="container mx-auto max-w-4xl flex flex-col sm:flex-row items-center justify-between space-y-3 sm:space-y-0">
             <div class="w-full sm:w-auto flex items-center space-x-2 text-center sm:text-left mb-2 sm:mb-0">
                 <div class="flex-grow">
-                    <p class="text-xs sm:text-sm text-gray-500 dark:text-gray-400">Now Playing:</p>
-                    <p id="currentStationName" class="font-semibold truncate text-sm sm:text-base" title="No station selected">---</p>
-                </div>
+                   <p class="text-xs sm:text-sm text-gray-500 dark:text-gray-400">Now Playing:</p>
+                  <p id="currentStationName" class="font-semibold truncate text-base sm:text-lg" title="No station selected">---</p>
+</div>
                 <button id="addCurrentToFavoritesBtn" class="icon-btn text-yellow-500 dark:text-yellow-400 hidden text-lg" title="Add current station to favorites" aria-label="Add to favorites">
                     <i class="fas fa-star"></i>
                 </button>
