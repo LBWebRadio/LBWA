@@ -458,42 +458,37 @@
             }
         }
 
-        stationForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            const id = stationIdInput.value;
-            const name = stationNameInput.value.trim();
-            const url = stationUrlInput.value.trim();
+       stationForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const id = stationIdInput.value;
+    const name = stationNameInput.value.trim();
+    const url = stationUrlInput.value.trim();
 
-            if (!name || !url) {
-                showMessage('Station Name and URL are required.', 'error');
-                return;
-            }
-            try { // Validate URL
-                new URL(url);
-            } catch (_) {
-                showMessage('Please enter a valid Stream URL.', 'error');
-                return;
-            }
+    // Only check for empty fields (no URL validation)
+    if (!name || !url) {
+        showMessage('Station Name and URL are required.', 'error');
+        return;
+    }
 
-
-            if (id) { // Editing existing
-                const index = favorites.findIndex(s => s.id.toString() === id);
-                if (index > -1) {
-                    favorites[index] = { ...favorites[index], name, url };
-                     showMessage('Station updated successfully!', 'success');
-                }
-            } else { // Adding new
-                // Check if URL already exists in favorites
-                if (favorites.some(fav => fav.url === url)) {
-                    showMessage('This station URL is already in your favorites.', 'info');
-                    closeModal();
-                    return;
-                }
-                favorites.push({ id: Date.now().toString(), name, url });
-                showMessage('Station added to favorites!', 'success');
-            }
-            saveFavorites();
+    if (id) { // Editing existing
+        const index = favorites.findIndex(s => s.id.toString() === id);
+        if (index > -1) {
+            favorites[index] = { ...favorites[index], name, url };
+            showMessage('Station updated successfully!', 'success');
+        }
+    } else { // Adding new
+        // Check if URL already exists in favorites
+        if (favorites.some(fav => fav.url === url)) {
+            showMessage('This station URL is already in your favorites.', 'info');
             closeModal();
+            return;
+        }
+        favorites.push({ id: Date.now().toString(), name, url });
+        showMessage('Station added to favorites!', 'success');
+    }
+    
+    saveFavorites();
+    closeModal();
 
             // If the newly added station is the one currently playing from a direct URL, update UI
             if (currentPlayingStation && currentPlayingStation.url === url && isDirectUrlStream) {
