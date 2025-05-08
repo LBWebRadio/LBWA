@@ -695,46 +695,67 @@
             showMessage(message.trim(), 'success', 5000);
         }
 
-        // --- Audio Player Logic ---
-        function playStation(station, isDirect = false) {
-            try {
-                if (!station || !station.url) {
-                    showMessage('Invalid station data.', 'error');
-                    return;
-                }
-                audioPlayer.src = station.url;
-                audioPlayer.play()
-                    .then(() => {
-                        currentPlayingStation = station;
-                        currentStationName.textContent = station.name;
-                        currentStationName.title = station.name;
-                        playPauseBtn.innerHTML = '<i class="fas fa-pause"></i>';
-                        playPauseBtn.setAttribute('aria-label', 'Pause');
-
-                        isDirectUrlStream = isDirect;
-                        const isAlreadyFavorite = favorites.some(fav => fav.url === station.url);
-
-                        if (isDirect && !isAlreadyFavorite) {
-                            addCurrentToFavoritesBtn.classList.remove('hidden');
-                        } else {
-                            addCurrentToFavoritesBtn.classList.add('hidden');
-                        }
-                    })
-                    .catch(error => {
-                        console.error("Error initiating playback:", error);
-                        showMessage(`Cannot play: ${station.name}. Stream might be offline or URL invalid.`, 'error');
-                        currentStationName.textContent = "Playback Error";
-                        currentStationName.title = `Error playing ${station.name}`;
-                        playPauseBtn.innerHTML = '<i class="fas fa-play"></i>';
-                        playPauseBtn.setAttribute('aria-label', 'Play');
-                        addCurrentToFavoritesBtn.classList.add('hidden');
-                    });
-            } catch (error) {
-                console.error("Error setting up station:", error);
-                showMessage(`Error with station: ${station.name}. URL might be malformed.`, 'error');
-                addCurrentToFavoritesBtn.classList.add('hidden');
-            }
+       // --- Audio Player Logic ---
+function playStation(station, isDirect = false) {
+    try {
+        if (!station || !station.url) {
+            showMessage('Invalid station data.', 'error');
+            return;
         }
+
+        // Enable CORS mode (important!)
+        audioPlayer.crossOrigin = "anonymous";
+        
+        // Create a clean URL with cache busting
+        let streamUrl = station.url;
+        
+        // 1. First try direct play (works for CORS-enabled streams)
+        audioPlayer.src = streamUrl + (streamUrl.includes('?') ? '&' : '?') + 'nocache=' + Date.now();
+        
+        audioPlayer.play()
+            .then(() => {
+                // Success case
+                currentPlayingStation = station;
+                currentStationName.textContent = station.name;
+                currentStationName.title = station.name;
+                playPauseBtn.innerHTML = '<i class="fas fa-pause"></i>';
+                playPauseBtn.setAttribute('aria-label', 'Pause');
+
+                isDirectUrlStream = isDirect;
+                const isAlreadyFavorite = favorites.some(fav => fav.url === station.url);
+
+                if (isDirect && !isAlreadyFavorite) {
+                    addCurrentToFavoritesBtn.classList.remove('hidden');
+                } else {
+                    addCurrentToFavoritesBtn.classList.add('hidden');
+                }
+            })
+            .catch(error => {
+                console.error("Direct play failed, trying proxy:", error);
+                
+                // 2. Fallback to CORS proxy
+                const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(streamUrl)}`;
+                audioPlayer.src = proxyUrl;
+                
+                return audioPlayer.play().then(() => {
+                    // Proxy success
+                    currentPlayingStation = station;
+                    currentStationName.textContent = station.name + " (via proxy)";
+                    playPauseBtn.innerHTML = '<i class="fas fa-pause"></i>';
+                }).catch(proxyError => {
+                    // Final failure
+                    console.error("Proxy playback failed:", proxyError);
+                    showMessage(`Cannot play: ${station.name}. Try another stream.`, 'error');
+                    currentStationName.textContent = "Playback Error";
+                    playPauseBtn.innerHTML = '<i class="fas fa-play"></i>';
+                });
+            });
+    } catch (error) {
+        console.error("Setup error:", error);
+        showMessage(`Error with station: ${station.name}`, 'error');
+        addCurrentToFavoritesBtn.classList.add('hidden');
+    }
+}
         
         // Event listener for playDirectUrlBtn
         playDirectUrlBtn.addEventListener('click', () => {
