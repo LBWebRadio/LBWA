@@ -3,7 +3,7 @@
 <head>
    <meta charset="UTF-8">
    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
-   <meta name="version" content="1.1.0">
+   <meta name="version" content="1.1.1">
 
    <!-- PWA Meta Tags -->
    <meta name="theme-color" content="#000000">
@@ -34,7 +34,7 @@
   <i class="fas fa-download mr-2"></i> Install
 </button>
     
-    <!-- Your other assets -->
+   
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -289,6 +289,7 @@
         let favorites = [];
         let currentPlayingStation = null; // Stores { id, name, url } of current station
         let isDirectUrlStream = false; // Tracks if current station is from direct URL and not yet a favorite
+       let currentLbrxFileName = 'live_beats_favorites.lbrx'; // Track the current imported filename
 
         // --- Message Box Logic ---
         function showMessage(message, type = 'error', duration = 3000) {
@@ -401,9 +402,14 @@
         });
 
         // --- Favorites Management ---
-        function loadFavorites() {
+    function loadFavorites() {
             const storedFavorites = localStorage.getItem('radioFavorites');
-            favorites = storedFavorites ? JSON.parse(storedFavorites) : []; // No default stations
+            favorites = storedFavorites ? JSON.parse(storedFavorites) : [];
+            // Load the LBRX filename if it exists
+            const storedFilename = localStorage.getItem('currentLbrxFileName');
+            if (storedFilename) {
+                currentLbrxFileName = storedFilename;
+            }
             renderFavorites();
         }
 
@@ -413,19 +419,22 @@
             renderFavorites();
         }
 
-        // Generate and update the .lbrx file content
         function updateLBRXFile() {
-            let lbrxContent = "## Live Beats Radio Export File\n";
-            lbrxContent += "## Version: 1.1.0\n";
-            lbrxContent += "## Format: Station name followed by URL on next line\n";
-            lbrxContent += "=== FAVORITE STATIONS ===\n\n";
+            let lbrxContent = generateLBRXContent();
+            localStorage.setItem('radioFavoritesLBRX', lbrxContent);
+        }
+
+        function generateLBRXContent() {
+            let content = "## Live Beats Radio Export File\n";
+            content += "## Version: 1.1.1\n";
+            content += "## Format: Station name followed by URL on next line\n";
+            content += "=== FAVORITE STATIONS ===\n\n";
             
             favorites.forEach(station => {
-                lbrxContent += `${station.name}\n${station.url}\n\n`;
+                content += `${station.name}\n${station.url}\n\n`;
             });
             
-            // Store the LBRX content in localStorage
-            localStorage.setItem('radioFavoritesLBRX', lbrxContent);
+            return content;
         }
 
         function renderFavorites() {
@@ -479,13 +488,12 @@
             }
         }
 
-       stationForm.addEventListener('submit', (e) => {
+        stationForm.addEventListener('submit', (e) => {
             e.preventDefault();
             const id = stationIdInput.value;
             const name = stationNameInput.value.trim();
             const url = stationUrlInput.value.trim();
 
-            // Only check for empty fields (no URL validation)
             if (!name || !url) {
                 showMessage('Station Name and URL are required.', 'error');
                 return;
@@ -496,9 +504,9 @@
                 if (index > -1) {
                     favorites[index] = { ...favorites[index], name, url };
                     showMessage('Station updated successfully!', 'success');
+                    saveFavorites(); // This will update the LBRX file
                 }
             } else { // Adding new
-                // Check if URL already exists in favorites
                 if (favorites.some(fav => fav.url === url)) {
                     showMessage('This station URL is already in your favorites.', 'info');
                     closeModal();
@@ -506,29 +514,28 @@
                 }
                 favorites.push({ id: Date.now().toString(), name, url });
                 showMessage('Station added to favorites!', 'success');
+                saveFavorites(); // This will update the LBRX file
             }
             
-            saveFavorites();
             closeModal();
 
             // If the newly added station is the one currently playing from a direct URL, update UI
-            if (currentPlayingStation && currentPlayingStation.url === url && isDirectUrlStream) {
+  if (currentPlayingStation && currentPlayingStation.url === url && isDirectUrlStream) {
                 isDirectUrlStream = false; 
                 addCurrentToFavoritesBtn.classList.add('hidden');
                 const newFavorite = favorites.find(fav => fav.url === url);
-                if (newFavorite) currentPlayingStation = newFavorite; // Update to persisted favorite
+                if (newFavorite) currentPlayingStation = newFavorite;
             }
         });
 
         function deleteFavorite(id) {
-            // Using confirm for simplicity, could be replaced with a custom modal
             if (confirm('Are you sure you want to delete this station?')) {
                 const stationToDelete = favorites.find(s => s.id === id);
                 favorites = favorites.filter(s => s.id !== id);
-                saveFavorites();
+                saveFavorites(); // This will update the LBRX file
                 showMessage('Station deleted.', 'info');
                 if (currentPlayingStation && stationToDelete && currentPlayingStation.url === stationToDelete.url) {
-                    stopPlayback(); // Stop if the deleted station was playing
+                    stopPlayback();
                 }
             }
         }
@@ -542,14 +549,13 @@
 
         fileImportInput.addEventListener('change', handleFileImport);
 
-        async function handleFileImport(event) {
+      async function handleFileImport(event) {
             const file = event.target.files[0];
             if (!file) return;
 
-            // Check file extension
             if (!file.name.endsWith('.lbrx')) {
                 showMessage('Please select a .lbrx file for import.', 'error');
-                fileImportInput.value = ''; // Reset input
+                fileImportInput.value = '';
                 return;
             }
 
@@ -562,23 +568,20 @@
                     return;
                 }
 
-                // Show confirmation dialog
                 const confirmed = await showImportConfirmation(importedStations.length);
                 if (!confirmed) return;
 
-                // Process imported stations
+                // Store the imported filename
+                currentLbrxFileName = file.name;
+                localStorage.setItem('currentLbrxFileName', currentLbrxFileName);
+
                 const results = processImportedStations(importedStations);
-                
-                // Show results
                 showImportResults(results);
-                
-                // Save and refresh
-                saveFavorites();
+                saveFavorites(); // This will update the LBRX file with the new data
             } catch (error) {
                 console.error('Import error:', error);
                 showMessage('Failed to import stations: ' + error.message, 'error');
             } finally {
-                // Reset file input
                 fileImportInput.value = '';
             }
         }
@@ -589,25 +592,18 @@
                 return;
             }
 
-            // Get the LBRX content from localStorage or generate it
-            let lbrxContent = localStorage.getItem('radioFavoritesLBRX');
-            if (!lbrxContent) {
-                updateLBRXFile();
-                lbrxContent = localStorage.getItem('radioFavoritesLBRX');
-            }
-
-            // Create download link
+            const lbrxContent = generateLBRXContent();
             const blob = new Blob([lbrxContent], { type: 'text/plain' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = 'live_beats_favorites.lbrx';
+            a.download = currentLbrxFileName; // Use the stored filename
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
             URL.revokeObjectURL(url);
 
-            showMessage('Favorites exported successfully!', 'success');
+            showMessage(`Favorites exported to ${currentLbrxFileName}!`, 'success');
         }
 
         function readFileAsText(file) {
@@ -938,10 +934,9 @@ function playStation(station, isDirect = false) {
 
 
         // --- Initial Load ---
-        document.addEventListener('DOMContentLoaded', () => {
+  document.addEventListener('DOMContentLoaded', () => {
             loadTheme();
             loadFavorites();
-            // Initial state for play/pause button
             if (audioPlayer.paused) {
                  playPauseBtn.innerHTML = '<i class="fas fa-play"></i>';
                  playPauseBtn.setAttribute('aria-label', 'Play');
@@ -949,7 +944,6 @@ function playStation(station, isDirect = false) {
                  playPauseBtn.innerHTML = '<i class="fas fa-pause"></i>';
                  playPauseBtn.setAttribute('aria-label', 'Pause');
             }
-            // Ensure message box is initially hidden and prepared for transitions
             messageBox.classList.add('opacity-0', 'invisible', 'hidden');
         });
 
