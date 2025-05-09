@@ -394,7 +394,7 @@
     <div class="flex flex-wrap gap-2 mb-4">
         <button class="popular-tag-btn btn-secondary text-sm px-3 py-1" data-tag="topclick">Popular</button>
         <button class="popular-tag-btn btn-secondary text-sm px-3 py-1" data-tag="topvote">Top Rated</button>
-        <button class="popular-tag-btn btn-secondary text-sm px-3 py-1" data-tag="country">By Country</button>
+        
         <button class="popular-tag-btn btn-secondary text-sm px-3 py-1" data-tag="genre">By Genre</button>
     </div>
     
@@ -876,10 +876,27 @@ function renderRadioBrowserResults(stations) {
         
         const favicon = document.createElement('img');
         favicon.className = 'w-8 h-8 rounded mr-3 flex-shrink-0';
-        favicon.src = station.favicon || 'icons/icon-32.png';
-        favicon.onerror = () => { favicon.src = 'icons/icon-32.png'; };
+        // Set default image first
+        favicon.src = 'icons/icon-32.png';
+        
+        // Only try to load station favicon if it exists and isn't empty
+        if (station.favicon && station.favicon.trim() !== '') {
+            // Create a temporary image to test loading
+            const tempImg = new Image();
+            tempImg.onload = function() {
+                favicon.src = station.favicon;
+            };
+            tempImg.onerror = function() {
+                // Keep the default image if loading fails
+                // Already set to default, so no need to do anything
+            };
+            // Start loading the image
+            tempImg.src = station.favicon;
+        }
+        
         favicon.alt = station.name;
         
+        // Rest of the function remains the same...
         const infoDiv = document.createElement('div');
         infoDiv.className = 'min-w-0';
         
@@ -967,12 +984,8 @@ popularTagBtns.forEach(btn => {
         const tag = btn.dataset.tag;
         radioSearchInput.value = '';
         
-        if (tag === 'country') {
-            const country = prompt('Enter country name:');
-            if (country) {
-                searchRadioStations(country, 'country');
-            }
-        } else if (tag === 'genre') {
+        // Remove the country case
+        if (tag === 'genre') {
             const genre = prompt('Enter genre (e.g., rock, jazz, pop):');
             if (genre) {
                 searchRadioStations(genre, 'genre');
