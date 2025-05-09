@@ -100,6 +100,36 @@
             background-color: rgba(75, 85, 99, 0.8);
         }
 
+/* Share Modal Styles */
+#shareFavoritesList {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(156, 163, 175, 0.5) transparent;
+}
+
+.dark #shareFavoritesList {
+    scrollbar-color: rgba(75, 85, 99, 0.5) transparent;
+}
+
+.share-checkbox {
+    accent-color: #3b82f6;
+    width: 1.1em;
+    height: 1.1em;
+    margin-right: 0.75rem;
+}
+
+.station-share-item {
+    @apply flex items-center p-3 bg-gray-50 dark:bg-gray-700 rounded-lg;
+}
+
+.station-share-item label {
+    @apply flex items-center cursor-pointer flex-grow;
+}
+
+.station-share-name {
+    @apply text-sm font-medium text-gray-700 dark:text-gray-300 truncate;
+}
+       
+
         /* Player controls fixed at bottom */
         .player-controls {
             position: fixed;
@@ -458,20 +488,23 @@
                         <i class="fas fa-cog mr-2 text-gray-500"></i>
                         Actions
                     </h2>
-                    <div class="grid grid-cols-2 gap-3">
-                        <button id="openAddModalBtn" class="btn-primary">
-                            <i class="fas fa-plus mr-2"></i>Add
-                        </button>
-                        <button id="importFavoritesBtn" class="btn-warning">
-                            <i class="fas fa-file-import mr-2"></i>Import
-                        </button>
-                        <button id="exportFavoritesBtn" class="btn-success">
-                            <i class="fas fa-file-export mr-2"></i>Export
-                        </button>
-                        <button id="clearFavoritesBtn" class="btn-danger">
-                            <i class="fas fa-trash mr-2"></i>Clear
-                        </button>
-                    </div>
+                   <div class="grid grid-cols-2 gap-3">
+    <button id="openAddModalBtn" class="btn-primary">
+        <i class="fas fa-plus mr-2"></i>Add
+    </button>
+    <button id="importFavoritesBtn" class="btn-warning">
+        <i class="fas fa-file-import mr-2"></i>Import
+    </button>
+    <button id="exportFavoritesBtn" class="btn-success">
+        <i class="fas fa-file-export mr-2"></i>Export
+    </button>
+    <button id="shareBtn" class="btn-success">
+        <i class="fas fa-share-alt mr-2"></i>Share
+    </button>
+    <button id="clearFavoritesBtn" class="btn-danger">
+        <i class="fas fa-trash mr-2"></i>Clear
+    </button>
+</div>
                 </div>
                 
                 <!-- Now Playing section -->
@@ -688,6 +721,16 @@
 
     <script>
         // DOM Elements
+       const shareBtn = document.getElementById('shareBtn');
+const shareModal = document.getElementById('shareModal');
+const shareFavoritesBtn = document.getElementById('shareFavoritesBtn');
+const shareAppBtn = document.getElementById('shareAppBtn');
+const cancelShareBtn = document.getElementById('cancelShareBtn');
+const favoritesShareModal = document.getElementById('favoritesShareModal');
+const shareFavoritesList = document.getElementById('shareFavoritesList');
+const selectAllBtn = document.getElementById('selectAllBtn');
+const cancelFavoritesShareBtn = document.getElementById('cancelFavoritesShareBtn');
+const confirmShareBtn = document.getElementById('confirmShareBtn');
         const audioPlayer = document.getElementById('audioPlayer');
         const themeToggleBtn = document.getElementById('themeToggleBtn');
         const infoBtn = document.getElementById('infoBtn');
@@ -772,6 +815,19 @@ let RADIO_BROWSER_BASE_URL = 'https://de1.api.radio-browser.info';
 let currentRadioSearch = '';
 let currentRadioResults = [];
 
+       // Event Listeners
+shareBtn.addEventListener('click', openShareModal);
+cancelShareBtn.addEventListener('click', closeShareModal);
+shareFavoritesBtn.addEventListener('click', openFavoritesShareModal);
+shareAppBtn.addEventListener('click', shareApp);
+cancelFavoritesShareBtn.addEventListener('click', closeFavoritesShareModal);
+selectAllBtn.addEventListener('click', toggleSelectAll);
+confirmShareBtn.addEventListener('click', shareSelectedFavorites);
+
+       // Modal click handlers
+shareModal.addEventListener('click', (e) => e.target === shareModal && closeShareModal());
+favoritesShareModal.addEventListener('click', (e) => e.target === favoritesShareModal && closeFavoritesShareModal());
+
 // Function to get a random available server
 async function getRandomRadioBrowserServer() {
     try {
@@ -801,6 +857,150 @@ async function initializeRadioBrowser() {
     searchRadioStations('topclick', 'tag');
 }
 
+
+
+// Functions
+function openShareModal() {
+    shareModal.classList.remove('invisible', 'opacity-0');
+    shareModal.classList.add('open');
+}
+
+function closeShareModal() {
+    shareModal.classList.add('opacity-0');
+    setTimeout(() => shareModal.classList.add('invisible'), 200);
+}
+
+function openFavoritesShareModal() {
+    closeShareModal();
+    
+    shareFavoritesList.innerHTML = '';
+    
+    if (favorites.length === 0) {
+        shareFavoritesList.innerHTML = `
+            <div class="text-center py-8">
+                <i class="fas fa-star text-3xl text-gray-300 dark:text-gray-600 mb-3"></i>
+                <p class="text-gray-500 dark:text-gray-400">No favorite stations to share</p>
+            </div>
+        `;
+        confirmShareBtn.disabled = true;
+    } else {
+        favorites.forEach((station, index) => {
+            const item = document.createElement('div');
+            item.className = 'station-share-item';
+            
+            item.innerHTML = `
+                <label>
+                    <input type="checkbox" class="share-checkbox" checked 
+                           data-name="${encodeURIComponent(station.name)}" 
+                           data-url="${encodeURIComponent(station.url)}">
+                    <span class="station-share-name">${index + 1}. ${station.name}</span>
+                </label>
+            `;
+            
+            shareFavoritesList.appendChild(item);
+        });
+        confirmShareBtn.disabled = false;
+    }
+    
+    favoritesShareModal.classList.remove('invisible', 'opacity-0');
+    favoritesShareModal.classList.add('open');
+}
+
+function closeFavoritesShareModal() {
+    favoritesShareModal.classList.add('opacity-0');
+    setTimeout(() => favoritesShareModal.classList.add('invisible'), 200);
+}
+
+function toggleSelectAll() {
+    const checkboxes = shareFavoritesList.querySelectorAll('.share-checkbox');
+    const allChecked = Array.from(checkboxes).every(cb => cb.checked);
+    
+    checkboxes.forEach(cb => cb.checked = !allChecked);
+    selectAllBtn.textContent = allChecked ? 'Select All' : 'Deselect All';
+}
+
+async function shareSelectedFavorites() {
+    const checkboxes = shareFavoritesList.querySelectorAll('.share-checkbox:checked');
+    
+    if (checkboxes.length === 0) {
+        showMessage('Please select at least one station', 'warning');
+        return;
+    }
+    
+    const stations = Array.from(checkboxes).map(cb => ({
+        name: decodeURIComponent(cb.dataset.name),
+        url: decodeURIComponent(cb.dataset.url)
+    }));
+    
+    closeFavoritesShareModal();
+    
+    const shareData = {
+        title: 'My Favorite Radio Stations',
+        text: `Check out these ${stations.length} radio stations I love!`,
+        url: window.location.href
+    };
+    
+    // Create text version
+    let shareText = `${shareData.title}\n\n${shareData.text}\n\n`;
+    stations.forEach((station, i) => {
+        shareText += `${i+1}. ${station.name}\n${station.url}\n\n`;
+    });
+    shareText += `Shared via Live Beats: ${shareData.url}`;
+    
+    try {
+        if (navigator.share) {
+            await navigator.share({
+                title: shareData.title,
+                text: shareText,
+                url: shareData.url
+            });
+        } else {
+            await fallbackShare(shareText);
+        }
+    } catch (err) {
+        if (err.name !== 'AbortError') {
+            await fallbackShare(shareText);
+        }
+    }
+}
+
+async function shareApp() {
+    closeShareModal();
+    
+    const shareData = {
+        title: 'Live Beats WebRadio',
+        text: 'Check out this awesome web radio player!',
+        url: window.location.href
+    };
+    
+    try {
+        if (navigator.share) {
+            await navigator.share(shareData);
+        } else {
+            await fallbackShare(`${shareData.text}\n\n${shareData.url}`);
+        }
+    } catch (err) {
+        if (err.name !== 'AbortError') {
+            await fallbackShare(shareData.url);
+        }
+    }
+}
+
+async function fallbackShare(content) {
+    try {
+        await navigator.clipboard.writeText(content);
+        showMessage('Copied to clipboard!', 'success');
+    } catch (err) {
+        prompt('Here is the shareable content:', content);
+    }
+}
+
+// Disable share button if not supported (optional)
+if (!navigator.share && !navigator.clipboard) {
+    shareBtn.disabled = true;
+    shareBtn.title = "Sharing not supported in your browser";
+}
+       
 // Track station click in Radio Browser API
 async function trackStationClick(stationUuid) {
     if (!stationUuid) return;
@@ -2257,5 +2457,44 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     </script>
+   <!-- Share Modals -->
+<div id="shareModal" class="modal fixed inset-0 bg-black bg-opacity-60 dark:bg-opacity-75 flex items-center justify-center p-4 opacity-0 invisible z-[100]">
+    <div class="modal-content bg-white dark:bg-gray-800 p-6 rounded-xl shadow-xl w-full max-w-md border border-gray-200 dark:border-gray-700">
+        <h3 class="text-xl font-semibold mb-4 flex items-center">
+            <i class="fas fa-share-alt mr-2 text-blue-500"></i>
+            Share Options
+        </h3>
+        <div class="space-y-4">
+            <button id="shareFavoritesBtn" class="btn-primary w-full text-left">
+                <i class="fas fa-star mr-2"></i> Share Favorites
+            </button>
+            <button id="shareAppBtn" class="btn-primary w-full text-left">
+                <i class="fas fa-mobile-alt mr-2"></i> Share This App
+            </button>
+        </div>
+        <div class="mt-6 flex justify-end">
+            <button id="cancelShareBtn" class="btn-secondary">Cancel</button>
+        </div>
+    </div>
+</div>
+
+<div id="favoritesShareModal" class="modal fixed inset-0 bg-black bg-opacity-60 dark:bg-opacity-75 flex items-center justify-center p-4 opacity-0 invisible z-[100]">
+    <div class="modal-content bg-white dark:bg-gray-800 p-6 rounded-xl shadow-xl w-full max-w-md border border-gray-200 dark:border-gray-700 max-h-[80vh] overflow-hidden flex flex-col">
+        <h3 class="text-xl font-semibold mb-4 flex items-center">
+            <i class="fas fa-star mr-2 text-yellow-500"></i>
+            Select Stations to Share
+        </h3>
+        <div id="shareFavoritesList" class="flex-grow overflow-y-auto pr-2 mb-4 space-y-2">
+            <!-- Favorites will be listed here -->
+        </div>
+        <div class="flex justify-between items-center">
+            <button id="selectAllBtn" class="btn-secondary text-sm">Select All</button>
+            <div>
+                <button id="cancelFavoritesShareBtn" class="btn-secondary mr-2">Cancel</button>
+                <button id="confirmShareBtn" class="btn-primary">Share</button>
+            </div>
+        </div>
+    </div>
+</div>
 </body>
 </html>
