@@ -1529,11 +1529,16 @@ function confirmImport() {
                         isDirectUrlStream = isDirect;
                         const isAlreadyFavorite = favorites.some(fav => fav.url === station.url);
 
-                        if (isDirect && !isAlreadyFavorite) {
-                            addCurrentToFavoritesBtn.classList.remove('hidden');
-                        } else {
-                            addCurrentToFavoritesBtn.classList.add('hidden');
-                        }
+              // Show/hide the add to favorites button
+if (isDirect && !isAlreadyFavorite) {
+    addCurrentToFavoritesBtn.classList.remove('hidden');
+    addCurrentToFavoritesBtn.innerHTML = '<i class="fas fa-star"></i>';
+    addCurrentToFavoritesBtn.title = 'Add current station to favorites';
+} else if (!isDirect && isAlreadyFavorite) {
+    addCurrentToFavoritesBtn.classList.add('hidden');
+} else {
+    addCurrentToFavoritesBtn.classList.add('hidden');
+}
                         
                         // Start bitrate monitoring
                         startBitrateMonitoring();
@@ -1692,8 +1697,43 @@ function confirmImport() {
             renderFavorites();
         }
 
+       function addCurrentToFavorites() {
+    if (!currentPlayingStation || !currentPlayingStation.url) {
+        showMessage('No station currently playing to add to favorites.', 'info');
+        return;
+    }
+    
+    // Check if already in favorites
+    const isAlreadyFavorite = favorites.some(fav => fav.url === currentPlayingStation.url);
+    if (isAlreadyFavorite) {
+        showMessage('This station is already in your favorites!', 'info');
+        return;
+    }
+    
+    // Generate a name if it's a direct URL stream
+    let name = currentPlayingStation.name;
+    if (isDirectUrlStream && name === "Direct Stream") {
+        try {
+            const urlObj = new URL(currentPlayingStation.url);
+            name = urlObj.hostname.replace(/^www\./, '') || "Custom Station";
+        } catch (e) {
+            name = "Custom Station";
+        }
+    }
+    
+    // Open the add modal with the current station's info
+    openModal('add', {
+        name: name,
+        url: currentPlayingStation.url
+    });
+    
+    // Hide the button since we're adding it to favorites
+    addCurrentToFavoritesBtn.classList.add('hidden');
+}
+
         playPauseBtn.addEventListener('click', togglePlayPause);
         stopBtn.addEventListener('click', stopPlayback);
+       addCurrentToFavoritesBtn.addEventListener('click', addCurrentToFavorites);
 
         volumeControl.addEventListener('input', (e) => {
             audioPlayer.volume = parseFloat(e.target.value);
