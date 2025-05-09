@@ -699,40 +699,38 @@
         ];
 
         // --- Message Box Logic ---
-        function showMessage(message, type = 'info', duration = 3000) {
-            messageText.textContent = message;
-            messageBox.className = `fixed top-5 right-5 p-4 rounded-lg shadow-lg text-white opacity-0 invisible z-[150] max-w-xs sm:max-w-sm text-sm border border-transparent`;
-            
-            // Set icon and color based on type
-            let iconClass, bgColor, borderColor;
-            switch(type) {
-                case 'success':
-                    iconClass = 'fa-check-circle';
-                    bgColor = 'bg-green-600 border-green-700';
-                    break;
-                case 'error':
-                    iconClass = 'fa-exclamation-circle';
-                    bgColor = 'bg-red-600 border-red-700';
-                    break;
-                case 'warning':
-                    iconClass = 'fa-exclamation-triangle';
-                    bgColor = 'bg-amber-500 border-amber-600';
-                    break;
-                default: // info
-                    iconClass = 'fa-info-circle';
-                    bgColor = 'bg-blue-600 border-blue-700';
-            }
-            
-            messageIcon.className = `fas ${iconClass} mr-3`;
-            messageBox.classList.add(bgColor, 'animate-fade-in');
-            messageBox.classList.remove('invisible', 'opacity-0');
-            messageBox.classList.add('opacity-100');
-            
-            clearTimeout(messageTimeout);
-            messageTimeout = setTimeout(() => {
-                hideMessage();
-            }, duration);
-        }
+function showMessage(message, type = 'info', duration = 3000) {
+    // Clear any existing message
+    messageText.textContent = message;
+    messageBox.className = 'fixed top-5 right-5 p-4 rounded-lg shadow-lg text-white opacity-0 invisible z-[150] max-w-xs sm:max-w-sm text-sm border border-transparent';
+    
+    // Set colors based on type (NO SPACES IN CLASS LISTS!)
+    const colorClasses = {
+        success: ['bg-green-600', 'border-green-700'],
+        error: ['bg-red-600', 'border-red-700'],
+        warning: ['bg-amber-500', 'border-amber-600'],
+        info: ['bg-blue-600', 'border-blue-700']
+    };
+    
+    // Add each class individually
+    colorClasses[type].forEach(cls => messageBox.classList.add(cls));
+    
+    // Set icon
+    messageIcon.className = `fas ${
+        type === 'success' ? 'fa-check-circle' :
+        type === 'error' ? 'fa-exclamation-circle' :
+        type === 'warning' ? 'fa-exclamation-triangle' :
+        'fa-info-circle'
+    } mr-3`;
+    
+    // Show message
+    messageBox.classList.remove('invisible', 'opacity-0');
+    messageBox.classList.add('opacity-100', 'animate-fade-in');
+    
+    // Auto-hide
+    clearTimeout(messageTimeout);
+    messageTimeout = setTimeout(hideMessage, duration);
+}
 
         function hideMessage() {
             messageBox.classList.remove('opacity-100');
