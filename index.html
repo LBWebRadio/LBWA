@@ -1302,40 +1302,47 @@ function showMessage(message, type = 'info', duration = 3000) {
             }
         }
 
- function confirmImport() {
+function confirmImport() {
+    console.log('=== START IMPORT DEBUG ===');
     const file = fileImportInput.files[0];
+    
     if (!file) {
-        closeImportConfirmModal();
+        console.error('No file selected');
         return;
     }
 
+    console.log('File selected:', file.name);
+    
     readFileAsText(file)
         .then(content => {
+            console.log('File content (first 100 chars):', content.substring(0, 100));
+            
             const importedStations = parseLBRXFile(content);
+            console.log('Parsed stations:', importedStations);
             
-            // DEBUG: Verify parsed data
-            console.log('Raw imported stations:', importedStations);
+            console.log('Current favorites (before):', favorites);
             
-            // SIMPLIFIED MERGE LOGIC
-            importedStations.forEach(newStation => {
-                const exists = favorites.some(s => s.url === newStation.url);
-                if (!exists) {
-                    favorites.push(newStation);
+            // Merge strategy
+            importedStations.forEach(s => {
+                if (!favorites.some(existing => existing.url === s.url)) {
+                    favorites.push(s);
                 }
             });
             
-            // FORCE UPDATE
+            console.log('Current favorites (after):', favorites);
+            
             localStorage.setItem('radioFavorites', JSON.stringify(favorites));
-            renderFavorites(); // ← Ensure this is called
+            console.log('LocalStorage updated');
+            
+            renderFavorites();
             updateFavoritesCount();
             
-            showMessage(`Imported ${importedStations.length} stations!`, 'success');
+            showMessage(`Imported ${importedStations.length} stations`, 'success');
             closeImportConfirmModal();
         })
         .catch(error => {
-            console.error('Import error:', error);
-            showMessage('Import failed: ' + error.message, 'error');
-            closeImportConfirmModal();
+            console.error('Full error:', error);
+            showMessage('Import crashed: ' + error.message, 'error');
         });
 }
 
