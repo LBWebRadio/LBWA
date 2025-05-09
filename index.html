@@ -981,18 +981,20 @@ function showMessage(message, type = 'info', duration = 3000) {
             localStorage.setItem('radioFavoritesLBRX', lbrxContent);
         }
 
-        function generateLBRXContent() {
-            let content = "## Live Beats Radio Export File\n";
-            content += "## Version: 1.3.1\n";
-            content += "## Format: Station name followed by URL on next line\n";
-            content += "=== FAVORITE STATIONS ===\n\n";
-            
-            favorites.forEach(station => {
-                content += `${station.name}\n${station.url}\n\n`;
-            });
-            
-            return content;
-        }
+      function generateLBRXContent() {
+    let content = "## LIVE BEATS WEBRADIO PLAYER EXPORT ##\n";
+    content += `## Date: ${new Date().toISOString()}\n`;
+    content += `## Version: 1.3.0\n`;
+    content += `=== FAVORITE STATIONS (${favorites.length} stations) ===\n\n`;
+    
+    // Add numbered stations with exact WinForms formatting
+    favorites.forEach((station, index) => {
+        content += `${index + 1}. ${station.name}\n${station.url}\n\n`;
+    });
+    
+    content += "## END OF EXPORT ##";
+    return content;
+}
 
         function renderQuickAccess() {
             quickAccessList.innerHTML = '';
