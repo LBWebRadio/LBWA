@@ -3,23 +3,26 @@
 <head>
    <meta charset="UTF-8">
    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
-   <meta name="version" content="1.3.1">
+   <meta name="version" content="1.3.0">
 
+   <!-- PWA Meta Tags -->
    <meta name="theme-color" content="#111827">
    <meta name="mobile-web-app-capable" content="yes">
    <meta name="apple-mobile-web-app-capable" content="yes">
    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
    <meta name="apple-mobile-web-app-title" content="Live Beats">
    
+   <!-- Manifest -->
    <link rel="manifest" href="manifest.json" crossorigin="use-credentials">
 
+   <!-- Icons - All paths made relative for GitHub Pages -->
    <link rel="shortcut icon" href="icons/icon-32.png">
    <link rel="icon" href="icons/icon-32.png" sizes="32x32">
    <link rel="icon" href="icons/icon-192.png" sizes="192x192">
-   
-<link rel="apple-touch-icon" href="icons/icon-180.png">
+   <link rel="apple-touch-icon" href="icons/icon-180.png">
    <link rel="apple-touch-icon" sizes="180x180" href="icons/icon-180.png">
 
+   <!-- Windows-specific tags -->
    <meta name="msapplication-TileImage" content="icons/icon-144.png">
    <meta name="msapplication-TileColor" content="#111827">
    <meta name="msapplication-config" content="browserconfig.xml">
@@ -34,8 +37,7 @@
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
-    
-  tailwind.config = {
+      tailwind.config = {
         darkMode: 'class',
         theme: {
           extend: {
@@ -43,23 +45,20 @@
               primary: {
                 50: '#f0f9ff',
                 100: '#e0f2fe',
-     
-           200: '#bae6fd',
+                200: '#bae6fd',
                 300: '#7dd3fc',
                 400: '#38bdf8',
                 500: '#0ea5e9',
                 600: '#0284c7',
                 700: '#0369a1',
-   
-             800: '#075985',
+                800: '#075985',
                 900: '#0c4a6e',
               },
             },
             fontFamily: {
               sans: ['Inter', 'sans-serif'],
             },
-  
-          animation: {
+            animation: {
               'spin-slow': 'spin 3s linear infinite',
               'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
             }
@@ -68,204 +67,197 @@
       }
     </script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-    
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         body {
             font-family: 'Inter', sans-serif;
-transition: background-color 0.3s ease, color 0.3s ease;
+            transition: background-color 0.3s ease, color 0.3s ease;
             -webkit-tap-highlight-color: transparent;
         }
         
         /* Custom scrollbar for webkit browsers */
         ::-webkit-scrollbar {
             width: 8px;
-height: 8px;
+            height: 8px;
         }
         ::-webkit-scrollbar-track {
             background: transparent;
-}
+        }
         ::-webkit-scrollbar-thumb {
             background-color: rgba(156, 163, 175, 0.5);
-border-radius: 10px;
+            border-radius: 10px;
             border: 2px solid transparent;
             background-clip: content-box;
         }
         ::-webkit-scrollbar-thumb:hover {
             background-color: rgba(156, 163, 175, 0.8);
-}
+        }
 
         .dark ::-webkit-scrollbar-thumb {
             background-color: rgba(75, 85, 99, 0.5);
-}
+        }
         .dark ::-webkit-scrollbar-thumb:hover {
             background-color: rgba(75, 85, 99, 0.8);
-}
+        }
 
         /* Player controls fixed at bottom */
         .player-controls {
             position: fixed;
-bottom: 0;
+            bottom: 0;
             left: 0;
             right: 0;
             z-index: 50;
             backdrop-filter: blur(10px);
             background-color: rgba(255, 255, 255, 0.8);
-border-top: 1px solid rgba(0, 0, 0, 0.1);
+            border-top: 1px solid rgba(0, 0, 0, 0.1);
         }
         
         .dark .player-controls {
             background-color: rgba(17, 24, 39, 0.8);
-border-top: 1px solid rgba(255, 255, 255, 0.1);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         /* Modal styles */
         .modal {
             transition: opacity 0.2s ease-in-out, visibility 0.2s ease-in-out;
-}
+        }
         .modal-content {
             transition: transform 0.2s ease-in-out, opacity 0.2s ease-in-out;
-}
+        }
         .modal.open {
             opacity: 1;
-visibility: visible;
+            visibility: visible;
         }
         .modal.open .modal-content {
             transform: translateY(0) scale(1);
-opacity: 1;
+            opacity: 1;
         }
         .modal .modal-content {
             transform: translateY(20px) scale(0.98);
-opacity: 0;
+            opacity: 0;
         }
 
         /* Input focus states */
         input:focus, textarea:focus, select:focus, button:focus-visible {
             outline: 2px solid #3b82f6;
-outline-offset: 2px;
+            outline-offset: 2px;
         }
         .dark input:focus, .dark textarea:focus, .dark select:focus, .dark button:focus-visible {
             outline-color: #60a5fa;
-}
+        }
 
         /* Button styles & hover effects */
         .btn {
             @apply font-medium py-2.5 px-5 rounded-lg shadow-sm transition-all duration-200 ease-in-out transform focus:outline-none;
-}
+        }
         .btn-primary {
             @apply btn bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white hover:shadow-md hover:scale-[1.02];
-}
+        }
         .btn-secondary {
             @apply btn bg-gray-100 hover:bg-gray-200 text-gray-800 hover:shadow-md hover:scale-[1.02] border border-gray-200;
-}
+        }
         .dark .btn-secondary {
             @apply bg-gray-700 hover:bg-gray-600 text-gray-200 border-gray-600;
-}
+        }
         
         .btn-danger {
             @apply btn bg-gradient-to-r from-red-500 to-pink-500 hover:from-red-600 hover:to-pink-600 text-white hover:shadow-md hover:scale-[1.02];
-}
+        }
         
         .btn-success {
             @apply btn bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white hover:shadow-md hover:scale-[1.02];
-}
+        }
         
         .btn-warning {
             @apply btn bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white hover:shadow-md hover:scale-[1.02];
-}
+        }
         
         .icon-btn {
             @apply p-2.5 sm:p-3 rounded-full transition-all duration-200 ease-in-out transform hover:scale-105 focus:outline-none;
-}
+        }
         .icon-btn:hover {
             @apply bg-gray-100 dark:bg-gray-700;
-}
+        }
         .icon-btn:focus-visible {
             @apply ring-2 ring-offset-1 ring-blue-500 dark:ring-blue-400;
-}
+        }
 
         /* Message Box */
         #messageBox {
             transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
-}
+        }
         #messageBox.opacity-0 {
             transform: translateY(-20px);
-}
+        }
         #messageBox.opacity-100 {
             transform: translateY(0);
-}
+        }
         
         /* Station card hover effect */
         .station-card {
             @apply transition-all duration-200 ease-in-out transform hover:-translate-y-0.5;
-}
+        }
         
         /* Volume slider */
         input[type="range"] {
             -webkit-appearance: none;
-height: 6px;
+            height: 6px;
             border-radius: 3px;
             @apply bg-gray-200 dark:bg-gray-600;
         }
         
         input[type="range"]::-webkit-slider-thumb {
             -webkit-appearance: none;
-width: 16px;
+            width: 16px;
             height: 16px;
             border-radius: 50%;
             @apply bg-blue-500 dark:bg-blue-400 cursor-pointer;
-}
+        }
         
         /* Loading spinner */
         .spinner {
             animation: spin-slow 1.5s linear infinite;
-}
+        }
         
         /* Now playing animation */
         @keyframes nowPlaying {
-            0%, 100% { opacity: 0.5;
-transform: scale(0.95); }
-            50% { opacity: 1; transform: scale(1.05);
-}
+            0%, 100% { opacity: 0.5; transform: scale(0.95); }
+            50% { opacity: 1; transform: scale(1.05); }
         }
         
         .now-playing {
             animation: nowPlaying 2s ease-in-out infinite;
-}
+        }
         
         /* Gradient text */
         .gradient-text {
             @apply bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-indigo-400;
-}
+        }
         
         /* Fade in animation */
         @keyframes fadeIn {
-            from { opacity: 0;
-transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0);
-}
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
         
         .animate-fade-in {
             animation: fadeIn 0.3s ease-out forwards;
-}
+        }
         
         /* Pulse animation for live indicator */
         @keyframes livePulse {
-            0%, 100% { opacity: 1;
-}
-            50% { opacity: 0.7;
-}
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
         }
         
         .live-indicator {
             animation: livePulse 2s ease-in-out infinite;
-}
+        }
         
         /* Waveform animation */
         .waveform {
             display: flex;
-align-items: center;
+            align-items: center;
             justify-content: space-between;
             width: 40px;
             height: 20px;
@@ -273,507 +265,466 @@ align-items: center;
         
         .waveform-bar {
             background-color: currentColor;
-width: 3px;
+            width: 3px;
             border-radius: 3px;
             animation: waveformAnimation 1.5s ease-in-out infinite;
         }
         
         .waveform-bar:nth-child(1) {
             height: 30%;
-animation-delay: 0.1s;
+            animation-delay: 0.1s;
         }
         
         .waveform-bar:nth-child(2) {
             height: 60%;
-animation-delay: 0.3s;
+            animation-delay: 0.3s;
         }
         
         .waveform-bar:nth-child(3) {
             height: 40%;
-animation-delay: 0.5s;
+            animation-delay: 0.5s;
         }
         
         .waveform-bar:nth-child(4) {
             height: 80%;
-animation-delay: 0.2s;
+            animation-delay: 0.2s;
         }
         
         .waveform-bar:nth-child(5) {
             height: 50%;
-animation-delay: 0.4s;
+            animation-delay: 0.4s;
         }
         
         @keyframes waveformAnimation {
-            0%, 100% { transform: scaleY(0.5);
-}
-            50% { transform: scaleY(1.2);
-}
+            0%, 100% { transform: scaleY(0.5); }
+            50% { transform: scaleY(1.2); }
         }
     </style>
 </head>
 <body class="bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-100 min-h-screen flex flex-col">
 
-    <audio id="audioPlayer" crossOrigin="anonymous"></audio>
+    <audio id="audioPlayer"></audio>
 
     <header class="bg-white dark:bg-gray-800 shadow-sm p-4 sticky top-0 z-40">
         <div class="container mx-auto flex justify-between items-center max-w-6xl px-4">
             <div class="flex items-center space-x-2">
                <img src="icons/icon-48.png" 
-                     alt="Live Beats Icon" 
-                     class="w-8 h-8 rounded-lg">
-   
-             <h1 class="text-xl sm:text-2xl font-bold gradient-text">
+     alt="Live Beats Icon" 
+     class="w-8 h-8 rounded-lg">
+                <h1 class="text-xl sm:text-2xl font-bold gradient-text">
                     Live Beats WebRadio
                 </h1>
             </div>
             
-            <nav class="flex items-center space-x-4">
-      
-          <button id="themeToggleBtn" class="icon-btn text-gray-600 dark:text-gray-300" aria-label="Toggle theme">
+            <div class="flex items-center space-x-4">
+                <button id="themeToggleBtn" class="icon-btn text-gray-600 dark:text-gray-300">
                     <i class="fas fa-moon dark:hidden"></i>
                     <i class="fas fa-sun hidden dark:block"></i>
                 </button>
                 
-       
-         <button id="infoBtn" class="icon-btn text-gray-600 dark:text-gray-300" aria-label="App Info">
+                <button id="infoBtn" class="icon-btn text-gray-600 dark:text-gray-300" aria-label="App Info">
                     <i class="fas fa-info-circle"></i>
                 </button>
-            </nav>
+            </div>
         </div>
     </header>
 
     <main class="container mx-auto max-w-6xl p-4 flex-grow mb-36">
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
- 
-           <section class="lg:col-span-2 space-y-6" aria-labelledby="main-content-heading">
-                <h2 id="main-content-heading" class="sr-only">Main Content</h2>
+            <!-- Left column -->
+            <div class="lg:col-span-2 space-y-6">
+                <!-- Play from URL section -->
                 <div class="bg-white dark:bg-gray-800 p-5 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
-                    <h3 class="text-xl font-semibold mb-4 flex items-center">
-  
-                      <i class="fas fa-link mr-2 text-blue-500"></i>
+                    <h2 class="text-xl font-semibold mb-4 flex items-center">
+                        <i class="fas fa-link mr-2 text-blue-500"></i>
                         Play from URL
-                    </h3>
+                    </h2>
                     <div class="flex flex-col sm:flex-row items-stretch gap-3">
-   
-                     <input type="url" id="directUrlInput" 
+                        <input type="url" id="directUrlInput" 
                                class="flex-grow w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white placeholder-gray-400 dark:placeholder-gray-500" 
-                             
-  placeholder="https://example.com/stream.mp3">
+                               placeholder="https://example.com/stream.mp3">
                         <button id="playDirectUrlBtn" class="btn-primary whitespace-nowrap">
                             <i class="fas fa-play mr-2"></i>Play
                         </button>
-                
-    </div>
+                    </div>
                     <div class="mt-3 text-sm text-gray-500 dark:text-gray-400">
-                        Tip: If the station will not play, it likely doesn't support CORS. The player will attempt to use a proxy.
+                        Tip: If the station will not play it likely doesn't support CORS
                     </div>
                 </div>
- 
-               
+                
+                <!-- Quick Access section -->
                 <div class="bg-white dark:bg-gray-800 p-5 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
                     <div class="flex items-center justify-between mb-4">
-                 
-       <h3 class="text-xl font-semibold flex items-center">
+                        <h2 class="text-xl font-semibold flex items-center">
                             <i class="fas fa-bolt mr-2 text-amber-500"></i>
                             Quick Access
-                        </h3>
-    
-                    <button id="editQuickAccessBtn" class="icon-btn text-gray-500 dark:text-gray-400 hover:text-blue-500 dark:hover:text-blue-400" aria-label="Edit Quick Access Stations">
+                        </h2>
+                        <button id="editQuickAccessBtn" class="icon-btn text-gray-500 dark:text-gray-400 hover:text-blue-500 dark:hover:text-blue-400">
                             <i class="fas fa-edit"></i>
                         </button>
-                    
-</div>
+                    </div>
                     <div id="quickAccessList" class="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                        </div>
+                        <!-- Quick access buttons will be generated here -->
+                    </div>
                 </div>
-       
-     </section>
+            </div>
             
-            <aside class="space-y-6" aria-labelledby="sidebar-heading">
-                 <h2 id="sidebar-heading" class="sr-only">Sidebar Content</h2>
+            <!-- Right column -->
+            <div class="space-y-6">
+                <!-- Actions section -->
                 <div class="bg-white dark:bg-gray-800 p-5 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
-            
-        <h3 class="text-xl font-semibold mb-4 flex items-center">
+                    <h2 class="text-xl font-semibold mb-4 flex items-center">
                         <i class="fas fa-cog mr-2 text-gray-500"></i>
                         Actions
-                    </h3>
-               
-     <div class="grid grid-cols-2 gap-3">
+                    </h2>
+                    <div class="grid grid-cols-2 gap-3">
                         <button id="openAddModalBtn" class="btn-primary">
-                            <i class="fas fa-plus mr-2"></i>Add Station
+                            <i class="fas fa-plus mr-2"></i>Add
                         </button>
-           
-             <button id="importFavoritesBtn" class="btn-warning">
+                        <button id="importFavoritesBtn" class="btn-warning">
                             <i class="fas fa-file-import mr-2"></i>Import
                         </button>
                         <button id="exportFavoritesBtn" class="btn-success">
-    
-                        <i class="fas fa-file-export mr-2"></i>Export
+                            <i class="fas fa-file-export mr-2"></i>Export
                         </button>
                         <button id="clearFavoritesBtn" class="btn-danger">
-                       
-     <i class="fas fa-trash mr-2"></i>Clear All
+                            <i class="fas fa-trash mr-2"></i>Clear
                         </button>
                     </div>
                 </div>
                 
-                
-<div id="nowPlayingSection" class="bg-white dark:bg-gray-800 p-5 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 hidden">
-                    <h3 class="text-xl font-semibold mb-4 flex items-center">
+                <!-- Now Playing section -->
+                <div id="nowPlayingSection" class="bg-white dark:bg-gray-800 p-5 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 hidden">
+                    <h2 class="text-xl font-semibold mb-4 flex items-center">
                         <i class="fas fa-headphones mr-2 text-purple-500"></i>
-                 
-       Now Playing
-                    </h3>
+                        Now Playing
+                    </h2>
                     <div class="flex items-center space-x-4">
                         <div class="flex-shrink-0">
-                        
-    <div class="w-16 h-16 rounded-lg bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white">
+                            <div class="w-16 h-16 rounded-lg bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white">
                                 <i class="fas fa-music text-2xl"></i>
                             </div>
-                       
- </div>
+                        </div>
                         <div class="flex-grow min-w-0">
                             <p class="text-sm text-gray-500 dark:text-gray-400 truncate">Station</p>
                             <p id="currentStationName" class="font-bold truncate" title="No station selected">---</p>
-       
-                     <div class="flex items-center mt-1">
+                            <div class="flex items-center mt-1">
                                 <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200 mr-2">
-                                
-    <span class="w-2 h-2 rounded-full bg-red-500 mr-1 live-indicator"></span>
+                                    <span class="w-2 h-2 rounded-full bg-red-500 mr-1 live-indicator"></span>
                                     LIVE
                                 </span>
-                      
-          <span id="bitrateInfo" class="text-xs text-gray-500 dark:text-gray-400"></span>
+                                <span id="bitrateInfo" class="text-xs text-gray-500 dark:text-gray-400"></span>
                             </div>
                         </div>
                     </div>
-              
-  </div>
-            </aside>
+                </div>
+            </div>
         </div>
         
-        <section class="mt-6 bg-white dark:bg-gray-800 p-5 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700" aria-labelledby="favorites-heading">
+        <!-- Favorites section -->
+        <div class="mt-6 bg-white dark:bg-gray-800 p-5 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
             <div class="flex items-center justify-between mb-4">
-                <h2 id="favorites-heading" class="text-xl font-semibold flex items-center">
-      
-              <i class="fas fa-star mr-2 text-yellow-500"></i>
+                <h2 class="text-xl font-semibold flex items-center">
+                    <i class="fas fa-star mr-2 text-yellow-500"></i>
                     My Favorite Stations
                 </h2>
                 <span id="favoritesCount" class="text-sm bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 px-2.5 py-0.5 rounded-full">
-                   
- 0 stations
+                    0 stations
                 </span>
             </div>
             
             <div id="favoritesList" class="space-y-3 max-h-[50vh] overflow-y-auto pr-2">
                 <div id="noFavoritesMsg" class="text-center py-8">
-                    <i class="fas 
-fa-radio text-4xl text-gray-300 dark:text-gray-600 mb-3"></i>
+                    <i class="fas fa-radio text-4xl text-gray-300 dark:text-gray-600 mb-3"></i>
                     <p class="text-gray-500 dark:text-gray-400">No favorite stations yet.</p>
                     <p class="text-sm text-gray-400 dark:text-gray-500 mt-1">Add some stations or try the quick access links!</p>
                 </div>
-                </div>
-        </section>
-   
- </main>
+            </div>
+        </div>
+    </main>
 
-    <footer class="player-controls">
+    <!-- Player controls -->
+    <div class="player-controls">
         <div class="container mx-auto max-w-6xl flex flex-col sm:flex-row items-center justify-between space-y-3 sm:space-y-0 p-4">
             <div class="w-full sm:w-auto flex items-center space-x-3 text-center sm:text-left mb-2 sm:mb-0 min-w-0">
                 <div class="flex-grow min-w-0">
                     <p class="text-xs sm:text-sm text-gray-500 dark:text-gray-400 truncate">Now Playing:</p>
-  
-                  <p id="currentStationNameCompact" class="font-semibold truncate text-base sm:text-lg" title="No station selected">---</p>
+                    <p id="currentStationNameCompact" class="font-semibold truncate text-base sm:text-lg" title="No station selected">---</p>
                 </div>
-                <button id="addCurrentToFavoritesBtn" class="icon-btn text-yellow-500 dark:text-yellow-400 hidden text-lg" title="Add current station to favorites" aria-label="Add current station to favorites">
-                    <i class="far fa-star"></i>           </button>
+                <button id="addCurrentToFavoritesBtn" class="icon-btn text-yellow-500 dark:text-yellow-400 hidden text-lg" title="Add current station to favorites" aria-label="Add to favorites">
+                    <i class="fas fa-star"></i>
+                </button>
             </div>
 
             <div class="flex items-center space-x-4">
-                <button id="stopBtn" class="icon-btn text-2xl sm:text-3xl text-red-500 dark:text-red-400" aria-label="Stop playback">
+                <button id="stopBtn" class="icon-btn text-2xl sm:text-3xl text-red-500 dark:text-red-400" aria-label="Stop">
                     <i class="fas fa-stop"></i>
                 </button>
-  
-          <button id="playPauseBtn" class="icon-btn text-3xl sm:text-4xl text-green-500 hover:text-green-600 dark:text-green-400 dark:hover:text-green-300" aria-label="Play">
-                    <i class="fas fa-play"></i>
-                </button>
+            <button id="playPauseBtn" class="icon-btn text-3xl sm:text-4xl text-green-500 hover:text-green-600 dark:text-green-400 dark:hover:text-green-300" aria-label="Play">
+    <i class="fas fa-play"></i>
+</button>
                 <div class="flex items-center space-x-2">
-                    <i class="fas fa-volume-down text-gray-600 dark:text-gray-300 text-base sm:text-lg" aria-hidden="true"></i>
+                    <i class="fas fa-volume-down text-gray-600 dark:text-gray-300 text-base sm:text-lg"></i>
                    <input type="range" id="volumeControl" min="0" max="1" step="0.01" value="0.5" 
-                           aria-label="Volume control"
-    
-   class="w-32 sm:w-40 h-2 bg-gray-200 dark:bg-gray-600 rounded-full appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-blue-500 dark:[&::-webkit-slider-thumb]:bg-blue-400">
-                    <i class="fas fa-volume-up text-gray-600 dark:text-gray-300 text-base sm:text-lg" aria-hidden="true"></i>
+       class="w-32 sm:w-40 h-2 bg-gray-200 dark:bg-gray-600 rounded-full appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-blue-500 dark:[&::-webkit-slider-thumb]:bg-blue-400">
+                    <i class="fas fa-volume-up text-gray-600 dark:text-gray-300 text-base sm:text-lg"></i>
                 </div>
             </div>
         </div>
-    </footer>
+    </div>
 
-    <div id="stationModal" class="modal fixed inset-0 bg-black bg-opacity-60 
-dark:bg-opacity-75 flex items-center justify-center p-4 opacity-0 invisible z-[100]" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <!-- Station Modal -->
+    <div id="stationModal" class="modal fixed inset-0 bg-black bg-opacity-60 dark:bg-opacity-75 flex items-center justify-center p-4 opacity-0 invisible z-[100]">
         <div class="modal-content bg-white dark:bg-gray-800 p-6 rounded-xl shadow-xl w-full max-w-md border border-gray-200 dark:border-gray-700">
             <h3 id="modalTitle" class="text-xl font-semibold mb-5 flex items-center">
-                <i class="fas fa-plus-circle mr-2 text-blue-500" aria-hidden="true"></i>
+                <i class="fas fa-plus-circle mr-2 text-blue-500"></i>
                 <span>Add Favorite Station</span>
             </h3>
-      
-      <form id="stationForm">
+            <form id="stationForm">
                 <input type="hidden" id="stationId">
                 <div class="mb-4">
                     <label for="stationNameInput" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Station Name</label>
                     <input type="text" id="stationNameInput" required 
-      
-                     class="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white placeholder-gray-400 dark:placeholder-gray-500" 
+                           class="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white placeholder-gray-400 dark:placeholder-gray-500" 
                            placeholder="E.g., My Favorite Hits">
                 </div>
                 <div class="mb-6">
- 
-                   <label for="stationUrlInput" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Station Stream URL</label>
+                    <label for="stationUrlInput" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Station Stream URL</label>
                     <input type="url" id="stationUrlInput" required 
                            class="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white placeholder-gray-400 dark:placeholder-gray-500" 
-      
-                     placeholder="https://stream.example.com/radio">
+                           placeholder="https://stream.example.com/radio">
                 </div>
                 <div class="flex justify-end space-x-3">
                     <button type="button" id="cancelModalBtn" class="btn-secondary">Cancel</button>
-                    <button 
-type="submit" id="saveStationBtn" class="btn-primary">Save Station</button>
+                    <button type="submit" id="saveStationBtn" class="btn-primary">Save Station</button>
                 </div>
             </form>
         </div>
     </div>
 
-    <div id="quickAccessEditModal" class="modal fixed inset-0 bg-black bg-opacity-60 dark:bg-opacity-75 flex items-center justify-center p-4 opacity-0 invisible z-[100]" role="dialog" aria-modal="true" aria-labelledby="quickAccessEditModalTitle">
+    <!-- Quick Access Edit Modal -->
+    <div id="quickAccessEditModal" class="modal fixed inset-0 bg-black bg-opacity-60 dark:bg-opacity-75 flex items-center justify-center p-4 opacity-0 invisible z-[100]">
         <div class="modal-content bg-white dark:bg-gray-800 p-6 rounded-xl shadow-xl w-full max-w-md border border-gray-200 dark:border-gray-700">
-           
- <h3 id="quickAccessEditModalTitle" class="text-xl font-semibold mb-5 flex items-center">
-                <i class="fas fa-edit mr-2 text-blue-500" aria-hidden="true"></i>
+            <h3 class="text-xl font-semibold mb-5 flex items-center">
+                <i class="fas fa-edit mr-2 text-blue-500"></i>
                 <span>Edit Quick Access</span>
             </h3>
             <div class="mb-6">
                 <p class="text-sm text-gray-600 dark:text-gray-300 mb-4">Select stations to show in Quick Access:</p>
-     
-           <div id="quickAccessEditList" class="space-y-2 max-h-[300px] overflow-y-auto">
-                    </div>
+                <div id="quickAccessEditList" class="space-y-2 max-h-[300px] overflow-y-auto">
+                    <!-- Favorites will be listed here for selection -->
+                </div>
             </div>
             <div class="flex justify-end space-x-3">
-              
-  <button type="button" id="cancelQuickAccessEditBtn" class="btn-secondary">Cancel</button>
+                <button type="button" id="cancelQuickAccessEditBtn" class="btn-secondary">Cancel</button>
                 <button type="button" id="saveQuickAccessEditBtn" class="btn-primary">Save Changes</button>
             </div>
         </div>
     </div>
 
-    <div id="infoModal" class="modal fixed inset-0 bg-black bg-opacity-60 dark:bg-opacity-75 flex items-center justify-center p-4 opacity-0 invisible z-[100]" role="dialog" aria-modal="true" aria-labelledby="infoModalTitle">
+    <!-- Info Modal -->
+    <div id="infoModal" class="modal fixed inset-0 bg-black bg-opacity-60 dark:bg-opacity-75 flex items-center justify-center p-4 opacity-0 invisible z-[100]">
         <div class="modal-content bg-white dark:bg-gray-800 p-6 rounded-xl shadow-xl w-full max-w-md border border-gray-200 dark:border-gray-700">
-       
-     <h3 id="infoModalTitle" class="text-xl font-semibold mb-5 flex items-center">
-                <i class="fas fa-info-circle mr-2 text-blue-500" aria-hidden="true"></i>
+            <h3 class="text-xl font-semibold mb-5 flex items-center">
+                <i class="fas fa-info-circle mr-2 text-blue-500"></i>
                 <span>About Live Beats WRP</span>
             </h3>
             <div class="space-y-4 text-sm text-gray-700 dark:text-gray-300">
                 <p>
-       
-       <strong>License:</strong> GNU GPL v3<br>
-                    <a href="https://www.gnu.org/licenses/gpl-3.0.en.html" 
-                       target="_blank" 
-                       rel="noopener noreferrer"
-                       class="text-blue-600 dark:text-blue-400 hover:underline">
-                       View License Terms
-                    </a>
-                </p>
-                <p>
-                    <strong>©<span id="currentYear">2025</span> Christian Flach</strong><br>
-                    <a href="mailto:livebeatswrp@gmail.com" 
-                        class="text-blue-600 dark:text-blue-400 hover:underline">
-                        Contact: livebeatswrp@gmail.com
-                    </a><br>
-                    <a href="https://lbwebradio.github.io/index.html"
-                        target="_blank"
-                        rel="noopener noreferrer"
-    
- class="text-blue-600 dark:text-blue-400 hover:underline">
-                        LBWRP Website
-                    </a>
-                </p>
-                <p class="text-sm">
-                    <strong>Version:</strong> <span id="appVersion">1.3.0</span>
-                </p>
+              <strong>License:</strong> GNU GPL v3<br>
+    <a href="https://www.gnu.org/licenses/gpl-3.0.en.html" 
+       target="_blank" 
+       rel="noopener noreferrer"
+       class="text-blue-600 dark:text-blue-400 hover:underline">
+       View License Terms
+    </a>
+  </p>
+
+ <p>
+  <strong>©2025 <span id="currentYear"></span> Christian Flach</strong><br>
+  <a href="mailto:your.email@example.com" 
+     class="text-blue-600 dark:text-blue-400 hover:underline">
+     Contact: livebeatswrp@gmail.com
+  </a><br>
+  <a href="https://lbwebradio.github.io/index.html"
+     target="_blank"
+     rel="noopener noreferrer"
+     class="text-blue-600 dark:text-blue-400 hover:underline">
+     LBWRP Website
+  </a>
+</p>
+
+  <p class="text-sm">
+    <strong>Version:</strong> 1.3.0
+</p>
                 <p>
                     <strong>Features:</strong>
                 </p>
                 <ul class="list-disc pl-5 space-y-1">
-          
-          <li>Save your favorite radio stations</li>
+                    <li>Save your favorite radio stations</li>
                     <li>Customizable Quick Access section</li>
                     <li>Play directly from any stream URL</li>
-                    <li>Import/Export your favorites in .lbrx format</li>
-                
-    <li>Works as a PWA (installable on supported devices)</li>
-                    <li>Dark/Light theme support with system preference detection</li>
-                    <li>Basic playback controls (Play/Pause, Stop, Volume)</li>
-                    <li>Visual feedback for playing state and live streams</li>
+                    <li>Import/Export your favorites</li>
+                    <li>Works as a PWA (installable)</li>
+                    <li>Dark/Light theme support</li>
                 </ul>
                 <p class="pt-2">
                     <strong>Keyboard Shortcuts:</strong><br>
-                
-    Space: Play/Pause<br>
+                    Space: Play/Pause<br>
                     S: Stop playback<br>
-                    &uarr;/&darr;: Adjust volume
+                    ↑/↓: Adjust volume
                 </p>
             </div>
             <div class="mt-6 flex justify-end">
-        
-        <button type="button" id="closeInfoModalBtn" class="btn-secondary">Close</button>
+                <button type="button" id="closeInfoModalBtn" class="btn-secondary">Close</button>
             </div>
         </div>
     </div>
 
-    <div id="importConfirmModal" class="modal fixed inset-0 bg-black bg-opacity-60 dark:bg-opacity-75 flex items-center justify-center p-4 opacity-0 invisible z-[100]" role="alertdialog" aria-modal="true" aria-labelledby="importConfirmModalTitle">
+    <!-- Import Confirmation Modal -->
+    <div id="importConfirmModal" class="modal fixed inset-0 bg-black bg-opacity-60 dark:bg-opacity-75 flex items-center justify-center p-4 opacity-0 invisible z-[100]">
         <div class="modal-content bg-white dark:bg-gray-800 p-6 rounded-xl shadow-xl w-full max-w-md border border-gray-200 dark:border-gray-700">
-            <h3 id="importConfirmModalTitle" class="text-xl font-semibold mb-4">Import Stations</h3>
-    
-        <p id="importConfirmText" class="mb-6">You're about to import stations.
-Existing stations with the same URL will be updated.</p>
+            <h3 class="text-xl font-semibold mb-4">Import Stations</h3>
+            <p id="importConfirmText" class="mb-6">You're about to import stations. Existing stations with the same URL will be updated.</p>
             <div class="flex justify-end space-x-3">
-                <button type="button" id="cancelImportBtn" class="btn-secondary">Cancel</button>
-                <button type="button" id="confirmImportBtn" class="btn-primary">Import</button>
+                <button id="cancelImportBtn" class="btn-secondary">Cancel</button>
+                <button id="confirmImportBtn" class="btn-primary">Import</button>
             </div>
         </div>
     </div>
 
-    <div id="clearConfirmModal" class="modal fixed inset-0 
-bg-black bg-opacity-60 dark:bg-opacity-75 flex items-center justify-center p-4 opacity-0 invisible z-[100]" role="alertdialog" aria-modal="true" aria-labelledby="clearConfirmModalTitle">
+    <!-- Clear Confirmation Modal -->
+    <div id="clearConfirmModal" class="modal fixed inset-0 bg-black bg-opacity-60 dark:bg-opacity-75 flex items-center justify-center p-4 opacity-0 invisible z-[100]">
         <div class="modal-content bg-white dark:bg-gray-800 p-6 rounded-xl shadow-xl w-full max-w-md border border-gray-200 dark:border-gray-700">
-            <h3 id="clearConfirmModalTitle" class="text-xl font-semibold mb-4">Clear All Favorites</h3>
-            <p class="mb-6 text-red-500 dark:text-red-400">Are you sure you want to delete all your favorite stations?
-This action cannot be undone.</p>
+            <h3 class="text-xl font-semibold mb-4">Clear All Favorites</h3>
+            <p class="mb-6 text-red-500 dark:text-red-400">Are you sure you want to delete all your favorite stations? This action cannot be undone.</p>
             <div class="flex justify-end space-x-3">
-                <button type="button" id="cancelClearBtn" class="btn-secondary">Cancel</button>
-                <button type="button" id="confirmClearBtn" class="btn-danger">Clear All</button>
+                <button id="cancelClearBtn" class="btn-secondary">Cancel</button>
+                <button id="confirmClearBtn" class="btn-danger">Clear All</button>
             </div>
         </div>
     </div>
 
-    <div id="messageBox" class="fixed top-5 right-5 p-4 rounded-lg shadow-lg text-white 
-opacity-0 invisible z-[150] max-w-xs sm:max-w-sm text-sm border border-transparent" role="alert" aria-live="assertive">
+    <!-- Message Box -->
+    <div id="messageBox" class="fixed top-5 right-5 p-4 rounded-lg shadow-lg text-white opacity-0 invisible z-[150] max-w-xs sm:max-w-sm text-sm border border-transparent">
         <div class="flex items-start justify-between">
             <div class="flex-shrink-0 pt-0.5">
-                <i id="messageIcon" class="fas fa-info-circle mr-3" aria-hidden="true"></i>
+                <i id="messageIcon" class="fas fa-info-circle mr-3"></i>
             </div>
             <div class="flex-grow">
                 <p id="messageText" class="mr-2"></p>
-     
-       </div>
-            <button id="closeMessageBtn" class="text-lg font-bold leading-none hover:opacity-75 focus:outline-none" aria-label="Close message">&times;</button>
+            </div>
+            <button id="closeMessageBtn" class="text-lg font-bold leading-none hover:opacity-75 focus:outline-none">&times;</button>
         </div>
     </div>
 
-    <input type="file" id="fileImportInput" accept=".lbrx" class="hidden" aria-hidden="true">
+    <!-- File Input (hidden) -->
+    <input type="file" id="fileImportInput" accept=".lbrx" class="hidden">
 
     <script>
         // DOM Elements
         const audioPlayer = document.getElementById('audioPlayer');
-const themeToggleBtn = document.getElementById('themeToggleBtn');
+        const themeToggleBtn = document.getElementById('themeToggleBtn');
         const infoBtn = document.getElementById('infoBtn');
         const openAddModalBtn = document.getElementById('openAddModalBtn');
         const stationModal = document.getElementById('stationModal');
         const quickAccessEditModal = document.getElementById('quickAccessEditModal');
-const infoModal = document.getElementById('infoModal');
+        const infoModal = document.getElementById('infoModal');
         const importConfirmModal = document.getElementById('importConfirmModal');
         const clearConfirmModal = document.getElementById('clearConfirmModal');
-        const modalTitle = document.getElementById('modalTitle').querySelector('span'); // Get the span for text content
+        const modalTitle = document.getElementById('modalTitle');
         const cancelModalBtn = document.getElementById('cancelModalBtn');
-const closeInfoModalBtn = document.getElementById('closeInfoModalBtn');
+        const closeInfoModalBtn = document.getElementById('closeInfoModalBtn');
         const stationForm = document.getElementById('stationForm');
         const stationIdInput = document.getElementById('stationId');
         const stationNameInput = document.getElementById('stationNameInput');
         const stationUrlInput = document.getElementById('stationUrlInput');
-const favoritesList = document.getElementById('favoritesList');
+        const favoritesList = document.getElementById('favoritesList');
         const noFavoritesMsg = document.getElementById('noFavoritesMsg');
         const favoritesCount = document.getElementById('favoritesCount');
         const playPauseBtn = document.getElementById('playPauseBtn');
         const stopBtn = document.getElementById('stopBtn');
-const volumeControl = document.getElementById('volumeControl');
+        const volumeControl = document.getElementById('volumeControl');
         const currentStationName = document.getElementById('currentStationName');
         const currentStationNameCompact = document.getElementById('currentStationNameCompact');
         const nowPlayingSection = document.getElementById('nowPlayingSection');
         const bitrateInfo = document.getElementById('bitrateInfo');
-const quickAccessList = document.getElementById('quickAccessList');
+        const quickAccessList = document.getElementById('quickAccessList');
         const quickAccessEditList = document.getElementById('quickAccessEditList');
         const editQuickAccessBtn = document.getElementById('editQuickAccessBtn');
         const cancelQuickAccessEditBtn = document.getElementById('cancelQuickAccessEditBtn');
         const saveQuickAccessEditBtn = document.getElementById('saveQuickAccessEditBtn');
-// Direct URL play elements
+        
+        // Direct URL play elements
         const directUrlInput = document.getElementById('directUrlInput');
         const playDirectUrlBtn = document.getElementById('playDirectUrlBtn');
-const addCurrentToFavoritesBtn = document.getElementById('addCurrentToFavoritesBtn');
+        const addCurrentToFavoritesBtn = document.getElementById('addCurrentToFavoritesBtn');
 
         // Import/Export Elements
         const importFavoritesBtn = document.getElementById('importFavoritesBtn');
-const exportFavoritesBtn = document.getElementById('exportFavoritesBtn');
+        const exportFavoritesBtn = document.getElementById('exportFavoritesBtn');
         const clearFavoritesBtn = document.getElementById('clearFavoritesBtn');
         const fileImportInput = document.getElementById('fileImportInput');
         const cancelImportBtn = document.getElementById('cancelImportBtn');
         const confirmImportBtn = document.getElementById('confirmImportBtn');
-const importConfirmText = document.getElementById('importConfirmText');
+        const importConfirmText = document.getElementById('importConfirmText');
         const cancelClearBtn = document.getElementById('cancelClearBtn');
         const confirmClearBtn = document.getElementById('confirmClearBtn');
-// Message Box Elements
+
+        // Message Box Elements
         const messageBox = document.getElementById('messageBox');
         const messageText = document.getElementById('messageText');
-const messageIcon = document.getElementById('messageIcon');
+        const messageIcon = document.getElementById('messageIcon');
         const closeMessageBtn = document.getElementById('closeMessageBtn');
         let messageTimeout;
 
-        // App State
         let favorites = [];
         let quickAccessStations = [];
-let currentPlayingStation = null;
-        let isDirectUrlStream = false; // True if current station is played from direct URL and not yet a favorite
+        let currentPlayingStation = null;
+        let isDirectUrlStream = false;
         let currentLbrxFileName = 'live_beats_favorites.lbrx';
         let audioContext;
         let analyser;
-        let sourceNode; // To reconnect MediaElementSource
         let bitrateInterval;
-let lastBytes = 0; // For bitrate calculation
+        let lastBytes = 0;
 
-        // Default quick access stations - consider making this configurable or empty by default
+        // Default quick access stations
         const defaultQuickAccessStations = [
             { name: "BBC Radio 1", url: "https://stream.live.vc.bbcmedia.co.uk/bbc_radio_one", icon: "fab fa-bbc" },
             { name: "BBC Radio 2", url: "https://stream.live.vc.bbcmedia.co.uk/bbc_radio_two", icon: "fab fa-bbc" },
             { name: "Classic FM", url: "https://icecast.thisisdax.com/ClassicFMMP3", icon: "fas fa-music" },
-            { name: "Radio Swiss 
-Jazz", url: "https://stream.srg-ssr.ch/m/rsj/mp3_128", icon: "fas fa-globe-europe" },
-            { name: "Radio France Info", url: "https://direct.franceinfo.fr/live/franceinfo-midfi.mp3", icon: "fas fa-broadcast-tower" }, // Corrected URL
+            { name: "Radio Swiss Jazz", url: "https://stream.srg-ssr.ch/m/rsj/mp3_128", icon: "fas fa-globe-europe" },
+            { name: "Radio France", url: "https://stream.srg-ssr.ch/m/rsj/mp3_128", icon: "fas fa-broadcast-tower" },
             { name: "Radio Paradise", url: "https://stream.radioparadise.com/flac", icon: "fas fa-parachute-box" }
         ];
-// --- Message Box Logic ---
+
+        // --- Message Box Logic ---
         function showMessage(message, type = 'info', duration = 3000) {
             messageText.textContent = message;
-messageBox.className = `fixed top-5 right-5 p-4 rounded-lg shadow-lg text-white opacity-0 invisible z-[150] max-w-xs sm:max-w-sm text-sm border border-transparent`; // Reset classes
-// Set icon and color based on type
+            messageBox.className = `fixed top-5 right-5 p-4 rounded-lg shadow-lg text-white opacity-0 invisible z-[150] max-w-xs sm:max-w-sm text-sm border border-transparent`;
+            
+            // Set icon and color based on type
             let iconClass, bgColor, borderColor;
-switch(type) {
+            switch(type) {
                 case 'success':
                     iconClass = 'fa-check-circle';
-bgColor = 'bg-green-600 border-green-700';
+                    bgColor = 'bg-green-600 border-green-700';
                     break;
                 case 'error':
                     iconClass = 'fa-exclamation-circle';
-bgColor = 'bg-red-600 border-red-700';
+                    bgColor = 'bg-red-600 border-red-700';
                     break;
                 case 'warning':
                     iconClass = 'fa-exclamation-triangle';
-bgColor = 'bg-amber-500 border-amber-600';
+                    bgColor = 'bg-amber-500 border-amber-600';
                     break;
                 default: // info
                     iconClass = 'fa-info-circle';
-bgColor = 'bg-blue-600 border-blue-700';
+                    bgColor = 'bg-blue-600 border-blue-700';
             }
             
             messageIcon.className = `fas ${iconClass} mr-3`;
-messageBox.classList.add(...bgColor.split(' '), 'animate-fade-in'); // Apply new classes
+            messageBox.classList.add(bgColor, 'animate-fade-in');
             messageBox.classList.remove('invisible', 'opacity-0');
             messageBox.classList.add('opacity-100');
             
@@ -781,29 +732,28 @@ messageBox.classList.add(...bgColor.split(' '), 'animate-fade-in'); // Apply new
             messageTimeout = setTimeout(() => {
                 hideMessage();
             }, duration);
-}
+        }
 
         function hideMessage() {
             messageBox.classList.remove('opacity-100');
-messageBox.classList.add('opacity-0');
+            messageBox.classList.add('opacity-0');
             setTimeout(() => {
                 messageBox.classList.add('invisible');
-            }, 300); // Corresponds to transition duration
-}
+            }, 300);
+        }
         closeMessageBtn.addEventListener('click', hideMessage);
-// --- Theme Management ---
+
+        // --- Theme Management ---
         function setLightTheme() {
             document.documentElement.classList.remove('dark');
-document.documentElement.classList.add('light');
+            document.documentElement.classList.add('light');
             localStorage.setItem('theme', 'light');
-            themeToggleBtn.setAttribute('aria-label', 'Switch to dark theme');
         }
 
         function setDarkTheme() {
             document.documentElement.classList.add('dark');
-document.documentElement.classList.remove('light');
+            document.documentElement.classList.remove('light');
             localStorage.setItem('theme', 'dark');
-            themeToggleBtn.setAttribute('aria-label', 'Switch to light theme');
         }
 
         themeToggleBtn.addEventListener('click', () => {
@@ -813,317 +763,362 @@ document.documentElement.classList.remove('light');
                 setDarkTheme();
             }
         });
-function loadTheme() {
+
+        function loadTheme() {
             const savedTheme = localStorage.getItem('theme');
-const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
             
             if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
                 setDarkTheme();
-} else {
+            } else {
                 setLightTheme();
-}
+            }
         }
 
         // --- Modal Management ---
-        function openModal(modalElement, onOpenFocusElement = null) {
-            modalElement.classList.remove('invisible', 'opacity-0');
-modalElement.classList.add('open');
-            if (onOpenFocusElement) {
-                onOpenFocusElement.focus();
-            }
-        }
-
-        function closeModal(modalElement) {
-            modalElement.classList.add('opacity-0');
-setTimeout(() => {
-                modalElement.classList.add('invisible');
-                modalElement.classList.remove('open');
-            }, 200); // Transition duration
-}
-        
-        function setupStationModal(mode = 'add', station = null) {
+        function openModal(mode = 'add', station = null) {
+            stationModal.classList.remove('invisible', 'opacity-0');
+            stationModal.classList.add('open');
             stationForm.reset();
             stationIdInput.value = '';
-            const modalTitleIcon = document.getElementById('modalTitle').previousElementSibling;
 
             if (mode === 'edit' && station) {
-                modalTitle.textContent = 'Edit Favorite Station';
-                modalTitleIcon.className = 'fas fa-edit mr-2 text-blue-500';
-stationIdInput.value = station.id;
+                modalTitle.innerHTML = '<i class="fas fa-edit mr-2 text-blue-500"></i><span>Edit Favorite Station</span>';
+                stationIdInput.value = station.id;
                 stationNameInput.value = station.name;
                 stationUrlInput.value = station.url;
             } else {
-                modalTitle.textContent = 'Add Favorite Station';
-                modalTitleIcon.className = 'fas fa-plus-circle mr-2 text-blue-500';
-if (station && station.url) { // Pre-fill from direct play
+                modalTitle.innerHTML = '<i class="fas fa-plus-circle mr-2 text-blue-500"></i><span>Add Favorite Station</span>';
+                if (station && station.url) {
                     stationUrlInput.value = station.url;
-if (station.name && station.name !== "Direct Stream" && !station.name.startsWith("http")) {
+                    if (station.name && station.name !== "Direct Stream" && !station.name.startsWith("http")) {
                         stationNameInput.value = station.name;
-} else { // Attempt to derive a name from URL
+                    } else {
                         try {
                             const urlObj = new URL(station.url);
-stationNameInput.value = urlObj.hostname.replace(/^www\./, '');
+                            stationNameInput.value = urlObj.hostname.replace(/^www\./, '');
                         } catch (e) {
-                            console.warn("Could not parse URL for hostname:", station.url);
-                            stationNameInput.value = ''; // Default to empty if parsing fails
-}
+                            stationNameInput.value = '';
+                        }
                     }
                 }
             }
-            openModal(stationModal, stationNameInput);
-}
-        
-        function setupQuickAccessEditModal() {
-            quickAccessEditList.innerHTML = ''; // Clear previous list
-favorites.forEach(station => {
+            stationNameInput.focus();
+        }
+
+        function closeModal() {
+            stationModal.classList.add('opacity-0');
+            setTimeout(() => {
+                stationModal.classList.add('invisible');
+                stationModal.classList.remove('open');
+            }, 200);
+        }
+
+        function openQuickAccessEditModal() {
+            quickAccessEditList.innerHTML = '';
+            
+            // Add favorites to the edit list
+            favorites.forEach(station => {
                 const isInQuickAccess = quickAccessStations.some(q => q.url === station.url);
                 
                 const div = document.createElement('div');
-                div.className = 'flex items-center justify-between p-2 
-bg-gray-50 dark:bg-gray-700 rounded-lg';
+                div.className = 'flex items-center justify-between p-2 bg-gray-50 dark:bg-gray-700 rounded-lg';
                 
                 const label = document.createElement('label');
-                label.className = 'flex items-center space-x-3 cursor-pointer w-full'; // Make label take full width
+                label.className = 'flex items-center space-x-3 cursor-pointer';
                 
                 const checkbox = document.createElement('input');
-       
-         checkbox.type = 'checkbox';
-                checkbox.className = 'form-checkbox rounded text-blue-600 focus:ring-blue-500 dark:bg-gray-800 dark:border-gray-600';
+                checkbox.type = 'checkbox';
+                checkbox.className = 'rounded text-blue-600 focus:ring-blue-500 dark:bg-gray-800 dark:border-gray-600';
                 checkbox.checked = isInQuickAccess;
                 checkbox.dataset.url = station.url;
                 checkbox.dataset.name = station.name;
-             
-   
+                
                 const span = document.createElement('span');
-span.className = 'text-sm font-medium text-gray-700 dark:text-gray-300 truncate';
+                span.className = 'text-sm font-medium text-gray-700 dark:text-gray-300';
                 span.textContent = station.name;
                 
                 label.appendChild(checkbox);
                 label.appendChild(span);
                 div.appendChild(label);
+                
                 quickAccessEditList.appendChild(div);
             });
-            if (favorites.length === 0) {
-                quickAccessEditList.innerHTML = '<p class="text-sm text-gray-500 dark:text-gray-400 text-center py-4">Add some favorite stations first to customize Quick Access.</p>';
-            }
-            openModal(quickAccessEditModal);
-}
+            
+            quickAccessEditModal.classList.remove('invisible', 'opacity-0');
+            quickAccessEditModal.classList.add('open');
+        }
 
-        // Event Listeners for Modals
-        openAddModalBtn.addEventListener('click', () => setupStationModal('add'));
-        cancelModalBtn.addEventListener('click', () => closeModal(stationModal));
-stationModal.addEventListener('click', (e) => {
-            if (e.target === stationModal) closeModal(stationModal);
-        });
+        function closeQuickAccessEditModal() {
+            quickAccessEditModal.classList.add('opacity-0');
+            setTimeout(() => {
+                quickAccessEditModal.classList.add('invisible');
+                quickAccessEditModal.classList.remove('open');
+            }, 200);
+        }
 
-        editQuickAccessBtn.addEventListener('click', setupQuickAccessEditModal);
-        cancelQuickAccessEditBtn.addEventListener('click', () => closeModal(quickAccessEditModal));
-quickAccessEditModal.addEventListener('click', (e) => {
-            if (e.target === quickAccessEditModal) closeModal(quickAccessEditModal);
-        });
+        function openInfoModal() {
+            infoModal.classList.remove('invisible', 'opacity-0');
+            infoModal.classList.add('open');
+        }
 
-        infoBtn.addEventListener('click', () => openModal(infoModal));
-        closeInfoModalBtn.addEventListener('click', () => closeModal(infoModal));
-infoModal.addEventListener('click', (e) => {
-            if (e.target === infoModal) closeModal(infoModal);
-        });
+        function closeInfoModal() {
+            infoModal.classList.add('opacity-0');
+            setTimeout(() => {
+                infoModal.classList.add('invisible');
+                infoModal.classList.remove('open');
+            }, 200);
+        }
 
-        cancelImportBtn.addEventListener('click', () => closeModal(importConfirmModal));
-importConfirmModal.addEventListener('click', (e) => {
-            if (e.target === importConfirmModal) closeModal(importConfirmModal);
-        });
+        function openImportConfirmModal(stationCount) {
+            importConfirmText.textContent = `You're about to import ${stationCount} stations. Existing stations with the same URL will be updated.`;
+            importConfirmModal.classList.remove('invisible', 'opacity-0');
+            importConfirmModal.classList.add('open');
+        }
 
-        cancelClearBtn.addEventListener('click', () => closeModal(clearConfirmModal));
-clearConfirmModal.addEventListener('click', (e) => {
-            if (e.target === clearConfirmModal) closeModal(clearConfirmModal);
+        function closeImportConfirmModal() {
+            importConfirmModal.classList.add('opacity-0');
+            setTimeout(() => {
+                importConfirmModal.classList.add('invisible');
+                importConfirmModal.classList.remove('open');
+            }, 200);
+        }
+
+        function openClearConfirmModal() {
+            clearConfirmModal.classList.remove('invisible', 'opacity-0');
+            clearConfirmModal.classList.add('open');
+        }
+
+        function closeClearConfirmModal() {
+            clearConfirmModal.classList.add('opacity-0');
+            setTimeout(() => {
+                clearConfirmModal.classList.add('invisible');
+                clearConfirmModal.classList.remove('open');
+            }, 200);
+        }
+
+        openAddModalBtn.addEventListener('click', () => openModal('add'));
+        editQuickAccessBtn.addEventListener('click', openQuickAccessEditModal);
+        cancelQuickAccessEditBtn.addEventListener('click', closeQuickAccessEditModal);
+        infoBtn.addEventListener('click', openInfoModal);
+        closeInfoModalBtn.addEventListener('click', closeInfoModal);
+        cancelModalBtn.addEventListener('click', closeModal);
+        
+        stationModal.addEventListener('click', (e) => {
+            if (e.target === stationModal) closeModal();
         });
         
-// Save quick access changes
+        quickAccessEditModal.addEventListener('click', (e) => {
+            if (e.target === quickAccessEditModal) closeQuickAccessEditModal();
+        });
+        
+        infoModal.addEventListener('click', (e) => {
+            if (e.target === infoModal) closeInfoModal();
+        });
+        
+        importConfirmModal.addEventListener('click', (e) => {
+            if (e.target === importConfirmModal) closeImportConfirmModal();
+        });
+        
+        clearConfirmModal.addEventListener('click', (e) => {
+            if (e.target === clearConfirmModal) closeClearConfirmModal();
+        });
+
+        // Save quick access changes
         saveQuickAccessEditBtn.addEventListener('click', () => {
             const checkboxes = quickAccessEditList.querySelectorAll('input[type="checkbox"]:checked');
-            const newQuickAccess = Array.from(checkboxes).map(checkbox => ({
-       name: checkbox.dataset.name,
-                url: checkbox.dataset.url
-            }));
+            const newQuickAccess = [];
             
-  if (newQuickAccess.length === 0 && defaultQuickAccessStations.length > 0) {
-                newQuickAccess.push(defaultQuickAccessStations[0]); // Ensure at least one if defaults exist
-                showMessage('Quick Access must contain at least one station. The first default station was kept.', 'info', 4000);
+            checkboxes.forEach(checkbox => {
+                newQuickAccess.push({
+                    name: checkbox.dataset.name,
+                    url: checkbox.dataset.url
+                });
+            });
+            
+            // If no stations selected, keep at least one default
+            if (newQuickAccess.length === 0) {
+                newQuickAccess.push(defaultQuickAccessStations[0]);
+                showMessage('At least one station must be in Quick Access. Kept first default station.', 'info');
             }
             
             quickAccessStations = newQuickAccess;
- localStorage.setItem('quickAccessStations', JSON.stringify(quickAccessStations));
+            localStorage.setItem('quickAccessStations', JSON.stringify(quickAccessStations));
             renderQuickAccess();
-            closeModal(quickAccessEditModal);
-showMessage('Quick Access updated!', 'success');
+            closeQuickAccessEditModal();
+            showMessage('Quick Access updated!', 'success');
         });
 
         // --- Favorites Management ---
-        function loadData() {
+        function loadFavorites() {
             const storedFavorites = localStorage.getItem('radioFavorites');
-favorites = storedFavorites ? JSON.parse(storedFavorites) : [];
+            favorites = storedFavorites ? JSON.parse(storedFavorites) : [];
             
             const storedQuickAccess = localStorage.getItem('quickAccessStations');
-            quickAccessStations = storedQuickAccess ? JSON.parse(storedQuickAccess) : [...defaultQuickAccessStations]; // Use a copy
-const storedFilename = localStorage.getItem('currentLbrxFileName');
+            quickAccessStations = storedQuickAccess ? JSON.parse(storedQuickAccess) : defaultQuickAccessStations;
+            
+            const storedFilename = localStorage.getItem('currentLbrxFileName');
             if (storedFilename) currentLbrxFileName = storedFilename;
             
             renderFavorites();
             renderQuickAccess();
             updateFavoritesCount();
-            updateLBRXFile(); // Ensure LBRX content in localStorage is up-to-date on load
-}
+        }
 
-        function saveData() {
+        function saveFavorites() {
             localStorage.setItem('radioFavorites', JSON.stringify(favorites));
-            localStorage.setItem('quickAccessStations', JSON.stringify(quickAccessStations)); // Save quick access too
-            localStorage.setItem('currentLbrxFileName', currentLbrxFileName);
-updateLBRXFile(); // Update the LBRX content in localStorage
+            updateLBRXFile();
             renderFavorites();
-            renderQuickAccess(); // Re-render quick access in case a favorite used there was modified/deleted
+            renderQuickAccess();
             updateFavoritesCount();
         }
 
         function updateFavoritesCount() {
             const count = favorites.length;
-favoritesCount.textContent = `${count} station${count !== 1 ? 's' : ''}`;
-}
+            favoritesCount.textContent = `${count} station${count !== 1 ? 's' : ''}`;
+        }
 
         function updateLBRXFile() {
             let lbrxContent = generateLBRXContent();
-localStorage.setItem('radioFavoritesLBRX', lbrxContent); // Store for potential recovery or other uses
+            localStorage.setItem('radioFavoritesLBRX', lbrxContent);
         }
 
         function generateLBRXContent() {
             let content = "## Live Beats Radio Export File\n";
-content += `## Version: ${document.querySelector('meta[name="version"]').content}\n`; // Get version from meta
+            content += "## Version: 1.3.0\n";
             content += "## Format: Station name followed by URL on next line\n";
-            content += "## Generated: " + new Date().toISOString() + "\n";
-content += "=== FAVORITE STATIONS ===\n\n";
+            content += "=== FAVORITE STATIONS ===\n\n";
             
             favorites.forEach(station => {
                 content += `${station.name}\n${station.url}\n\n`;
             });
-return content.trim() + "\n"; // Ensure a final newline
+            
+            return content;
         }
 
         function renderQuickAccess() {
             quickAccessList.innerHTML = '';
-if (quickAccessStations.length === 0) {
-                quickAccessList.innerHTML = '<p class="text-sm text-gray-500 dark:text-gray-400 col-span-full text-center py-2">No quick access stations. Edit to add some from your favorites.</p>';
-            } else {
-                quickAccessStations.forEach(station => {
-                    const button = document.createElement('button');
-                    button.className = 'quick-access-btn btn-secondary text-left truncate flex items-center'; // Added flex
-                    button.dataset.url = station.url;
-                    button.dataset.name = station.name;
-                    
-          const defaultStation = defaultQuickAccessStations.find(s => s.url === station.url || s.name === station.name);
-                    const iconClass = station.icon || (defaultStation ? defaultStation.icon : 'fas fa-radio'); // Prioritize station.icon if available
-                    
-                    button.innerHTML = `
-                  <i class="${iconClass} mr-2 text-base w-4 text-center"></i>
-                        <span class="truncate text-sm">${station.name}</span>
-                    `;
-                    
-                    button.addEventListener('click', () => {
-            directUrlInput.value = station.url; // Pre-fill for convenience
-                        playStation({ 
-                            id: 'quick_' + Date.now() + Math.random().toString(36).substr(2,5), // Unique ID
-                            name: station.name, 
-             url: station.url 
-                        }, true); // true indicates it's a direct play (potentially not yet a favorite)
-});
-                    quickAccessList.appendChild(button);
+            
+            quickAccessStations.forEach(station => {
+                const button = document.createElement('button');
+                button.className = 'quick-access-btn btn-secondary text-left truncate';
+                button.dataset.url = station.url;
+                button.dataset.name = station.name;
+                
+                // Try to find icon from default stations
+                const defaultStation = defaultQuickAccessStations.find(s => s.url === station.url);
+                const iconClass = defaultStation ? defaultStation.icon : 'fas fa-radio';
+                
+                button.innerHTML = `
+                    <i class="${iconClass} mr-2"></i>
+                    <span class="truncate">${station.name}</span>
+                `;
+                
+                button.addEventListener('click', () => {
+                    directUrlInput.value = station.url;
+                    playStation({ 
+                        id: 'quick_' + Date.now(), 
+                        name: station.name, 
+                        url: station.url 
+                    }, true);
                 });
-            }
+                
+                quickAccessList.appendChild(button);
+            });
         }
 
         function renderFavorites() {
             favoritesList.innerHTML = '';
-if (favorites.length === 0) {
+            
+            if (favorites.length === 0) {
                 noFavoritesMsg.style.display = 'block';
-} else {
+            } else {
                 noFavoritesMsg.style.display = 'none';
-favorites.forEach((station, index) => {
-                    const isPlaying = currentPlayingStation && currentPlayingStation.url === station.url; // Check by URL for robustness
+                
+                favorites.forEach((station, index) => {
+                    const isPlaying = currentPlayingStation && currentPlayingStation.id === station.id;
                     const isInQuickAccess = quickAccessStations.some(q => q.url === station.url);
                     
-                    const div = 
-document.createElement('div');
-                    div.className = `station-card flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg shadow-sm hover:shadow-md transition-all duration-200 border border-gray-200 dark:border-gray-600 ${isPlaying ? 'ring-2 ring-blue-500 dark:ring-blue-400' : ''}`;
-                    div.setAttribute('role', 'listitem');
-
+                    const div = document.createElement('div');
+                    div.className = `station-card flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg shadow-sm hover:shadow-md transition-all duration-200 border border-gray-200 dark:border-gray-600 ${isPlaying ? 'border-blue-500 dark:border-blue-400' : ''}`;
+                    
                     const leftDiv = document.createElement('div');
-     leftDiv.className = 'flex items-center min-w-0 flex-grow mr-2';
+                    leftDiv.className = 'flex items-center min-w-0 flex-grow';
                     
                     const numberSpan = document.createElement('span');
-                    numberSpan.className = 'text-gray-500 dark:text-gray-400 text-sm font-medium mr-3 w-6 text-right flex-shrink-0';
-numberSpan.textContent = `${index + 1}.`;
+                    numberSpan.className = 'text-gray-500 dark:text-gray-400 text-sm font-medium mr-3 w-5 text-right';
+                    numberSpan.textContent = `${index + 1}.`;
                     
                     const nameSpan = document.createElement('span');
                     nameSpan.textContent = station.name;
-nameSpan.className = 'font-medium cursor-pointer hover:text-blue-600 dark:hover:text-blue-400 flex-grow truncate text-sm sm:text-base';
+                    nameSpan.className = 'font-medium cursor-pointer hover:text-blue-600 dark:hover:text-blue-400 flex-grow truncate mr-2 text-sm sm:text-base';
                     nameSpan.title = `Play ${station.name}`;
-                    nameSpan.addEventListener('click', () => playStation(station, false)); // false means it's from favorites list
-leftDiv.appendChild(numberSpan);
+                    nameSpan.addEventListener('click', () => playStation(station, false));
+                    
+                    leftDiv.appendChild(numberSpan);
                     leftDiv.appendChild(nameSpan);
                     
                     const controlsDiv = document.createElement('div');
                     controlsDiv.className = 'flex items-center space-x-1 sm:space-x-2 flex-shrink-0';
-if (isPlaying && !audioPlayer.paused) { // Show waveform only if actively playing
+                    
+                    if (isPlaying) {
                         const playingIndicator = document.createElement('div');
-playingIndicator.className = 'waveform text-blue-500 dark:text-blue-400 mr-1';
-                        playingIndicator.setAttribute('aria-label', 'Currently playing');
+                        playingIndicator.className = 'waveform text-blue-500 dark:text-blue-400 mr-1';
                         playingIndicator.innerHTML = `
-                            <div class="waveform-bar"></div><div class="waveform-bar"></div>
-                            <div class="waveform-bar"></div><div class="waveform-bar"></div>
-                       <div class="waveform-bar"></div>`;
-controlsDiv.appendChild(playingIndicator);
+                            <div class="waveform-bar"></div>
+                            <div class="waveform-bar"></div>
+                            <div class="waveform-bar"></div>
+                            <div class="waveform-bar"></div>
+                            <div class="waveform-bar"></div>
+                        `;
+                        controlsDiv.appendChild(playingIndicator);
                     }
                     
+                    // Add to quick access button
                     const quickAccessBtn = document.createElement('button');
-quickAccessBtn.className = `icon-btn ${isInQuickAccess ? 'text-amber-500 dark:text-amber-400' : 'text-gray-400 dark:text-gray-500 hover:text-amber-500 dark:hover:text-amber-400'}`;
-                    quickAccessBtn.innerHTML = `<i class="fas fa-bolt" aria-hidden="true"></i>`;
+                    quickAccessBtn.className = `icon-btn ${isInQuickAccess ? 'text-yellow-500 dark:text-yellow-400' : 'text-gray-400 dark:text-gray-500'}`;
+                    quickAccessBtn.innerHTML = '<i class="fas fa-bolt"></i>';
                     quickAccessBtn.title = isInQuickAccess ? 'Remove from Quick Access' : 'Add to Quick Access';
-                    quickAccessBtn.setAttribute('aria-label', isInQuickAccess ? `Remove ${station.name} from Quick Access` : `Add ${station.name} to Quick Access`);
                     quickAccessBtn.addEventListener('click', (e) => {
-                        e.stopPropagation(); // Prevent card click
+                        e.stopPropagation();
                         toggleQuickAccessStation(station);
                     });
-const playBtnItem = document.createElement('button');
-                    const isActuallyPlayingThis = isPlaying && !audioPlayer.paused;
-                    playBtnItem.className = `icon-btn ${isActuallyPlayingThis ? 'text-blue-500 dark:text-blue-400' : 'text-gray-500 dark:text-gray-400 hover:text-blue-500 dark:hover:text-blue-400'}`;
-playBtnItem.innerHTML = `<i class="fas fa-${isActuallyPlayingThis ? 'pause' : 'play'}" aria-hidden="true"></i>`;
-                    playBtnItem.title = isActuallyPlayingThis ? `Pause ${station.name}` : `Play ${station.name}`;
-playBtnItem.setAttribute('aria-label', isActuallyPlayingThis ? `Pause ${station.name}` : `Play ${station.name}`);
+                    
+                    const playBtnItem = document.createElement('button');
+                    playBtnItem.className = `icon-btn ${isPlaying ? 'text-blue-500 dark:text-blue-400' : 'text-gray-500 dark:text-gray-400'}`;
+                    playBtnItem.innerHTML = `<i class="fas fa-${isPlaying ? 'pause' : 'play'}"></i>`;
+                    playBtnItem.title = isPlaying ? `Pause ${station.name}` : `Play ${station.name}`;
+                    playBtnItem.setAttribute('aria-label', isPlaying ? `Pause ${station.name}` : `Play ${station.name}`);
                     playBtnItem.addEventListener('click', (e) => {
                         e.stopPropagation();
-                        if (isActuallyPlayingThis) {
+                        if (isPlaying && !audioPlayer.paused) {
                             audioPlayer.pause();
-               } else {
+                        } else {
                             playStation(station, false);
                         }
                     });
-const editBtn = document.createElement('button');
+                    
+                    const editBtn = document.createElement('button');
                     editBtn.className = 'icon-btn text-gray-500 dark:text-gray-400 hover:text-yellow-500 dark:hover:text-yellow-400';
-                    editBtn.innerHTML = '<i class="fas fa-edit" aria-hidden="true"></i>';
+                    editBtn.innerHTML = '<i class="fas fa-edit"></i>';
                     editBtn.title = `Edit ${station.name}`;
-editBtn.setAttribute('aria-label', `Edit ${station.name}`);
+                    editBtn.setAttribute('aria-label', `Edit ${station.name}`);
                     editBtn.addEventListener('click', (e) => {
                         e.stopPropagation();
-                        setupStationModal('edit', station);
+                        openModal('edit', station);
                     });
-const deleteBtn = document.createElement('button');
+                    
+                    const deleteBtn = document.createElement('button');
                     deleteBtn.className = 'icon-btn text-gray-500 dark:text-gray-400 hover:text-red-500 dark:hover:text-red-400';
-                    deleteBtn.innerHTML = '<i class="fas fa-trash-alt" aria-hidden="true"></i>';
+                    deleteBtn.innerHTML = '<i class="fas fa-trash-alt"></i>';
                     deleteBtn.title = `Delete ${station.name}`;
-deleteBtn.setAttribute('aria-label', `Delete ${station.name}`);
+                    deleteBtn.setAttribute('aria-label', `Delete ${station.name}`);
                     deleteBtn.addEventListener('click', (e) => {
                         e.stopPropagation();
-                        confirmDeleteFavorite(station); // Pass full station object
+                        deleteFavorite(station.id);
                     });
-controlsDiv.appendChild(quickAccessBtn);
+                    
+                    controlsDiv.appendChild(quickAccessBtn);
                     controlsDiv.appendChild(playBtnItem);
                     controlsDiv.appendChild(editBtn);
                     controlsDiv.appendChild(deleteBtn);
@@ -1137,19 +1132,24 @@ controlsDiv.appendChild(quickAccessBtn);
 
         function toggleQuickAccessStation(station) {
             const index = quickAccessStations.findIndex(q => q.url === station.url);
-if (index > -1) {
+            
+            if (index > -1) {
+                // Remove from quick access
                 quickAccessStations.splice(index, 1);
-showMessage(`Removed "${station.name}" from Quick Access.`, 'info');
+                showMessage(`Removed "${station.name}" from Quick Access`, 'info');
             } else {
-                if (quickAccessStations.length >= 6) { // Example limit
-                     showMessage('Quick Access is full (max 6). Edit to make space.', 'warning');
-                     return;
-                }
-                quickAccessStations.push({ name: station.name, url: station.url, icon: station.icon }); // include icon if available
-  showMessage(`Added "${station.name}" to Quick Access.`, 'success');
+                // Add to quick access
+                quickAccessStations.push({
+                    name: station.name,
+                    url: station.url
+                });
+                showMessage(`Added "${station.name}" to Quick Access`, 'success');
             }
-            saveData(); // Save quick access changes and re-render lists
-}
+            
+            localStorage.setItem('quickAccessStations', JSON.stringify(quickAccessStations));
+            renderQuickAccess();
+            renderFavorites();
+        }
 
         stationForm.addEventListener('submit', (e) => {
             e.preventDefault();
@@ -1158,660 +1158,639 @@ showMessage(`Removed "${station.name}" from Quick Access.`, 'info');
             const url = stationUrlInput.value.trim();
 
             if (!name || !url) {
-  showMessage('Station Name and URL are required.', 'error');
+                showMessage('Station Name and URL are required.', 'error');
                 return;
             }
 
             try {
-                new URL(url); // Basic URL format validation
+                new URL(url); // Validate URL format
             } catch (_) {
- showMessage('Please enter a valid URL (e.g., https://stream.example.com).', 'error');
+                showMessage('Please enter a valid URL format (e.g., https://...).', 'error');
                 return;
             }
 
-            if (id) { // Editing existing favorite
+            if (id) { // Editing existing
                 const index = favorites.findIndex(s => s.id.toString() === id);
                 if (index > -1) {
-                 favorites[index] = { ...favorites[index], name, url };
-                    showMessage(`Station "${name}" updated successfully!`, 'success');
-      if (currentPlayingStation && currentPlayingStation.id === id) {
-                        currentPlayingStation = { ...currentPlayingStation, name, url }; // Update current playing if it was edited
-updateNowPlayingDisplay(currentPlayingStation);
+                    favorites[index] = { ...favorites[index], name, url };
+                    showMessage('Station updated successfully!', 'success');
+                    saveFavorites();
+                    
+                    // Update current playing station if it's the one being edited
+                    if (currentPlayingStation && currentPlayingStation.id === id) {
+                        currentPlayingStation = { ...currentPlayingStation, name, url };
+                        currentStationName.textContent = name;
+                        currentStationNameCompact.textContent = name;
                     }
                 }
-            } else { // Adding new favorite
+            } else { // Adding new
                 if (favorites.some(fav => fav.url === url)) {
                     showMessage('This station URL is already in your favorites.', 'info');
-closeModal(stationModal);
+                    closeModal();
                     return;
                 }
-                const newStation = { id: Date.now().toString() + Math.random().toString(36).substr(2,5), name, url };
-favorites.push(newStation);
-                showMessage(`Station "${name}" added to favorites!`, 'success');
+                
+                const newStation = { id: Date.now().toString(), name, url };
+                favorites.push(newStation);
+                showMessage('Station added to favorites!', 'success');
+                saveFavorites();
+                
+                // If the newly added station is the one currently playing from a direct URL
                 if (currentPlayingStation && currentPlayingStation.url === url && isDirectUrlStream) {
-                    isDirectUrlStream = false; // No longer just a direct stream, it's now a favorite
-addCurrentToFavoritesBtn.classList.add('hidden');
-                    currentPlayingStation.id = newStation.id; // Update current playing station ID to match the new favorite
+                    isDirectUrlStream = false;
+                    addCurrentToFavoritesBtn.classList.add('hidden');
+                    currentPlayingStation = newStation;
                 }
             }
-            saveData();
-            closeModal(stationModal);
-});
+            
+            closeModal();
+        });
 
-        function confirmDeleteFavorite(stationToDelete) {
-const isPlayingThis = currentPlayingStation && currentPlayingStation.url === stationToDelete.url;
-const modal = document.createElement('div');
-modal.className = 'fixed inset-0 bg-black bg-opacity-60 dark:bg-opacity-75 flex items-center justify-center p-4 z-[100]';
-            modal.setAttribute('role', 'alertdialog');
-            modal.setAttribute('aria-modal', 'true');
-            modal.setAttribute('aria-labelledby', 'confirmDeleteTitle');
-modal.innerHTML = `
+        function deleteFavorite(id) {
+            const stationToDelete = favorites.find(s => s.id === id);
+            const isPlaying = currentPlayingStation && stationToDelete && currentPlayingStation.url === stationToDelete.url;
+            
+            // Create a custom confirmation modal
+            const modal = document.createElement('div');
+            modal.className = 'fixed inset-0 bg-black bg-opacity-60 dark:bg-opacity-75 flex items-center justify-center p-4 z-[100]';
+            
+            modal.innerHTML = `
                 <div class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-xl w-full max-w-md border border-gray-200 dark:border-gray-700">
-                    <h3 id="confirmDeleteTitle" class="text-xl font-semibold mb-4">Delete Station</h3>
-                    <p class="mb-6">Are you sure you want to delete "<strong>${stationToDelete.name}</strong>"?</p>
-<div class="flex justify-end space-x-3">
-                        <button id="cancelDeleteModalBtn" class="btn-secondary">Cancel</button>
-                        <button id="confirmDeleteModalBtn" class="btn-danger">Delete</button>
+                    <h3 class="text-xl font-semibold mb-4">Delete Station</h3>
+                    <p class="mb-6">Are you sure you want to delete "${stationToDelete.name}"?</p>
+                    <div class="flex justify-end space-x-3">
+                        <button id="cancelDeleteBtn" class="btn-secondary">Cancel</button>
+                        <button id="confirmDeleteBtn" class="btn-danger">Delete</button>
                     </div>
-                </div>`;
-document.body.appendChild(modal);
+                </div>
+            `;
             
-            const cancelBtn = modal.querySelector('#cancelDeleteModalBtn');
-            const confirmBtn = modal.querySelector('#confirmDeleteModalBtn');
-            const firstFocusableElement = cancelBtn; // Or confirmBtn
-            const lastFocusableElement = confirmBtn;
-
-            firstFocusableElement.focus();
-
-            modal.addEventListener('keydown', (e) => { // Trap focus
-                if (e.key === 'Tab') {
-                    if (e.shiftKey) { /* shift + tab */
-                        if (document.activeElement === firstFocusableElement) {
-                            lastFocusableElement.focus();
-                            e.preventDefault();
-                        }
-                    } else { /* tab */
-                        if (document.activeElement === lastFocusableElement) {
-                            firstFocusableElement.focus();
-                            e.preventDefault();
-                        }
-                    }
-                }
-                if (e.key === 'Escape') {
-                     document.body.removeChild(modal);
-                }
-            });
+            document.body.appendChild(modal);
             
-cancelBtn.addEventListener('click', () => document.body.removeChild(modal));
-confirmBtn.addEventListener('click', () => {
-                favorites = favorites.filter(s => s.id !== stationToDelete.id);
-                quickAccessStations = quickAccessStations.filter(q => q.url !== stationToDelete.url); // Also remove from quick access
-   
-                saveData();
-                showMessage(`Station "${stationToDelete.name}" deleted.`, 'info');
-        if (isPlayingThis) {
-                    stopPlayback();
-                }
+            const cancelBtn = modal.querySelector('#cancelDeleteBtn');
+            const confirmBtn = modal.querySelector('#confirmDeleteBtn');
+            
+            cancelBtn.addEventListener('click', () => {
                 document.body.removeChild(modal);
             });
-}
+            
+            confirmBtn.addEventListener('click', () => {
+                favorites = favorites.filter(s => s.id !== id);
+                
+                // Also remove from quick access if it's there
+                quickAccessStations = quickAccessStations.filter(q => q.url !== stationToDelete.url);
+                localStorage.setItem('quickAccessStations', JSON.stringify(quickAccessStations));
+                
+                saveFavorites();
+                showMessage('Station deleted.', 'info');
+                
+                if (isPlaying) {
+                    stopPlayback();
+                }
+                
+                document.body.removeChild(modal);
+            });
+        }
 
         // --- Import/Export Functions ---
-        importFavoritesBtn.addEventListener('click', () => fileImportInput.click());
-exportFavoritesBtn.addEventListener('click', () => {
-            if (favorites.length === 0) {
-                showMessage('No favorites to export.', 'info');
-return;
-            }
-            exportLBRXFile();
+        importFavoritesBtn.addEventListener('click', () => {
+            fileImportInput.click();
         });
+
+        exportFavoritesBtn.addEventListener('click', exportFavorites);
         
         clearFavoritesBtn.addEventListener('click', () => {
             if (favorites.length === 0) {
                 showMessage('No favorites to clear.', 'info');
                 return;
             }
-            openModal(clearConfirmModal);
-}); // Use generic openModal
-fileImportInput.addEventListener('change', async (event) => { // Make it async
-            const file = event.target.files[0];
-if (!file) return;
+            openClearConfirmModal();
+        });
 
-            if (!file.name.toLowerCase().endsWith('.lbrx')) {
-                showMessage('Invalid file type. Please select a .lbrx file.', 'error');
-fileImportInput.value = ''; // Reset file input
+        fileImportInput.addEventListener('change', handleFileImport);
+
+        cancelImportBtn.addEventListener('click', closeImportConfirmModal);
+        confirmImportBtn.addEventListener('click', confirmImport);
+        
+        cancelClearBtn.addEventListener('click', closeClearConfirmModal);
+        confirmClearBtn.addEventListener('click', confirmClearFavorites);
+
+        async function handleFileImport(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            if (!file.name.endsWith('.lbrx')) {
+                showMessage('Please select a .lbrx file for import.', 'error');
+                fileImportInput.value = '';
                 return;
             }
 
             try {
                 const content = await readFileAsText(file);
-const importedStations = parseLBRXFile(content);
+                const importedStations = parseLBRXFile(content);
                 
                 if (importedStations.length === 0) {
-                    showMessage('No valid stations found in the import file or file is empty.', 'info');
-                    fileImportInput.value = '';
-return;
+                    showMessage('No valid stations found in the import file.', 'info');
+                    return;
                 }
-                
-                // Store pending import data globally or pass to confirmation modal logic
-                window.pendingImportData = { file, importedStations };
-                
-                importConfirmText.textContent = `You are about to import ${importedStations.length} station(s) from "${file.name}". Existing stations with the same URL will be updated.`;
-                openModal(importConfirmModal);
 
-fileImportInput.value = ''; // Reset after processing
-            } catch (error) {
-                console.error('File import error:', error);
-showMessage(`Failed to read or parse import file: ${error.message}`, 'error');
+                openImportConfirmModal(importedStations.length);
                 fileImportInput.value = '';
-}
-        });
-
-        confirmImportBtn.addEventListener('click', () => {
-            if (!window.pendingImportData) {
-                closeModal(importConfirmModal);
-return;
+            } catch (error) {
+                console.error('Import error:', error);
+                showMessage('Failed to import stations: ' + error.message, 'error');
+                fileImportInput.value = '';
             }
-            const { file, importedStations } = window.pendingImportData;
-            const results = processImportedStations(importedStations);
-            
-currentLbrxFileName = file.name; // Update filename from the imported file
-            
-   showImportResults(results);
-            saveData(); // Save all data after import
-            closeModal(importConfirmModal);
-window.pendingImportData = null; // Clear pending data
-        });
-        
-        confirmClearBtn.addEventListener('click', () => {
+        }
+
+        function confirmImport() {
+            const file = fileImportInput.files[0];
+            if (!file) {
+                closeImportConfirmModal();
+                return;
+            }
+
+            readFileAsText(file)
+                .then(content => {
+                    const importedStations = parseLBRXFile(content);
+                    const results = processImportedStations(importedStations);
+                    
+                    // Store the imported filename
+                    currentLbrxFileName = file.name;
+                    localStorage.setItem('currentLbrxFileName', currentLbrxFileName);
+                    
+                    showImportResults(results);
+                    saveFavorites();
+                    closeImportConfirmModal();
+                })
+                .catch(error => {
+                    console.error('Import error:', error);
+                    showMessage('Failed to import stations: ' + error.message, 'error');
+                    closeImportConfirmModal();
+                });
+        }
+
+        function confirmClearFavorites() {
             favorites = [];
-quickAccessStations = [...defaultQuickAccessStations]; // Reset quick access to defaults
-saveData();
-            showMessage('All favorite stations cleared. Quick Access has been reset to defaults.', 'info', 4000);
-            closeModal(clearConfirmModal);
-
-if (currentPlayingStation) {
+            quickAccessStations = defaultQuickAccessStations; // Reset to defaults
+            localStorage.setItem('quickAccessStations', JSON.stringify(quickAccessStations));
+            saveFavorites();
+            showMessage('All favorites cleared and Quick Access reset.', 'info');
+            closeClearConfirmModal();
+            
+            if (currentPlayingStation) {
                 stopPlayback();
-}
-        });
+            }
+        }
 
-        function exportLBRXFile() {
+        function exportFavorites() {
+            if (favorites.length === 0) {
+                showMessage('No favorites to export.', 'info');
+                return;
+            }
+
             const lbrxContent = generateLBRXContent();
-const blob = new Blob([lbrxContent], { type: 'text/plain;charset=utf-8' });
+            const blob = new Blob([lbrxContent], { type: 'text/plain' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-a.download = currentLbrxFileName; // Use the stored/updated filename
+            a.download = currentLbrxFileName;
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
             URL.revokeObjectURL(url);
-            showMessage(`Favorites exported to "${currentLbrxFileName}"!`, 'success');
-}
+
+            showMessage(`Favorites exported to ${currentLbrxFileName}!`, 'success');
+        }
 
         function readFileAsText(file) {
             return new Promise((resolve, reject) => {
                 const reader = new FileReader();
                 reader.onload = (e) => resolve(e.target.result);
-                reader.onerror = (e) => reject(new Error('File reading failed: ' + reader.error.message));
-      reader.readAsText(file);
+                reader.onerror = (e) => reject(new Error('File reading failed'));
+                reader.readAsText(file);
             });
-}
+        }
 
         function parseLBRXFile(content) {
-            const lines = content.split(/\r?\n/); // Handle both LF and CRLF
-const stations = [];
-            let currentStationNameFromFile = null; // Changed variable name for clarity
+            const lines = content.split('\n');
+            const stations = [];
+            let currentStation = null;
             let inFavoritesSection = false;
-for (const line of lines) {
+
+            for (const line of lines) {
                 const trimmed = line.trim();
-if (!trimmed || trimmed.startsWith('##')) continue; // Skip comments and empty lines
                 
-                if (trimmed.toUpperCase() === '=== FAVORITE STATIONS ===') { // Case-insensitive match for section header
+                if (!trimmed || trimmed.startsWith('##')) continue;
+                
+                if (trimmed.startsWith('=== FAVORITE STATIONS')) {
                     inFavoritesSection = true;
-continue;
+                    continue;
                 }
                 
                 if (inFavoritesSection) {
-                    if (!currentStationNameFromFile) {
-                        currentStationNameFromFile = trimmed;
-} else {
-                        const stationUrlFromFile = trimmed;
-try {
-                            new URL(stationUrlFromFile); // Validate URL format
-stations.push({
-                                id: Date.now().toString() + Math.random().toString(36).substr(2, 9), // Longer random part
-                                name: currentStationNameFromFile,
- url: stationUrlFromFile
+                    if (!currentStation) {
+                        currentStation = { name: trimmed };
+                    } else {
+                        currentStation.url = trimmed;
+                        
+                        try {
+                            new URL(currentStation.url);
+                            stations.push({
+                                id: Date.now().toString() + Math.random().toString(36).substr(2, 5),
+                                name: currentStation.name,
+                                url: currentStation.url
                             });
-} catch (e) {
-                            console.warn(`Invalid URL skipped during LBRX parse: "${stationUrlFromFile}" for station "${currentStationNameFromFile}"`, e);
-}
-                        currentStationNameFromFile = null; // Reset for next station
-}
+                        } catch (e) {
+                            console.warn('Invalid URL skipped:', currentStation.url);
+                        }
+                        
+                        currentStation = null;
+                    }
                 }
             }
+            
             return stations;
-}
+        }
 
         function processImportedStations(importedStations) {
-            const results = { added: 0, skipped: 0, updated: 0 };
-importedStations.forEach(imported => {
-                const existingByUrlIndex = favorites.findIndex(f => f.url === imported.url);
-if (existingByUrlIndex > -1) { // Station with this URL already exists
-                    if (favorites[existingByUrlIndex].name !== imported.name) { // Update name if different
-                        favorites[existingByUrlIndex].name = imported.name;
-results.updated++;
+            const results = {
+                added: 0,
+                skipped: 0,
+                updated: 0
+            };
+            
+            for (const imported of importedStations) {
+                const existingByUrl = favorites.find(f => f.url === imported.url);
+                
+                if (existingByUrl) {
+                    if (existingByUrl.name !== imported.name) {
+                        existingByUrl.name = imported.name;
+                        results.updated++;
                     } else {
-                        results.skipped++; // Exact duplicate by URL and Name
-}
-                } else { // New station
-                    favorites.push(imported); // Add the new station
-results.added++;
+                        results.skipped++;
+                    }
+                    continue;
                 }
-            });
-            // No need to check by name if URL is the primary key for merging/updating [cite: 295, 296, 297]
+                
+                const existingByName = favorites.find(f => f.name === imported.name);
+                if (existingByName) {
+                    results.skipped++;
+                    continue;
+                }
+                
+                favorites.push(imported);
+                results.added++;
+            }
+            
             return results;
-}
+        }
 
         function showImportResults(results) {
-            let messageParts = [];
-if (results.added > 0) messageParts.push(`Added ${results.added} new station(s).`);
-if (results.updated > 0) messageParts.push(`Updated ${results.updated} existing station(s).`);
-if (results.skipped > 0) messageParts.push(`Skipped ${results.skipped} duplicate(s).`);
+            let message = '';
             
-            if (messageParts.length === 0) {
-                showMessage('Import complete. No changes were made to your favorites.', 'info');
-            } else {
-                showMessage(messageParts.join(' '), 'success', 5000);
+            if (results.added > 0) {
+                message += `Added ${results.added} new stations. `;
             }
-}
+            if (results.updated > 0) {
+                message += `Updated ${results.updated} existing stations. `;
+            }
+            if (results.skipped > 0) {
+                message += `Skipped ${results.skipped} duplicates.`;
+            }
+            
+            showMessage(message.trim(), 'success', 5000);
+        }
 
         // --- Audio Player Logic ---
-        function updateNowPlayingDisplay(station) {
-            const displayName = station ? station.name : '---';
-            const titleName = station ? station.name : 'No station selected';
-            currentStationName.textContent = displayName;
-            currentStationName.title = titleName;
-            currentStationNameCompact.textContent = displayName;
-            currentStationNameCompact.title = titleName;
+        function playStation(station, isDirect = false) {
+            try {
+                if (!station || !station.url) {
+                    showMessage('Invalid station data.', 'error');
+                    return;
+                }
 
-            if (station) {
-                nowPlayingSection.classList.remove('hidden');
-            } else {
+                // Stop any current playback
+                stopPlayback();
+                
+                // Setup audio context for visualization if not already done
+                setupAudioContext();
+                
+                // Enable CORS mode
+                audioPlayer.crossOrigin = "anonymous";
+                
+                // Create a clean URL with cache busting
+                let streamUrl = station.url;
+                
+                // Show loading state
+                currentStationName.textContent = 'Loading...';
+                currentStationNameCompact.textContent = 'Loading...';
+                playPauseBtn.innerHTML = '<i class="fas fa-spinner spinner"></i>';
+                
+                // 1. First try direct play (works for CORS-enabled streams)
+                audioPlayer.src = streamUrl + (streamUrl.includes('?') ? '&' : '?') + 'nocache=' + Date.now();
+                
+                audioPlayer.play()
+                    .then(() => {
+                        // Success case
+                        currentPlayingStation = station;
+                        currentStationName.textContent = station.name;
+                        currentStationNameCompact.textContent = station.name;
+                        playPauseBtn.innerHTML = '<i class="fas fa-pause"></i>';
+                        playPauseBtn.setAttribute('aria-label', 'Pause');
+                        nowPlayingSection.classList.remove('hidden');
+
+                        isDirectUrlStream = isDirect;
+                        const isAlreadyFavorite = favorites.some(fav => fav.url === station.url);
+
+                        if (isDirect && !isAlreadyFavorite) {
+                            addCurrentToFavoritesBtn.classList.remove('hidden');
+                        } else {
+                            addCurrentToFavoritesBtn.classList.add('hidden');
+                        }
+                        
+                        // Start bitrate monitoring
+                        startBitrateMonitoring();
+                        
+                        // Update UI to show playing state
+                        renderFavorites();
+                    })
+                    .catch(error => {
+                        console.error("Direct play failed, trying proxy:", error);
+                        
+                        // 2. Fallback to CORS proxy
+                        const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(streamUrl)}`;
+                        audioPlayer.src = proxyUrl;
+                        
+                        return audioPlayer.play().then(() => {
+                            // Proxy success
+                            currentPlayingStation = station;
+                            currentStationName.textContent = station.name + " (via proxy)";
+                            currentStationNameCompact.textContent = station.name + " (proxy)";
+                            playPauseBtn.innerHTML = '<i class="fas fa-pause"></i>';
+                            nowPlayingSection.classList.remove('hidden');
+                            
+                            // Start bitrate monitoring
+                            startBitrateMonitoring();
+                            
+                            // Update UI to show playing state
+                            renderFavorites();
+                        }).catch(proxyError => {
+                            // Final failure
+                            console.error("Proxy playback failed:", proxyError);
+                            showMessage(`Cannot play: ${station.name}. Try another stream.`, 'error');
+                            currentStationName.textContent = "Playback Error";
+                            currentStationNameCompact.textContent = "Error";
+                            playPauseBtn.innerHTML = '<i class="fas fa-play"></i>';
+                            nowPlayingSection.classList.add('hidden');
+                            stopBitrateMonitoring();
+                        });
+                    });
+            } catch (error) {
+                console.error("Setup error:", error);
+                showMessage(`Error with station: ${station.name}`, 'error');
+                addCurrentToFavoritesBtn.classList.add('hidden');
                 nowPlayingSection.classList.add('hidden');
+                stopBitrateMonitoring();
             }
         }
         
-        function playStation(station, isFromQuickAccessOrDirect = false) {
-            if (!station || !station.url) {
-                showMessage('Invalid station data. Cannot play.', 'error');
-return;
-            }
-
-            stopPlayback(); // Stop any current playback first
-            setupAudioContext(); // Ensure AudioContext is ready
-
-audioPlayer.crossOrigin = "anonymous"; // Already set on the element, but good to be aware
-
-            let streamUrl = station.url;
-            // Add a cache-busting parameter. Some servers might not like it, but often helps.
-            streamUrl += (streamUrl.includes('?') ? '&' : '?') + '_cb=' + Date.now();
-            
-updateNowPlayingDisplay({ name: 'Loading...' });
-            playPauseBtn.innerHTML = '<i class="fas fa-spinner spinner" aria-hidden="true"></i>';
-            playPauseBtn.setAttribute('aria-label', 'Loading station');
-            
-            audioPlayer.src = streamUrl;
-audioPlayer.play()
-                .then(() => {
-                    // Direct play successful
-                    currentPlayingStation = { ...station }; // Store a copy
-                    isDirectUrlStream = isFromQuickAccessOrDirect && !favorites.some(fav => fav.url === station.url);
-                    
-                    updateNowPlayingDisplay(currentPlayingStation);
-                    playPauseBtn.innerHTML = '<i class="fas fa-pause" aria-hidden="true"></i>';
-                    playPauseBtn.setAttribute('aria-label', 'Pause');
-   
-                    addCurrentToFavoritesBtn.classList.toggle('hidden', !isDirectUrlStream);
-                  
-                    startBitrateMonitoring();
-renderFavorites(); // Update favorite list UI (e.g., playing indicator)
-})
-                .catch(directPlayError => {
-                    console.warn("Direct play failed for:", station.url, directPlayError);
-                    // Fallback to CORS proxy
-const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(station.url)}`; // Original URL for proxy
-                    // console.log("Attempting playback via proxy:", proxyUrl);
-                    audioPlayer.src = proxyUrl; // No cache buster for proxy URL itself
-                    
-     audioPlayer.play().then(() => {
-                        currentPlayingStation = { ...station, name: `${station.name} (proxy)` };
-                        isDirectUrlStream = isFromQuickAccessOrDirect && !favorites.some(fav => fav.url === station.url);
-
-                        updateNowPlayingDisplay(currentPlayingStation);
-                        playPauseBtn.innerHTML = '<i class="fas fa-pause" aria-hidden="true"></i>';
-                        playPauseBtn.setAttribute('aria-label', 'Pause');
-                        addCurrentToFavoritesBtn.classList.toggle('hidden', !isDirectUrlStream);
-                       
-                        startBitrateMonitoring();
-renderFavorites();
-                    }).catch(proxyError => {
-                        console.error("Proxy playback also failed for:", station.url, proxyError);
-                        showMessage(`Cannot play "${station.name}". The stream might be offline, require a different protocol, or have strict CORS policies.`, 'error', 6000);
-                         stopPlayback(); // Reset UI fully on final failure
-});
-                });
-}
-        
         function setupAudioContext() {
-            if (!audioContext && (window.AudioContext || window.webkitAudioContext)) {
+            if (!audioContext) {
                 try {
                     audioContext = new (window.AudioContext || window.webkitAudioContext)();
-analyser = audioContext.createAnalyser();
-                    analyser.fftSize = 32; // Small FFT size for simple visualization
+                    analyser = audioContext.createAnalyser();
+                    analyser.fftSize = 32;
                     
-                    // Create source node only once
-                    if (!sourceNode) {
-                        sourceNode = audioContext.createMediaElementSource(audioPlayer);
-                    }
-                    sourceNode.connect(analyser);
-                    analyser.connect(audioContext.destination); // Connect analyser to output
-} catch (e) {
-                    console.warn('Web Audio API setup failed:', e);
-                    audioContext = null; // Ensure it's null if setup fails
-                    analyser = null;
-}
-            }
-            // If AudioContext was closed (e.g., by browser), try to resume it
-            if (audioContext && audioContext.state === 'suspended') {
-                audioContext.resume().catch(e => console.warn("AudioContext resume failed:", e));
+                    const source = audioContext.createMediaElementSource(audioPlayer);
+                    source.connect(analyser);
+                    analyser.connect(audioContext.destination);
+                } catch (e) {
+                    console.warn('Web Audio API not supported:', e);
+                }
             }
         }
         
         function startBitrateMonitoring() {
-            stopBitrateMonitoring(); // Clear any existing interval
-lastBytes = 0; // Reset byte count
-            if (analyser) { // Only if analyser is available (implies AudioContext works)
-                bitrateInterval = setInterval(updateBitrateInfo, 2000); // Update every 2 seconds
-            }
+            stopBitrateMonitoring();
+            lastBytes = 0;
+            bitrateInterval = setInterval(updateBitrateInfo, 2000);
         }
         
         function stopBitrateMonitoring() {
             if (bitrateInterval) {
                 clearInterval(bitrateInterval);
-bitrateInterval = null;
+                bitrateInterval = null;
             }
-            bitrateInfo.textContent = ''; // Clear bitrate display
-}
+            bitrateInfo.textContent = '';
+        }
         
-        // This function is a placeholder as true bitrate from HTML5 audio is tricky.
-        // This often reflects downloaded bytes for the buffer, not real-time stream bitrate.
         function updateBitrateInfo() {
-            // This is a very rough estimation and might not be accurate for all stream types.
-            // For more accurate bitrate, specific stream metadata (like ICY headers) would need to be parsed.
-            if (audioPlayer.buffered.length > 0 && audioPlayer.duration && audioPlayer.duration !== Infinity) {
-                const bufferedEnd = audioPlayer.buffered.end(audioPlayer.buffered.length - 1);
-                // This calculation is often not representative of actual stream bitrate for live streams.
-                // For now, we'll just indicate if it's live or has some data.
-                // A more complex solution would involve intercepting stream data.
-                // bitrateInfo.textContent = `~`; // Placeholder, as accurate calculation is hard
-            } else if (currentPlayingStation) {
-                 // bitrateInfo.textContent = "Live"; // Assume live if no duration
+            if (audioPlayer.buffered.length > 0) {
+                const bytesLoaded = audioPlayer.buffered.end(0) * audioPlayer.duration * 1000;
+                const bytesDiff = bytesLoaded - lastBytes;
+                const bitrate = Math.round((bytesDiff * 8) / 2000); // kbps
+                
+                if (bitrate > 0) {
+                    bitrateInfo.textContent = `${bitrate} kbps`;
+                }
+                
+                lastBytes = bytesLoaded;
             }
-             // Actual calculation is complex and often unreliable here.
-             // If you have access to response headers or can analyze the stream directly, that's better.
-             // For now, let's assume the 'LIVE' badge is sufficient visual cue.
-
-
-
-}
+        }
         
+        // Event listener for playDirectUrlBtn
         playDirectUrlBtn.addEventListener('click', () => {
             const url = directUrlInput.value.trim();
-            if (!url) {
-                showMessage('Please enter a stream URL.', 'warning');
-                directUrlInput.focus();
-                return;
-            }
-            try {
-     new URL(url); // Validate URL
-            } catch (_) {
-                showMessage('Invalid URL format. Please enter a valid stream URL (e.g., https://...).', 'error');
-                directUrlInput.focus();
-                return;
-            }
-
-      let name = "Direct Stream";
-            try {
-                const urlObj = new URL(url);
-                name = urlObj.hostname.replace(/^www\./, '') || "Direct Stream"; // Basic name from hostname
-            } catch (e) { /* Ignore if URL is unusual */ }
-
-            playStation({ id: 'direct_' + Date.now(), name: name, url: url }, true);
-        });
-function togglePlayPause() {
-            if (!currentPlayingStation) {
-                if (favorites.length > 0) { // If no station playing, play the first favorite
-                    playStation(favorites[0], false);
-                } else if (quickAccessStations.length > 0) { // Or first quick access
-                     playStation({ id: 'quick_' + Date.now(), name: quickAccessStations[0].name, url: quickAccessStations[0].url }, true);
-                } else {
-                    showMessage('No station selected or available to play.', 'info');
+            if (url) {
+                try {
+                    new URL(url);
+                } catch (_) {
+                    showMessage('Please enter a valid stream URL format (e.g., https://...).', 'error');
+                    return;
                 }
-return;
-}
+
+                let name = "Direct Stream";
+                try {
+                    const urlObj = new URL(url);
+                    name = urlObj.hostname.replace(/^www\./, '') || "Direct Stream";
+                } catch (e) { /* ignore if URL is not standard for hostname extraction */ }
+
+                playStation({ id: 'direct_' + Date.now(), name: name, url: url }, true);
+            } else {
+                showMessage('Please enter a stream URL.', 'error');
+            }
+        });
+
+        function togglePlayPause() {
+            if (!currentPlayingStation && favorites.length > 0) {
+                playStation(favorites[0], false);
+                return;
+            }
+            if (!currentPlayingStation) {
+                showMessage('No station selected to play.', 'info');
+                return;
+            }
 
             if (audioPlayer.paused) {
-                if (audioContext && audioContext.state === 'suspended') { // Ensure context is running
-                    audioContext.resume().then(() => audioPlayer.play()).catch(e => console.error("Play error after resume:", e));
-                } else {
-                    audioPlayer.play().catch(e => {
-                        showMessage('Error resuming playback. The stream might have issues.', 'error');
-                        console.error("Play error:", e);
-                    });
-                }
+                audioPlayer.play().catch(e => {
+                    showMessage('Error resuming playback.', 'error');
+                    console.error("Play error:", e);
+                });
+                playPauseBtn.innerHTML = '<i class="fas fa-pause"></i>';
+                playPauseBtn.setAttribute('aria-label', 'Pause');
             } else {
                 audioPlayer.pause();
+                playPauseBtn.innerHTML = '<i class="fas fa-play"></i>';
+                playPauseBtn.setAttribute('aria-label', 'Play');
             }
-            // renderFavorites(); // Handled by onplaying/onpause events
-
-
-}
+            
+            renderFavorites();
+        }
 
         function stopPlayback() {
             audioPlayer.pause();
-if (audioPlayer.src) { // Only reset src if it's set
-                audioPlayer.src = ""; // Setting src to empty string stops download and clears player state
-            }
-            audioPlayer.removeAttribute('src'); // More robust way to stop loading
-            audioPlayer.load(); // This should effectively stop buffering/loading
-
+            audioPlayer.currentTime = 0;
+            if (audioPlayer.src) audioPlayer.src = "";
+            
             currentPlayingStation = null;
             isDirectUrlStream = false;
-            updateNowPlayingDisplay(null);
-playPauseBtn.innerHTML = '<i class="fas fa-play" aria-hidden="true"></i>';
+            currentStationName.textContent = '---';
+            currentStationNameCompact.textContent = '---';
+            playPauseBtn.innerHTML = '<i class="fas fa-play"></i>';
             playPauseBtn.setAttribute('aria-label', 'Play');
             addCurrentToFavoritesBtn.classList.add('hidden');
+            nowPlayingSection.classList.add('hidden');
             stopBitrateMonitoring();
-            renderFavorites(); // Update UI
-}
+            
+            renderFavorites();
+        }
 
         playPauseBtn.addEventListener('click', togglePlayPause);
         stopBtn.addEventListener('click', stopPlayback);
-volumeControl.addEventListener('input', (e) => {
-            const newVolume = parseFloat(e.target.value);
-            audioPlayer.volume = newVolume;
-            // Optional: Save volume to localStorage
-            // localStorage.setItem('playerVolume', newVolume);
-        });
-// Load saved volume or default
-        // const savedVolume = localStorage.getItem('playerVolume');
-        // audioPlayer.volume = savedVolume ? parseFloat(savedVolume) : 0.5;
-        // volumeControl.value = audioPlayer.volume;
 
+        volumeControl.addEventListener('input', (e) => {
+            audioPlayer.volume = parseFloat(e.target.value);
+        });
+        audioPlayer.volume = parseFloat(volumeControl.value);
 
         audioPlayer.addEventListener('error', (e) => {
-            console.error('Audio Player Error Event:', e.target.error);
-            let errorMessage = "An error occurred with the audio player.";
+            console.error('Audio Player Error Event:', e);
+            let errorMessage = "Error playing audio.";
             if (currentPlayingStation) {
-                errorMessage = `Playback error for "${currentPlayingStation.name}". The stream might be offline, unavailable, or the URL incorrect.`;
+                errorMessage = `Playback error for: ${currentPlayingStation.name}. The stream might be offline or the URL incorrect.`;
             }
-       showMessage(errorMessage, 'error', 7000);
-            // Don't call stopPlayback() here if you want to allow user to retry play/pause
-            // But ensure UI reflects the error state
-            playPauseBtn.innerHTML = '<i class="fas fa-play" aria-hidden="true"></i>';
+            showMessage(errorMessage, 'error', 5000);
+            currentStationName.textContent = "Playback Error";
+            currentStationNameCompact.textContent = "Error";
+            playPauseBtn.innerHTML = '<i class="fas fa-play"></i>';
             playPauseBtn.setAttribute('aria-label', 'Play');
-            updateNowPlayingDisplay({ name: "Playback Error" }); // Show error in now playing
+            nowPlayingSection.classList.add('hidden');
             stopBitrateMonitoring();
-            renderFavorites(); // Update playing indicators
-});
-audioPlayer.addEventListener('ended', () => {
-            // This usually happens for non-live streams or if a live stream truly ends/is cut.
-            playPauseBtn.innerHTML = '<i class="fas fa-play" aria-hidden="true"></i>';
-            playPauseBtn.setAttribute('aria-label', 'Play');
-            if (currentPlayingStation) { // Only show message if something was supposed to be playing
-                showMessage(`Stream "${currentPlayingStation.name}" ended or was interrupted.`, 'info');
-            }
-            // Don't nullify currentPlayingStation here, user might want to replay.
-            // nowPlayingSection.classList.add('hidden'); // Keep now playing visible
-            stopBitrateMonitoring();
-            renderFavorites();
-     });
-        
-        audioPlayer.addEventListener('playing', () => { // 'playing' is more reliable than 'play' for UI updates
-            if (audioContext && audioContext.state === 'suspended') {
-                audioContext.resume(); // Ensure context is active
-            }
-            playPauseBtn.innerHTML = '<i class="fas fa-pause" aria-hidden="true"></i>';
-playPauseBtn.setAttribute('aria-label', 'Pause');
-            if (currentPlayingStation) nowPlayingSection.classList.remove('hidden');
-            renderFavorites(); // Update favorite items (e.g. playing indicator)
-        });
-        
-        audioPlayer.addEventListener('pause', () => {
-            // Only update UI if it's a deliberate pause and not an error/end state that already handled it
-            if (audioPlayer.readyState > 0 && !audioPlayer.error && audioPlayer.currentTime > 0) {
-                playPauseBtn.innerHTML = '<i class="fas fa-play" aria-hidden="true"></i>';
-playPauseBtn.setAttribute('aria-label', 'Play');
-                renderFavorites(); // Update favorite items
-            }
-        });
-        
-        addCurrentToFavoritesBtn.addEventListener('click', () => {
-            if (currentPlayingStation && isDirectUrlStream) {
-                setupStationModal('add', currentPlayingStation); // Open modal to add the current direct stream
-            }
-        });
-
-// Keyboard shortcuts
-        document.addEventListener('keydown', (e) => {
-            const activeElement = document.activeElement;
-            const isInputFocused = activeElement && (activeElement.tagName === 'INPUT' || activeElement.tagName === 'TEXTAREA' || activeElement.isContentEditable);
             
-            if (isInputFocused && activeElement.closest('.modal')) return; // Allow keys in modal inputs
-            if (isInputFocused && !activeElement.closest('.player-controls')) return; // Allow keys in general inputs not in player
+            renderFavorites();
+        });
 
-            let unhandled = false;
+        audioPlayer.addEventListener('ended', () => {
+            playPauseBtn.innerHTML = '<i class="fas fa-play"></i>';
+            playPauseBtn.setAttribute('aria-label', 'Play');
+            showMessage('Stream ended or was interrupted.', 'info');
+            nowPlayingSection.classList.add('hidden');
+            stopBitrateMonitoring();
+            
+            renderFavorites();
+        });
+        
+        audioPlayer.onplaying = () => {
+            playPauseBtn.innerHTML = '<i class="fas fa-pause"></i>';
+            playPauseBtn.setAttribute('aria-label', 'Pause');
+            nowPlayingSection.classList.remove('hidden');
+            
+            renderFavorites();
+        };
+        
+        audioPlayer.onpause = () => {
+            if (audioPlayer.readyState > 0 && !audioPlayer.error && audioPlayer.currentTime > 0) {
+                playPauseBtn.innerHTML = '<i class="fas fa-play"></i>';
+                playPauseBtn.setAttribute('aria-label', 'Play');
+                
+                renderFavorites();
+            }
+        };
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            // Don't trigger if typing in an input field
+            if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+            
             switch(e.key) {
-                case ' ': // Spacebar
-                togglePlayPause();
+                case ' ':
+                    e.preventDefault();
+                    togglePlayPause();
                     break;
-                case 's': case 'S': // Stop
-          stopPlayback();
+                case 's':
+                case 'S':
+                    e.preventDefault();
+                    stopPlayback();
                     break;
-                case 'ArrowUp': // Volume Up
-       volumeControl.value = Math.min(1, parseFloat(volumeControl.value) + 0.05).toFixed(2);
+                case 'ArrowUp':
+                    e.preventDefault();
+                    volumeControl.stepUp();
                     audioPlayer.volume = parseFloat(volumeControl.value);
                     break;
-                case 'ArrowDown': // Volume Down
-      volumeControl.value = Math.max(0, parseFloat(volumeControl.value) - 0.05).toFixed(2);
+                case 'ArrowDown':
+                    e.preventDefault();
+                    volumeControl.stepDown();
                     audioPlayer.volume = parseFloat(volumeControl.value);
                     break;
-                case 'Escape': // Close topmost modal or message
-                    const openModals = document.querySelectorAll('.modal.open');
-                    if (openModals.length > 0) {
-                        closeModal(openModals[openModals.length - 1]); // Close last opened (topmost)
-                    } else if (!messageBox.classList.contains('invisible')) {
-                        hideMessage();
-                    } else {
-                        unhandled = true;
-                    }
-                    break;
-                default:
-                    unhandled = true;
             }
-            if (!unhandled) {
-                e.preventDefault(); // Prevent default browser action for handled keys
-            }
-});
+        });
 
         // --- Initial Load ---
         document.addEventListener('DOMContentLoaded', () => {
             loadTheme();
-            loadData(); // Changed from loadFavorites to loadData
-
-            const appVersionSpan = document.getElementById('appVersion');
-            if (appVersionSpan) {
-                appVersionSpan.textContent = document.querySelector('meta[name="version"]').content;
-            }
-            const currentYearSpan = document.getElementById('currentYear');
-            if (currentYearSpan) {
-                currentYearSpan.textContent = new Date().getFullYear();
-            }
-
+            loadFavorites();
             if (audioPlayer.paused) {
-                playPauseBtn.innerHTML = '<i class="fas fa-play" aria-hidden="true"></i>';
+                playPauseBtn.innerHTML = '<i class="fas fa-play"></i>';
                 playPauseBtn.setAttribute('aria-label', 'Play');
-           } else {
-                playPauseBtn.innerHTML = '<i class="fas fa-pause" aria-hidden="true"></i>';
+            } else {
+                playPauseBtn.innerHTML = '<i class="fas fa-pause"></i>';
                 playPauseBtn.setAttribute('aria-label', 'Pause');
             }
-            // messageBox.classList.add('opacity-0', 'invisible'); // Initial state for message box already set in CSS
+            messageBox.classList.add('opacity-0', 'invisible', 'hidden');
         });
-// PWA Installation
-        let deferredInstallPrompt = null;
-        const installButton = document.getElementById('installButton');
 
+        // PWA Installation
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('sw.js') // Assuming sw.js is in the root
-                    .then(reg => console.log('ServiceWorker registered successfully:', reg.scope))
-                    .catch(err => console.error('ServiceWorker registration failed:', err));
-     });
+                navigator.serviceWorker.register('/sw.js')
+                    .then(reg => console.log('ServiceWorker registered'))
+                    .catch(err => console.log('ServiceWorker failed: ', err));
+            });
         }
 
+        // Install Prompt Handler
         window.addEventListener('beforeinstallprompt', (e) => {
-            e.preventDefault(); // Prevent the mini-infobar from appearing on mobile
-            deferredInstallPrompt = e;
-            console.log('`beforeinstallprompt` event was fired.');
-      if (installButton) {
-                installButton.classList.remove('hidden'); // Show the install button
-                installButton.addEventListener('click', async () => {
-                    installButton.classList.add('hidden'); // Hide the button after click
-                    if (deferredInstallPrompt) {
-                        deferredInstallPrompt.prompt(); // Show the install prompt
-                        const { outcome } = await deferredInstallPrompt.userChoice;
-         console.log(`User response to the install prompt: ${outcome}`);
-                        if (outcome === 'accepted') {
-                            console.log('User accepted the A2HS prompt');
+            e.preventDefault();
+            console.log('PWA installable');
+            window.deferredInstallPrompt = e;
+            
+            const installButton = document.getElementById('installButton');
+            if (installButton) {
+                installButton.classList.remove('hidden');
+                installButton.addEventListener('click', () => {
+                    e.prompt();
+                    e.userChoice.then((choiceResult) => {
+                        if (choiceResult.outcome === 'accepted') {
+                            console.log('User accepted install');
+                            installButton.classList.add('hidden');
                         } else {
-                         console.log('User dismissed the A2HS prompt');
+                            console.log('User dismissed install');
                         }
-                        deferredInstallPrompt = null; // We've used the prompt, can't use it again
-                    }
+                    });
                 });
             }
-       });
-
-        window.addEventListener('appinstalled', () => {
-            console.log('Live Beats WRP was installed.');
-            if (installButton) {
-                installButton.classList.add('hidden'); // Hide button if app is installed by other means
-            }
-            deferredInstallPrompt = null; // Clear the prompt
         });
-
     </script>
 </body>
 </html>
