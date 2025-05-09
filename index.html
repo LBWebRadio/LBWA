@@ -604,28 +604,33 @@
         </div>
     </div>
 
-<!-- Share Options Modal -->
-<div id="shareModal" class="modal fixed inset-0 bg-black bg-opacity-60 dark:bg-opacity-75 flex items-center justify-center p-4 opacity-0 invisible z-[100]">
-    <div class="modal-content bg-white dark:bg-gray-800 p-6 rounded-xl shadow-xl w-full max-w-md border border-gray-200 dark:border-gray-700">
-        <h3 class="text-xl font-semibold mb-5 flex items-center">
-            <i class="fas fa-share-alt mr-2 text-blue-500"></i>
-            <span>Share Options</span>
-        </h3>
-        <div class="space-y-3">
-            <button id="shareFavoritesBtn" class="btn-primary w-full text-left">
-                <i class="fas fa-star mr-2"></i> Share Favorite Stations
-            </button>
-            <button id="shareAppBtn" class="btn-secondary w-full text-left">
-                <i class="fas fa-mobile-alt mr-2"></i> Share This App
-            </button>
-        </div>
-        <div class="mt-6 flex justify-end">
-            <button type="button" id="cancelShareBtn" class="btn-secondary">Cancel</button>
+// Share functionality
+    <div id="shareModal" class="modal fixed inset-0 bg-black bg-opacity-60 dark:bg-opacity-75 flex items-center justify-center p-4 opacity-0 invisible z-[100]">
+        <div class="modal-content bg-white dark:bg-gray-800 p-6 rounded-xl shadow-xl w-full max-w-md border border-gray-200 dark:border-gray-700 max-h-[80vh] overflow-y-auto">
+            <h3 class="text-xl font-semibold mb-5 flex items-center">
+                <i class="fas fa-share-alt mr-2 text-blue-500"></i>
+                <span>Share Favorite Stations</span>
+            </h3>
+            
+            <div class="mb-4">
+                <p class="text-sm text-gray-600 dark:text-gray-300 mb-2">Select stations to share:</p>
+                <div id="shareStationList" class="space-y-2 max-h-[300px] overflow-y-auto">
+                    <!-- Stations will be added here -->
+                </div>
+            </div>
+            
+            <div class="flex justify-between items-center mt-4">
+                <div class="flex items-center space-x-2">
+                    <input type="checkbox" id="selectAllStations" class="rounded text-blue-600 focus:ring-blue-500">
+                    <label for="selectAllStations" class="text-sm">Select All</label>
+                </div>
+                <div class="flex space-x-3">
+                    <button id="cancelShareBtn" class="btn-secondary">Cancel</button>
+                    <button id="confirmShareBtn" class="btn-primary">Share Selected</button>
+                </div>
+            </div>
         </div>
     </div>
-</div>
-
-   
 
     <!-- Quick Access Edit Modal -->
     <div id="quickAccessEditModal" class="modal fixed inset-0 bg-black bg-opacity-60 dark:bg-opacity-75 flex items-center justify-center p-4 opacity-0 invisible z-[100]">
@@ -828,6 +833,105 @@ let RADIO_BROWSER_BASE_URL = 'https://de1.api.radio-browser.info';
 // Current search state
 let currentRadioSearch = '';
 let currentRadioResults = [];
+
+
+
+// ======== SHARE FUNCTIONS ======== 
+function prepareShareModal() {
+    const shareStationList = document.getElementById('shareStationList');
+    shareStationList.innerHTML = '';
+    
+    if (favorites.length === 0) {
+        shareStationList.innerHTML = '<p class="text-gray-500 dark:text-gray-400 text-center py-4">No favorite stations to share</p>';
+        document.getElementById('confirmShareBtn').disabled = true;
+        return;
+    }
+    
+    favorites.forEach(station => {
+        const div = document.createElement('div');
+        div.className = 'flex items-center p-2 bg-gray-50 dark:bg-gray-700 rounded-lg';
+        
+        div.innerHTML = `
+            <input type="checkbox" id="share-${station.id}" 
+                   class="station-checkbox rounded text-blue-600 focus:ring-blue-500 mr-3" 
+                   data-name="${station.name}" 
+                   data-url="${station.url}" 
+                   checked>
+            <label for="share-${station.id}" class="flex-grow">
+                <span class="font-medium">${station.name}</span>
+                <div class="text-xs text-gray-500 dark:text-gray-400 truncate">${station.url}</div>
+            </label>
+        `;
+        
+        shareStationList.appendChild(div);
+    });
+    
+    document.getElementById('selectAllStations').addEventListener('change', (e) => {
+        const checkboxes = shareStationList.querySelectorAll('.station-checkbox');
+        checkboxes.forEach(checkbox => {
+            checkbox.checked = e.target.checked;
+        });
+    });
+}
+
+function shareSelectedStations() {
+    const selectedStations = [];
+    const checkboxes = document.querySelectorAll('.station-checkbox:checked');
+    
+    checkboxes.forEach(checkbox => {
+        selectedStations.push({
+            name: checkbox.dataset.name,
+            url: checkbox.dataset.url
+        });
+    });
+    
+    if (selectedStations.length === 0) {
+        showMessage('Please select at least one station to share', 'warning');
+        return;
+    }
+    
+    let shareText = `🎧 My Favorite Radio Stations (${selectedStations.length} selected):\n\n`;
+    selectedStations.forEach((station, index) => {
+        shareText += `${index + 1}. ${station.name}\n${station.url}\n\n`;
+    });
+    
+    shareText += `\nShared via Live Beats WebRadio Player\n${window.location.href}`;
+    
+    if (navigator.share) {
+        navigator.share({
+            title: `My ${selectedStations.length} Favorite Radio Stations`,
+            text: shareText,
+            url: window.location.href
+        }).catch(err => {
+            console.log('Error sharing:', err);
+            copyToClipboard(shareText);
+        });
+    } else {
+        copyToClipboard(shareText);
+    }
+    
+    closeShareModal();
+}
+
+function copyToClipboard(text) {
+    navigator.clipboard.writeText(text).then(() => {
+        showMessage('Share text copied to clipboard!', 'success');
+    }).catch(err => {
+        console.error('Failed to copy:', err);
+        showMessage('Failed to copy to clipboard', 'error');
+    });
+}
+
+// Event Listeners
+shareBtn.addEventListener('click', () => {
+    openShareModal();
+    prepareShareModal();
+});
+
+document.getElementById('confirmShareBtn').addEventListener('click', shareSelectedStations);
+
+
+       
 
 // Function to get a random available server
 async function getRandomRadioBrowserServer() {
