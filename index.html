@@ -1274,75 +1274,68 @@ function showMessage(message, type = 'info', duration = 3000) {
         cancelClearBtn.addEventListener('click', closeClearConfirmModal);
         confirmClearBtn.addEventListener('click', confirmClearFavorites);
 
-        async function handleFileImport(event) {
-            const file = event.target.files[0];
-            if (!file) return;
+       async function handleFileImport(event) {
+    const file = event.target.files[0];
+    if (!file) return;
 
-            if (!file.name.endsWith('.lbrx')) {
-                showMessage('Please select a .lbrx file for import.', 'error');
-                fileImportInput.value = '';
-                return;
-            }
+    if (!file.name.endsWith('.lbrx')) {
+        showMessage('Please select a .lbrx file for import.', 'error');
+        return; // REMOVED fileInput.value clearing
+    }
 
-            try {
-                const content = await readFileAsText(file);
-                const importedStations = parseLBRXFile(content);
-                
-                if (importedStations.length === 0) {
-                    showMessage('No valid stations found in the import file.', 'info');
-                    return;
-                }
-
-                openImportConfirmModal(importedStations.length);
-                fileImportInput.value = '';
-            } catch (error) {
-                console.error('Import error:', error);
-                showMessage('Failed to import stations: ' + error.message, 'error');
-                fileImportInput.value = '';
-            }
+    try {
+        const content = await readFileAsText(file);
+        const importedStations = parseLBRXFile(content);
+        
+        if (importedStations.length === 0) {
+            showMessage('No valid stations found in the import file.', 'info');
+            return;
         }
 
+        // STORE THE FILE REFERENCE
+        window.pendingImportFile = file; // NEW LINE
+        openImportConfirmModal(importedStations.length);
+        
+    } catch (error) {
+        console.error('Import error:', error);
+        showMessage('Failed to read file: ' + error.message, 'error');
+    }
+}
+
 function confirmImport() {
-    console.log('=== START IMPORT DEBUG ===');
-    const file = fileImportInput.files[0];
+    // USE THE STORED FILE REFERENCE
+    const file = window.pendingImportFile || fileImportInput.files[0];
     
     if (!file) {
-        console.error('No file selected');
+        showMessage('No file selected', 'error');
         return;
     }
 
-    console.log('File selected:', file.name);
-    
     readFileAsText(file)
         .then(content => {
-            console.log('File content (first 100 chars):', content.substring(0, 100));
-            
             const importedStations = parseLBRXFile(content);
-            console.log('Parsed stations:', importedStations);
             
-            console.log('Current favorites (before):', favorites);
-            
-            // Merge strategy
-            importedStations.forEach(s => {
-                if (!favorites.some(existing => existing.url === s.url)) {
-                    favorites.push(s);
+            // SIMPLE MERGE LOGIC
+            importedStations.forEach(newStation => {
+                if (!favorites.some(s => s.url === newStation.url)) {
+                    favorites.push(newStation);
                 }
             });
             
-            console.log('Current favorites (after):', favorites);
-            
+            // FORCE UPDATE
             localStorage.setItem('radioFavorites', JSON.stringify(favorites));
-            console.log('LocalStorage updated');
-            
             renderFavorites();
             updateFavoritesCount();
             
-            showMessage(`Imported ${importedStations.length} stations`, 'success');
-            closeImportConfirmModal();
+            showMessage(`Imported ${importedStations.length} stations!`, 'success');
         })
         .catch(error => {
-            console.error('Full error:', error);
-            showMessage('Import crashed: ' + error.message, 'error');
+            showMessage('Import failed: ' + error.message, 'error');
+        })
+        .finally(() => {
+            closeImportConfirmModal();
+            fileImportInput.value = ''; // Clear here instead
+            delete window.pendingImportFile; // Clean up
         });
 }
 
