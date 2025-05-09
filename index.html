@@ -326,20 +326,6 @@
         cursor: pointer;
     }
 
-/* Share modal buttons */
-#shareFavoritesBtn, #shareAppBtn {
-    @apply flex items-center py-3 px-4 rounded-lg transition-all duration-200;
-}
-
-#shareFavoritesBtn:hover, #shareAppBtn:hover {
-    transform: translateY(-1px);
-}
-
-.station-card {
-    cursor: pointer;
-}
-           
-
     [onclick="toggleSection('playFromUrlSection')"], 
     [onclick="toggleSection('discoverStationsSection')"] {
         cursor: pointer;
@@ -467,33 +453,26 @@
             <!-- Right column -->
             <div class="space-y-6">
                 <!-- Actions section -->
-              <div class="bg-white dark:bg-gray-800 p-5 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
-    <h2 class="text-xl font-semibold mb-4 flex items-center">
-        <i class="fas fa-cog mr-2 text-gray-500"></i>
-        Actions
-    </h2>
-    <div class="grid grid-cols-2 gap-3">
-        <button id="openAddModalBtn" class="btn-primary">
-            <i class="fas fa-plus mr-2"></i>Add
-        </button>
-        <button id="importFavoritesBtn" class="btn-warning">
-            <i class="fas fa-file-import mr-2"></i>Import
-        </button>
-        <button id="exportFavoritesBtn" class="btn-success">
-            <i class="fas fa-file-export mr-2"></i>Export
-        </button>
-        <button id="clearFavoritesBtn" class="btn-danger">
-            <i class="fas fa-trash mr-2"></i>Clear
-        </button>
-        <!-- Add these new buttons -->
-        <button id="shareBtn" class="btn-secondary">
-            <i class="fas fa-share-alt mr-2"></i>Share
-        </button>
-        <button id="refreshBtn" class="btn-secondary">
-            <i class="fas fa-sync-alt mr-2"></i>Refresh
-        </button>
-    </div>
-</div>
+                <div class="bg-white dark:bg-gray-800 p-5 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
+                    <h2 class="text-xl font-semibold mb-4 flex items-center">
+                        <i class="fas fa-cog mr-2 text-gray-500"></i>
+                        Actions
+                    </h2>
+                    <div class="grid grid-cols-2 gap-3">
+                        <button id="openAddModalBtn" class="btn-primary">
+                            <i class="fas fa-plus mr-2"></i>Add
+                        </button>
+                        <button id="importFavoritesBtn" class="btn-warning">
+                            <i class="fas fa-file-import mr-2"></i>Import
+                        </button>
+                        <button id="exportFavoritesBtn" class="btn-success">
+                            <i class="fas fa-file-export mr-2"></i>Export
+                        </button>
+                        <button id="clearFavoritesBtn" class="btn-danger">
+                            <i class="fas fa-trash mr-2"></i>Clear
+                        </button>
+                    </div>
+                </div>
                 
                 <!-- Now Playing section -->
                 <div id="nowPlayingSection" class="bg-white dark:bg-gray-800 p-5 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 hidden">
@@ -601,34 +580,6 @@
                     <button type="submit" id="saveStationBtn" class="btn-primary">Save Station</button>
                 </div>
             </form>
-        </div>
-    </div>
-
-// Share functionality
-    <div id="shareModal" class="modal fixed inset-0 bg-black bg-opacity-60 dark:bg-opacity-75 flex items-center justify-center p-4 opacity-0 invisible z-[100]">
-        <div class="modal-content bg-white dark:bg-gray-800 p-6 rounded-xl shadow-xl w-full max-w-md border border-gray-200 dark:border-gray-700 max-h-[80vh] overflow-y-auto">
-            <h3 class="text-xl font-semibold mb-5 flex items-center">
-                <i class="fas fa-share-alt mr-2 text-blue-500"></i>
-                <span>Share Favorite Stations</span>
-            </h3>
-            
-            <div class="mb-4">
-                <p class="text-sm text-gray-600 dark:text-gray-300 mb-2">Select stations to share:</p>
-                <div id="shareStationList" class="space-y-2 max-h-[300px] overflow-y-auto">
-                    <!-- Stations will be added here -->
-                </div>
-            </div>
-            
-            <div class="flex justify-between items-center mt-4">
-                <div class="flex items-center space-x-2">
-                    <input type="checkbox" id="selectAllStations" class="rounded text-blue-600 focus:ring-blue-500">
-                    <label for="selectAllStations" class="text-sm">Select All</label>
-                </div>
-                <div class="flex space-x-3">
-                    <button id="cancelShareBtn" class="btn-secondary">Cancel</button>
-                    <button id="confirmShareBtn" class="btn-primary">Share Selected</button>
-                </div>
-            </div>
         </div>
     </div>
 
@@ -785,10 +736,6 @@
         const cancelClearBtn = document.getElementById('cancelClearBtn');
         const confirmClearBtn = document.getElementById('confirmClearBtn');
 
-
-
-
-
         // Message Box Elements
         const messageBox = document.getElementById('messageBox');
         const messageText = document.getElementById('messageText');
@@ -817,15 +764,6 @@ const radioBrowserLoading = document.getElementById('radioBrowserLoading');
 const radioBrowserEmpty = document.getElementById('radioBrowserEmpty');
 const popularTagBtns = document.querySelectorAll('.popular-tag-btn');
 
-
-       // Share button elements
-const shareBtn = document.getElementById('shareBtn');
-const shareModal = document.getElementById('shareModal');
-const cancelShareBtn = document.getElementById('cancelShareBtn');
-const shareFavoritesBtn = document.getElementById('shareFavoritesBtn');
-const shareAppBtn = document.getElementById('shareAppBtn');
-const refreshBtn = document.getElementById('refreshBtn');
-
 // Radio Browser API configuration
 const RADIO_BROWSER_USER_AGENT = 'Live Beats WebRadio PWA/1.3.5';
 let RADIO_BROWSER_BASE_URL = 'https://de1.api.radio-browser.info';
@@ -833,105 +771,6 @@ let RADIO_BROWSER_BASE_URL = 'https://de1.api.radio-browser.info';
 // Current search state
 let currentRadioSearch = '';
 let currentRadioResults = [];
-
-
-
-// ======== SHARE FUNCTIONS ======== 
-function prepareShareModal() {
-    const shareStationList = document.getElementById('shareStationList');
-    shareStationList.innerHTML = '';
-    
-    if (favorites.length === 0) {
-        shareStationList.innerHTML = '<p class="text-gray-500 dark:text-gray-400 text-center py-4">No favorite stations to share</p>';
-        document.getElementById('confirmShareBtn').disabled = true;
-        return;
-    }
-    
-    favorites.forEach(station => {
-        const div = document.createElement('div');
-        div.className = 'flex items-center p-2 bg-gray-50 dark:bg-gray-700 rounded-lg';
-        
-        div.innerHTML = `
-            <input type="checkbox" id="share-${station.id}" 
-                   class="station-checkbox rounded text-blue-600 focus:ring-blue-500 mr-3" 
-                   data-name="${station.name}" 
-                   data-url="${station.url}" 
-                   checked>
-            <label for="share-${station.id}" class="flex-grow">
-                <span class="font-medium">${station.name}</span>
-                <div class="text-xs text-gray-500 dark:text-gray-400 truncate">${station.url}</div>
-            </label>
-        `;
-        
-        shareStationList.appendChild(div);
-    });
-    
-    document.getElementById('selectAllStations').addEventListener('change', (e) => {
-        const checkboxes = shareStationList.querySelectorAll('.station-checkbox');
-        checkboxes.forEach(checkbox => {
-            checkbox.checked = e.target.checked;
-        });
-    });
-}
-
-function shareSelectedStations() {
-    const selectedStations = [];
-    const checkboxes = document.querySelectorAll('.station-checkbox:checked');
-    
-    checkboxes.forEach(checkbox => {
-        selectedStations.push({
-            name: checkbox.dataset.name,
-            url: checkbox.dataset.url
-        });
-    });
-    
-    if (selectedStations.length === 0) {
-        showMessage('Please select at least one station to share', 'warning');
-        return;
-    }
-    
-    let shareText = `🎧 My Favorite Radio Stations (${selectedStations.length} selected):\n\n`;
-    selectedStations.forEach((station, index) => {
-        shareText += `${index + 1}. ${station.name}\n${station.url}\n\n`;
-    });
-    
-    shareText += `\nShared via Live Beats WebRadio Player\n${window.location.href}`;
-    
-    if (navigator.share) {
-        navigator.share({
-            title: `My ${selectedStations.length} Favorite Radio Stations`,
-            text: shareText,
-            url: window.location.href
-        }).catch(err => {
-            console.log('Error sharing:', err);
-            copyToClipboard(shareText);
-        });
-    } else {
-        copyToClipboard(shareText);
-    }
-    
-    closeShareModal();
-}
-
-function copyToClipboard(text) {
-    navigator.clipboard.writeText(text).then(() => {
-        showMessage('Share text copied to clipboard!', 'success');
-    }).catch(err => {
-        console.error('Failed to copy:', err);
-        showMessage('Failed to copy to clipboard', 'error');
-    });
-}
-
-// Event Listeners
-shareBtn.addEventListener('click', () => {
-    openShareModal();
-    prepareShareModal();
-});
-
-document.getElementById('confirmShareBtn').addEventListener('click', shareSelectedStations);
-
-
-       
 
 // Function to get a random available server
 async function getRandomRadioBrowserServer() {
@@ -1784,119 +1623,6 @@ function showMessage(message, type = 'info', duration = 3000) {
                 document.body.removeChild(modal);
             });
         }
-
-// ===== SHARE AND REFRESH FUNCTIONS =====
-// Share modal functions
-function openShareModal() {
-    shareModal.classList.remove('invisible', 'opacity-0');
-    shareModal.classList.add('open');
-}
-
-function closeShareModal() {
-    shareModal.classList.add('opacity-0');
-    setTimeout(() => {
-        shareModal.classList.add('invisible');
-        shareModal.classList.remove('open');
-    }, 200);
-}
-
-// Share functionality
-function shareFavorites() {
-    if (favorites.length === 0) {
-        showMessage('No favorites to share.', 'info');
-        return;
-    }
-
-    // Create share text
-    let shareText = `🎧 My Favorite Radio Stations (${favorites.length} stations):\n\n`;
-    favorites.forEach((station, index) => {
-        shareText += `${index + 1}. ${station.name}\n${station.url}\n\n`;
-    });
-    
-    shareText += `\nShared via Live Beats WebRadio Player\n${window.location.href}`;
-
-    if (navigator.share) {
-        navigator.share({
-            title: 'My Favorite Radio Stations',
-            text: `Check out my ${favorites.length} favorite radio stations!`,
-            url: window.location.href
-        }).catch(err => {
-            console.log('Error sharing:', err);
-            fallbackShare(shareText);
-        });
-    } else {
-        fallbackShare(shareText);
-    }
-}
-
-function fallbackShare(text) {
-    // Copy to clipboard
-    navigator.clipboard.writeText(text).then(() => {
-        showMessage('Share text copied to clipboard!', 'success');
-    }).catch(err => {
-        console.error('Failed to copy:', err);
-        showMessage('Failed to copy to clipboard', 'error');
-    });
-}
-
-function shareApp() {
-    const shareData = {
-        title: 'Live Beats WebRadio Player',
-        text: 'Check out Live Beats WebRadio Player!',
-        url: window.location.href
-    };
-
-    if (navigator.share) {
-        navigator.share(shareData).catch(err => {
-            console.log('Error sharing app:', err);
-            fallbackShare(`Check out Live Beats WebRadio Player:\n${window.location.href}`);
-        });
-    } else {
-        fallbackShare(`Check out Live Beats WebRadio Player:\n${window.location.href}`);
-    }
-}
-
-// Refresh functionality
-function refreshPlayer() {
-    // Stop any current playback
-    stopPlayback();
-    
-    // Clear any error states
-    currentStationName.textContent = '---';
-    currentStationNameCompact.textContent = '---';
-    
-    // Show loading message
-    showMessage('Player refreshed', 'success');
-    
-    // Re-render favorites and quick access
-    renderFavorites();
-    renderQuickAccess();
-}
-
-// Event listeners for new buttons
-shareBtn.addEventListener('click', openShareModal);
-cancelShareBtn.addEventListener('click', closeShareModal);
-shareModal.addEventListener('click', (e) => {
-    if (e.target === shareModal) closeShareModal();
-});
-
-shareFavoritesBtn.addEventListener('click', () => {
-    closeShareModal();
-    shareFavorites();
-});
-
-shareAppBtn.addEventListener('click', () => {
-    closeShareModal();
-    shareApp();
-});
-
-refreshBtn.addEventListener('click', refreshPlayer);
-
-   
-
-// --- Import/Export Functions ---
-
-   
 
         // --- Import/Export Functions ---
         importFavoritesBtn.addEventListener('click', () => {
