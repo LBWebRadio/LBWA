@@ -731,7 +731,7 @@
             </div>
             <div class="border-t border-gray-200 dark:border-gray-700 pt-4">
                 <h4 class="font-medium mb-2">Share App</h4>
-                <p class="text-sm text-gray-600 dark:text-gray-300 mb-4">Share Live Beats WebRadio Player with others</p>
+                <p class="text-sm text-gray-600 dark:text-gray-300 mb-4">Share the Live Beats WebRadio Player with others</p>
                 <button id="shareAppBtn" class="btn-primary w-full">
                     <i class="fas fa-mobile-alt mr-2"></i> Share App
                 </button>
@@ -761,14 +761,8 @@
     <input type="file" id="fileImportInput" accept=".lbrx" class="hidden">
 
     <script>
-       // Check for MSE support
-const isMseSupported = 'MediaSource' in window;
-
-if (!isMseSupported) {
-    console.warn('Media Source Extensions not supported, falling back to standard audio player');
-}
         // DOM Elements
-    
+        const audioPlayer = document.getElementById('audioPlayer');
         const themeToggleBtn = document.getElementById('themeToggleBtn');
         const infoBtn = document.getElementById('infoBtn');
         const openAddModalBtn = document.getElementById('openAddModalBtn');
@@ -2100,7 +2094,7 @@ function confirmImport() {
         }
 
         // --- Audio Player Logic ---
-function playStation(station, isDirect = false) {
+       function playStation(station, isDirect = false) {
     try {
         if (!station || !station.url) {
             showMessage('Invalid station data.', 'error');
@@ -2121,180 +2115,93 @@ function playStation(station, isDirect = false) {
         } else {
             addCurrentToFavoritesBtn.classList.add('hidden');
         }
-
-        // Show loading state
-        currentStationName.textContent = 'Loading...';
-        currentStationNameCompact.textContent = 'Loading...';
-        playPauseBtn.innerHTML = '<i class="fas fa-spinner spinner"></i>';
-        
-        // Create a clean URL with cache busting
-        let streamUrl = station.url;
-        
-        if (isMseSupported) {
-            // Use MSE approach for supported browsers
-            setupMSEPlayer(streamUrl, station);
-        } else {
-            // Fallback to standard audio element
-            setupStandardPlayer(streamUrl, station, isDirect);
-        }
-    } catch (error) {
-        console.error("Setup error:", error);
-        showMessage(`Error with station: ${station.name}`, 'error');
-        addCurrentToFavoritesBtn.classList.add('hidden');
-        nowPlayingSection.classList.add('hidden');
-        stopBitrateMonitoring();
-    }
-}
-
-function setupMSEPlayer(streamUrl, station) {
-    // Create MediaSource object
-    const mediaSource = new MediaSource();
-    const mseAudioPlayer = new Audio();
-    mseAudioPlayer.src = URL.createObjectURL(mediaSource);
-    
-    mediaSource.addEventListener('sourceopen', () => {
-        try {
-            // For simplicity, we'll assume MP3 format
-            const sourceBuffer = mediaSource.addSourceBuffer('audio/mpeg');
-            
-            // Fetch the stream
-            fetch(streamUrl)
-                .then(response => {
-                    if (!response.ok) throw new Error('Network response was not ok');
-                    
-                    const reader = response.body.getReader();
-                    
-                    function pushToBuffer({ done, value }) {
-                        if (done) {
-                            mediaSource.endOfStream();
-                            return;
-                        }
-                        
-                        if (!sourceBuffer.updating) {
-                            sourceBuffer.appendBuffer(value);
-                        } else {
-                            // If buffer is busy, queue the chunk
-                            setTimeout(() => pushToBuffer({ done, value }), 50);
-                        }
-                        
-                        return reader.read().then(pushToBuffer);
-                    }
-                    
-                    return reader.read().then(pushToBuffer);
-                })
-                .then(() => {
-                    // Playback setup successful
-                    currentPlayingStation = station;
-                    currentStationName.textContent = station.name;
-                    currentStationNameCompact.textContent = station.name;
-                    playPauseBtn.innerHTML = '<i class="fas fa-pause"></i>';
-                    playPauseBtn.setAttribute('aria-label', 'Pause');
-                    nowPlayingSection.classList.remove('hidden');
-
-                    // Setup audio context for visualization
-                    setupAudioContext();
-                    
-                    // Start bitrate monitoring
-                    startBitrateMonitoring();
-                    
-                    // Update UI to show playing state
-                    renderFavorites();
-                    
-                    return mseAudioPlayer.play();
-                })
-                .catch(error => {
-                    console.error("MSE playback failed:", error);
-                    showMessage(`Cannot play: ${station.name}. Try another stream.`, 'error');
-                    currentStationName.textContent = "Playback Error";
-                    currentStationNameCompact.textContent = "Error";
-                    playPauseBtn.innerHTML = '<i class="fas fa-play"></i>';
-                    nowPlayingSection.classList.add('hidden');
-                    stopBitrateMonitoring();
-                });
-        } catch (error) {
-            console.error("MSE setup error:", error);
-            showMessage(`Error setting up MSE for: ${station.name}`, 'error');
-            currentStationName.textContent = "Playback Error";
-            currentStationNameCompact.textContent = "Error";
-            playPauseBtn.innerHTML = '<i class="fas fa-play"></i>';
-            nowPlayingSection.classList.add('hidden');
-            stopBitrateMonitoring();
-        }
-    });
-    
-    // Replace the standard audio player with our MSE player
-    audioPlayer = mseAudioPlayer;
-}
-
-function setupStandardPlayer(streamUrl, station, isDirect) {
-    // Enable CORS mode
-    audioPlayer.crossOrigin = "anonymous";
-    audioPlayer.src = streamUrl + (streamUrl.includes('?') ? '&' : '?') + 'nocache=' + Date.now();
-    
-    audioPlayer.play()
-        .then(() => {
-            // Success case
-            currentPlayingStation = station;
-            currentStationName.textContent = station.name;
-            currentStationNameCompact.textContent = station.name;
-            playPauseBtn.innerHTML = '<i class="fas fa-pause"></i>';
-            playPauseBtn.setAttribute('aria-label', 'Pause');
-            nowPlayingSection.classList.remove('hidden');
-
-            isDirectUrlStream = isDirect;
-            const isAlreadyFavorite = favorites.some(fav => fav.url === station.url);
-
-            if (isDirect && !isAlreadyFavorite) {
-                addCurrentToFavoritesBtn.classList.remove('hidden');
-                addCurrentToFavoritesBtn.innerHTML = '<i class="fas fa-star"></i>';
-                addCurrentToFavoritesBtn.title = 'Add current station to favorites';
-            } else if (!isDirect && isAlreadyFavorite) {
-                addCurrentToFavoritesBtn.classList.add('hidden');
-            } else {
-                addCurrentToFavoritesBtn.classList.add('hidden');
-            }
-            
-            // Setup audio context for visualization
-            setupAudioContext();
-            
-            // Start bitrate monitoring
-            startBitrateMonitoring();
-            
-            // Update UI to show playing state
-            renderFavorites();
-        })
-        .catch(error => {
-            console.error("Direct play failed, trying proxy:", error);
-            
-            // Fallback to CORS proxy
-            const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(streamUrl)}`;
-            audioPlayer.src = proxyUrl;
-            
-            return audioPlayer.play().then(() => {
-                // Proxy success
-                currentPlayingStation = station;
-                currentStationName.textContent = station.name + " (via proxy)";
-                currentStationNameCompact.textContent = station.name + " (proxy)";
-                playPauseBtn.innerHTML = '<i class="fas fa-pause"></i>';
-                nowPlayingSection.classList.remove('hidden');
                 
-                // Start bitrate monitoring
-                startBitrateMonitoring();
+                // Setup audio context for visualization if not already done
+                setupAudioContext();
                 
-                // Update UI to show playing state
-                renderFavorites();
-            }).catch(proxyError => {
-                // Final failure
-                console.error("Proxy playback failed:", proxyError);
-                showMessage(`Cannot play: ${station.name}. Try another stream.`, 'error');
-                currentStationName.textContent = "Playback Error";
-                currentStationNameCompact.textContent = "Error";
-                playPauseBtn.innerHTML = '<i class="fas fa-play"></i>';
+                // Enable CORS mode
+                audioPlayer.crossOrigin = "anonymous";
+                
+                // Create a clean URL with cache busting
+                let streamUrl = station.url;
+                
+                // Show loading state
+                currentStationName.textContent = 'Loading...';
+                currentStationNameCompact.textContent = 'Loading...';
+                playPauseBtn.innerHTML = '<i class="fas fa-spinner spinner"></i>';
+                
+                // 1. First try direct play (works for CORS-enabled streams)
+                audioPlayer.src = streamUrl + (streamUrl.includes('?') ? '&' : '?') + 'nocache=' + Date.now();
+                
+                audioPlayer.play()
+                    .then(() => {
+                        // Success case
+                        currentPlayingStation = station;
+                        currentStationName.textContent = station.name;
+                        currentStationNameCompact.textContent = station.name;
+                        playPauseBtn.innerHTML = '<i class="fas fa-pause"></i>';
+                        playPauseBtn.setAttribute('aria-label', 'Pause');
+                        nowPlayingSection.classList.remove('hidden');
+
+                        isDirectUrlStream = isDirect;
+                        const isAlreadyFavorite = favorites.some(fav => fav.url === station.url);
+
+              // Show/hide the add to favorites button
+if (isDirect && !isAlreadyFavorite) {
+    addCurrentToFavoritesBtn.classList.remove('hidden');
+    addCurrentToFavoritesBtn.innerHTML = '<i class="fas fa-star"></i>';
+    addCurrentToFavoritesBtn.title = 'Add current station to favorites';
+} else if (!isDirect && isAlreadyFavorite) {
+    addCurrentToFavoritesBtn.classList.add('hidden');
+} else {
+    addCurrentToFavoritesBtn.classList.add('hidden');
+}
+                        
+                        // Start bitrate monitoring
+                        startBitrateMonitoring();
+                        
+                        // Update UI to show playing state
+                        renderFavorites();
+                    })
+                    .catch(error => {
+                        console.error("Direct play failed, trying proxy:", error);
+                        
+                        // 2. Fallback to CORS proxy
+                        const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(streamUrl)}`;
+                        audioPlayer.src = proxyUrl;
+                        
+                        return audioPlayer.play().then(() => {
+                            // Proxy success
+                            currentPlayingStation = station;
+                            currentStationName.textContent = station.name + " (via proxy)";
+                            currentStationNameCompact.textContent = station.name + " (proxy)";
+                            playPauseBtn.innerHTML = '<i class="fas fa-pause"></i>';
+                            nowPlayingSection.classList.remove('hidden');
+                            
+                            // Start bitrate monitoring
+                            startBitrateMonitoring();
+                            
+                            // Update UI to show playing state
+                            renderFavorites();
+                        }).catch(proxyError => {
+                            // Final failure
+                            console.error("Proxy playback failed:", proxyError);
+                            showMessage(`Cannot play: ${station.name}. Try another stream.`, 'error');
+                            currentStationName.textContent = "Playback Error";
+                            currentStationNameCompact.textContent = "Error";
+                            playPauseBtn.innerHTML = '<i class="fas fa-play"></i>';
+                            nowPlayingSection.classList.add('hidden');
+                            stopBitrateMonitoring();
+                        });
+                    });
+            } catch (error) {
+                console.error("Setup error:", error);
+                showMessage(`Error with station: ${station.name}`, 'error');
+                addCurrentToFavoritesBtn.classList.add('hidden');
                 nowPlayingSection.classList.add('hidden');
                 stopBitrateMonitoring();
-            });
-        });
-}
+            }
+        }
         
         function setupAudioContext() {
             if (!audioContext) {
@@ -2389,31 +2296,23 @@ function setupStandardPlayer(streamUrl, station, isDirect) {
             renderFavorites();
         }
 
- function stopPlayback() {
-    if (audioPlayer) {
-        audioPlayer.pause();
-        audioPlayer.currentTime = 0;
-        if (audioPlayer.src) {
-            // Handle both MSE and standard audio sources
-            if (audioPlayer.src.startsWith('blob:')) {
-                URL.revokeObjectURL(audioPlayer.src);
-            }
-            audioPlayer.src = "";
+        function stopPlayback() {
+            audioPlayer.pause();
+            audioPlayer.currentTime = 0;
+            if (audioPlayer.src) audioPlayer.src = "";
+            
+            currentPlayingStation = null;
+            isDirectUrlStream = false;
+            currentStationName.textContent = '---';
+            currentStationNameCompact.textContent = '---';
+            playPauseBtn.innerHTML = '<i class="fas fa-play"></i>';
+            playPauseBtn.setAttribute('aria-label', 'Play');
+            addCurrentToFavoritesBtn.classList.add('hidden');
+            nowPlayingSection.classList.add('hidden');
+            stopBitrateMonitoring();
+            
+            renderFavorites();
         }
-    }
-    
-    currentPlayingStation = null;
-    isDirectUrlStream = false;
-    currentStationName.textContent = '---';
-    currentStationNameCompact.textContent = '---';
-    playPauseBtn.innerHTML = '<i class="fas fa-play"></i>';
-    playPauseBtn.setAttribute('aria-label', 'Play');
-    addCurrentToFavoritesBtn.classList.add('hidden');
-    nowPlayingSection.classList.add('hidden');
-    stopBitrateMonitoring();
-    
-    renderFavorites();
-}
 
        function addCurrentToFavorites() {
     if (!currentPlayingStation || !currentPlayingStation.url) {
