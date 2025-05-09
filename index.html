@@ -3,7 +3,7 @@
 <head>
    <meta charset="UTF-8">
    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
-   <meta name="version" content="1.3.4">
+   <meta name="version" content="1.3.5">
 
    <!-- PWA Meta Tags -->
    <meta name="theme-color" content="#111827">
@@ -321,7 +321,15 @@
 .popular-tag-btn:hover {
     transform: translateY(-1px);
 }
-           
+
+           .station-card {
+        cursor: pointer;
+    }
+
+    [onclick="toggleSection('playFromUrlSection')"], 
+    [onclick="toggleSection('discoverStationsSection')"] {
+        cursor: pointer;
+    }
     </style>
 </head>
 <body class="bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-100 min-h-screen flex flex-col">
@@ -357,59 +365,71 @@
             <!-- Left column -->
             <div class="lg:col-span-2 space-y-6">
                 <!-- Play from URL section -->
-                <div class="bg-white dark:bg-gray-800 p-5 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
-                    <h2 class="text-xl font-semibold mb-4 flex items-center">
-                        <i class="fas fa-link mr-2 text-blue-500"></i>
-                        Play from URL
-                    </h2>
-                    <div class="flex flex-col sm:flex-row items-stretch gap-3">
-                        <input type="url" id="directUrlInput" 
-                               class="flex-grow w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white placeholder-gray-400 dark:placeholder-gray-500" 
-                               placeholder="https://example.com/stream.mp3">
-                        <button id="playDirectUrlBtn" class="btn-primary whitespace-nowrap">
-                            <i class="fas fa-play mr-2"></i>Play
-                        </button>
-                    </div>
-                    <div class="mt-3 text-sm text-gray-500 dark:text-gray-400">
-                        Tip: If the station will not play it likely doesn't support CORS
-                    </div>
-                </div>
-
-               <!-- Radio Browser section -->
-<div class="bg-white dark:bg-gray-800 p-5 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
-    <h2 class="text-xl font-semibold mb-4 flex items-center">
-        <i class="fas fa-search mr-2 text-blue-500"></i>
-        Discover Stations
-    </h2>
-    
-    <div class="flex flex-col sm:flex-row items-stretch gap-3 mb-4">
-        <input type="text" id="radioSearchInput" 
-               class="flex-grow w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white placeholder-gray-400 dark:placeholder-gray-500" 
-               placeholder="Search for stations...">
-        <button id="radioSearchBtn" class="btn-primary whitespace-nowrap">
-            <i class="fas fa-search mr-2"></i>Search
+             <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
+    <div class="flex items-center justify-between p-5 cursor-pointer" onclick="toggleSection('playFromUrlSection')">
+        <h2 class="text-xl font-semibold flex items-center">
+            <i class="fas fa-link mr-2 text-blue-500"></i>
+            Play from URL
+        </h2>
+        <button class="icon-btn text-gray-500 dark:text-gray-400">
+            <i id="playFromUrlToggleIcon" class="fas fa-plus"></i>
         </button>
     </div>
-    
-    <div class="flex flex-wrap gap-2 mb-4">
-        <button class="popular-tag-btn btn-secondary text-sm px-3 py-1" data-tag="topclick">Popular</button>
-        <button class="popular-tag-btn btn-secondary text-sm px-3 py-1" data-tag="topvote">Top Rated</button>
+    <div id="playFromUrlSection" class="px-5 pb-5 hidden">
+        <div class="flex flex-col sm:flex-row items-stretch gap-3">
+            <input type="url" id="directUrlInput" 
+                   class="flex-grow w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white placeholder-gray-400 dark:placeholder-gray-500" 
+                   placeholder="https://example.com/stream.mp3">
+            <button id="playDirectUrlBtn" class="btn-primary whitespace-nowrap">
+                <i class="fas fa-play mr-2"></i>Play
+            </button>
+        </div>
+        <div class="mt-3 text-sm text-gray-500 dark:text-gray-400">
+            Tip: If the station will not play it likely doesn't support CORS
+        </div>
+    </div>
+</div>
+
+               <!-- Radio Browser section -->
+<div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
+    <div class="flex items-center justify-between p-5 cursor-pointer" onclick="toggleSection('discoverStationsSection')">
+        <h2 class="text-xl font-semibold flex items-center">
+            <i class="fas fa-search mr-2 text-blue-500"></i>
+            Discover Stations
+        </h2>
+        <button class="icon-btn text-gray-500 dark:text-gray-400">
+            <i id="discoverStationsToggleIcon" class="fas fa-plus"></i>
+        </button>
+    </div>
+    <div id="discoverStationsSection" class="px-5 pb-5 hidden">
+        <div class="flex flex-col sm:flex-row items-stretch gap-3 mb-4">
+            <input type="text" id="radioSearchInput" 
+                   class="flex-grow w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white placeholder-gray-400 dark:placeholder-gray-500" 
+                   placeholder="Search for stations...">
+            <button id="radioSearchBtn" class="btn-primary whitespace-nowrap">
+                <i class="fas fa-search mr-2"></i>Search
+            </button>
+        </div>
         
-        <button class="popular-tag-btn btn-secondary text-sm px-3 py-1" data-tag="genre">By Genre</button>
-    </div>
-    
-    <div id="radioBrowserResults" class="space-y-3 max-h-[300px] overflow-y-auto pr-2 hidden">
-        <!-- Results will be displayed here -->
-    </div>
-    
-    <div id="radioBrowserLoading" class="text-center py-4 hidden">
-        <i class="fas fa-spinner spinner text-blue-500 text-2xl"></i>
-        <p class="text-gray-500 dark:text-gray-400 mt-2">Loading stations...</p>
-    </div>
-    
-    <div id="radioBrowserEmpty" class="text-center py-4">
-        <i class="fas fa-radio text-3xl text-gray-300 dark:text-gray-600 mb-3"></i>
-        <p class="text-gray-500 dark:text-gray-400">Search for radio stations to discover</p>
+        <div class="flex flex-wrap gap-2 mb-4">
+            <button class="popular-tag-btn btn-secondary text-sm px-3 py-1" data-tag="topclick">Popular</button>
+            <button class="popular-tag-btn btn-secondary text-sm px-3 py-1" data-tag="topvote">Top Rated</button>
+            <button class="popular-tag-btn btn-secondary text-sm px-3 py-1" data-tag="genre">By Genre</button>
+        </div>
+        
+        <div id="radioBrowserResults" class="space-y-3 max-h-[300px] overflow-y-auto pr-2 hidden">
+            <!-- Results will be displayed here -->
+        </div>
+        
+        <div id="radioBrowserLoading" class="text-center py-4 hidden">
+            <i class="fas fa-spinner spinner text-blue-500 text-2xl"></i>
+            <p class="text-gray-500 dark:text-gray-400 mt-2">Loading stations...</p>
+        </div>
+        
+        <div id="radioBrowserEmpty" class="text-center py-4">
+            <i class="fas fa-radio text-3xl text-gray-300 dark:text-gray-600 mb-3"></i>
+            <p class="text-gray-500 dark:text-gray-400">Search for radio stations to discover</p>
+        </div>
     </div>
 </div>
                 
@@ -616,7 +636,7 @@
 </p>
 
   <p class="text-sm">
-    <strong>Version:</strong> 1.3.4
+    <strong>Version:</strong> 1.3.5
 </p>
                
             </div>
@@ -745,7 +765,7 @@ const radioBrowserEmpty = document.getElementById('radioBrowserEmpty');
 const popularTagBtns = document.querySelectorAll('.popular-tag-btn');
 
 // Radio Browser API configuration
-const RADIO_BROWSER_USER_AGENT = 'Live Beats WebRadio PWA/1.3.4';
+const RADIO_BROWSER_USER_AGENT = 'Live Beats WebRadio PWA/1.3.5';
 let RADIO_BROWSER_BASE_URL = 'https://de1.api.radio-browser.info';
 
 // Current search state
@@ -860,6 +880,22 @@ async function searchRadioStations(searchTerm = '', searchBy = 'name') {
     }
 }
 
+function toggleSection(sectionId) {
+    const section = document.getElementById(sectionId);
+    const icon = document.getElementById(`${sectionId}ToggleIcon`);
+    
+    if (section.classList.contains('hidden')) {
+        section.classList.remove('hidden');
+        icon.classList.remove('fa-plus');
+        icon.classList.add('fa-minus');
+    } else {
+        section.classList.add('hidden');
+        icon.classList.remove('fa-minus');
+        icon.classList.add('fa-plus');
+    }
+}
+       
+// Render radio browser results
 // Render radio browser results
 function renderRadioBrowserResults(stations) {
     radioBrowserResults.innerHTML = '';
@@ -869,7 +905,28 @@ function renderRadioBrowserResults(stations) {
         if (!streamUrl) return;
         
         const div = document.createElement('div');
-        div.className = 'station-card flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg shadow-sm hover:shadow-md transition-all duration-200 border border-gray-200 dark:border-gray-600';
+        div.className = 'station-card flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg shadow-sm hover:shadow-md transition-all duration-200 border border-gray-200 dark:border-gray-600 cursor-pointer';
+        
+        // Make the whole card clickable to play the station
+        div.addEventListener('click', (e) => {
+            // Don't trigger if clicking on buttons or links inside the card
+            if (e.target.tagName === 'BUTTON' || e.target.tagName === 'A' || e.target.closest('button')) {
+                return;
+            }
+            
+            // Track the click first
+            trackStationClick(station.stationuuid);
+            
+            playStation({
+                id: `radio_browser_${station.stationuuid}`,
+                name: station.name,
+                url: streamUrl
+            }, true);
+            
+            document.querySelector('#nowPlayingSection').scrollIntoView({
+                behavior: 'smooth'
+            });
+        });
         
         const leftDiv = document.createElement('div');
         leftDiv.className = 'flex items-center min-w-0 flex-grow';
@@ -896,7 +953,6 @@ function renderRadioBrowserResults(stations) {
         
         favicon.alt = station.name;
         
-        // Rest of the function remains the same...
         const infoDiv = document.createElement('div');
         infoDiv.className = 'min-w-0';
         
@@ -927,16 +983,14 @@ function renderRadioBrowserResults(stations) {
         playBtn.className = 'icon-btn text-blue-500 dark:text-blue-400 hover:text-blue-600 dark:hover:text-blue-300';
         playBtn.innerHTML = '<i class="fas fa-play"></i>';
         playBtn.title = `Play ${station.name}`;
-        playBtn.addEventListener('click', () => {
-            // Track the click first
+        playBtn.addEventListener('click', (e) => {
+            e.stopPropagation(); // Prevent the card click from triggering
             trackStationClick(station.stationuuid);
-            
             playStation({
                 id: `radio_browser_${station.stationuuid}`,
                 name: station.name,
                 url: streamUrl
             }, true);
-            
             document.querySelector('#nowPlayingSection').scrollIntoView({
                 behavior: 'smooth'
             });
@@ -946,7 +1000,8 @@ function renderRadioBrowserResults(stations) {
         addBtn.className = 'icon-btn text-yellow-500 dark:text-yellow-400 hover:text-yellow-600 dark:hover:text-yellow-300';
         addBtn.innerHTML = '<i class="fas fa-star"></i>';
         addBtn.title = `Add ${station.name} to favorites`;
-        addBtn.addEventListener('click', () => {
+        addBtn.addEventListener('click', (e) => {
+            e.stopPropagation(); // Prevent the card click from triggering
             openModal('add', {
                 name: station.name,
                 url: streamUrl
@@ -1295,7 +1350,7 @@ function showMessage(message, type = 'info', duration = 3000) {
       function generateLBRXContent() {
     let content = "## LIVE BEATS WEBRADIO PLAYER EXPORT ##\n";
     content += `## Date: ${new Date().toISOString()}\n`;
-    content += `## Version: 1.3.4\n`;
+    content += `## Version: 1.3.5\n`;
     content += `=== FAVORITE STATIONS (${favorites.length} stations) ===\n\n`;
     
     // Add numbered stations with exact WinForms formatting
