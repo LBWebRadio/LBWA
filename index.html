@@ -1370,38 +1370,59 @@ function showMessage(message, type = 'info', duration = 3000) {
             });
         }
 
-     function parseLBRXFile(content) {
-    const lines = content.split('\n');
+    function parseLBRXFile(content) {
     const stations = [];
+    const lines = content.split('\n');
     let currentStation = null;
+    let inStationsSection = false;
 
     for (const line of lines) {
         const trimmed = line.trim();
-        if (!trimmed) continue; // Skip empty lines
+        
+        // Skip empty lines and comments
+        if (!trimmed || trimmed.startsWith('##')) continue;
+        
+        // Detect stations section
+        if (trimmed.includes('FAVORITE STATIONS')) {
+            inStationsSection = true;
+            continue;
+        }
+        
+        // Skip section end markers
+        if (trimmed.startsWith('===')) continue;
 
-        if (!currentStation) {
-            // First line is station name
-            currentStation = {
-                id: Date.now().toString() + Math.random().toString(36).substr(2, 5),
-                name: trimmed,
-                url: ''
-            };
-        } else {
-            // Second line is URL
-            currentStation.url = trimmed;
-            
-            // Validate URL format
-            try {
-                new URL(currentStation.url);
-                stations.push(currentStation);
-            } catch (e) {
-                console.warn('Invalid URL skipped:', currentStation.url);
+        if (inStationsSection) {
+            // Check if line looks like a URL
+            if (trimmed.match(/^https?:\/\//i)) {
+                if (currentStation) {
+                    currentStation.url = trimmed;
+                    
+                    // Validate URL
+                    try {
+                        new URL(currentStation.url);
+                        stations.push(currentStation);
+                    } catch (e) {
+                        console.warn('Invalid URL skipped:', currentStation.url);
+                    }
+                    currentStation = null;
+                }
+            } 
+            // Otherwise treat as station name (clean up numbering)
+            else if (!currentStation) {
+                const cleanName = trimmed
+                    .replace(/^\d+\.\s*/, '')  // Remove leading "1. "
+                    .replace(/^\d+\.\w+\s*-\s*/i, '');  // Remove "1.FM - "
+                
+                currentStation = {
+                    id: Date.now().toString() + Math.random().toString(36).substr(2, 5),
+                    name: cleanName,
+                    url: ''
+                };
             }
-            
-            currentStation = null; // Reset for next station
         }
     }
-
+    
+    console.log('Parsed stations:', stations);
     return stations;
 }
 
