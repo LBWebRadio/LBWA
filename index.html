@@ -984,7 +984,7 @@ function openShareModal() {
         const checkbox = document.createElement('input');
         checkbox.type = 'checkbox';
         checkbox.className = 'rounded text-blue-600 focus:ring-blue-500 dark:bg-gray-800 dark:border-gray-600';
-        checkbox.checked = true;
+        checkbox.checked = false; // Changed from true to false
         checkbox.dataset.url = station.url;
         checkbox.dataset.name = station.name;
         
@@ -1033,7 +1033,8 @@ function shareSelectedFavorites() {
         shareText += `• ${station.name}\n${station.url}\n\n`;
     });
     
-    shareText += `\nGet the app: ${appUrl}`;
+    // Removed the duplicate app URL at the end
+    shareText += `Get the app: ${appUrl}`;
     
     if (navigator.share) {
         navigator.share({
@@ -1051,7 +1052,7 @@ function shareSelectedFavorites() {
 function shareApp() {
     const appUrl = window.location.href;
     const appName = 'Live Beats WebRadio Player';
-    const shareText = `Check out ${appName} - A modern web radio player with thousands of stations!\n\n${appUrl}`;
+    const shareText = `Check out ${appName} - A modern web radio player with thousands of stations!\n${appUrl}`; // Removed duplicate URL
     
     if (navigator.share) {
         navigator.share({
