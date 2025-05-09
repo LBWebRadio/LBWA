@@ -1026,6 +1026,7 @@ function showMessage(message, type = 'info', duration = 3000) {
         }
 
         function renderFavorites() {
+           console.log('Rendering favorites:', favorites); 
             favoritesList.innerHTML = '';
             
             if (favorites.length === 0) {
@@ -1301,32 +1302,42 @@ function showMessage(message, type = 'info', duration = 3000) {
             }
         }
 
-        function confirmImport() {
-            const file = fileImportInput.files[0];
-            if (!file) {
-                closeImportConfirmModal();
-                return;
-            }
+ function confirmImport() {
+    const file = fileImportInput.files[0];
+    if (!file) {
+        closeImportConfirmModal();
+        return;
+    }
 
-            readFileAsText(file)
-                .then(content => {
-                    const importedStations = parseLBRXFile(content);
-                    const results = processImportedStations(importedStations);
-                    
-                    // Store the imported filename
-                    currentLbrxFileName = file.name;
-                    localStorage.setItem('currentLbrxFileName', currentLbrxFileName);
-                    
-                    showImportResults(results);
-                    saveFavorites();
-                    closeImportConfirmModal();
-                })
-                .catch(error => {
-                    console.error('Import error:', error);
-                    showMessage('Failed to import stations: ' + error.message, 'error');
-                    closeImportConfirmModal();
-                });
-        }
+    readFileAsText(file)
+        .then(content => {
+            const importedStations = parseLBRXFile(content);
+            
+            // DEBUG: Verify parsed data
+            console.log('Raw imported stations:', importedStations);
+            
+            // SIMPLIFIED MERGE LOGIC
+            importedStations.forEach(newStation => {
+                const exists = favorites.some(s => s.url === newStation.url);
+                if (!exists) {
+                    favorites.push(newStation);
+                }
+            });
+            
+            // FORCE UPDATE
+            localStorage.setItem('radioFavorites', JSON.stringify(favorites));
+            renderFavorites(); // ← Ensure this is called
+            updateFavoritesCount();
+            
+            showMessage(`Imported ${importedStations.length} stations!`, 'success');
+            closeImportConfirmModal();
+        })
+        .catch(error => {
+            console.error('Import error:', error);
+            showMessage('Import failed: ' + error.message, 'error');
+            closeImportConfirmModal();
+        });
+}
 
         function confirmClearFavorites() {
             favorites = [];
