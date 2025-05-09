@@ -1052,19 +1052,24 @@ function shareSelectedFavorites() {
 function shareApp() {
     const appUrl = window.location.href;
     const appName = 'Live Beats WebRadio Player';
-    const shareText = `Check out ${appName} - A modern web radio player with thousands of stations!\n${appUrl}`; // Removed duplicate URL
+    
+    // Clean single-line version without duplicate URL
+    const shareText = `Check out ${appName} - A modern web radio player with thousands of stations!`;
     
     if (navigator.share) {
+        // For Web Share API (mobile devices)
         navigator.share({
             title: appName,
-            text: shareText,
-            url: appUrl
+            text: shareText,  // Text without URL
+            url: appUrl       // URL passed separately
         }).catch(err => {
-            console.log('Error sharing:', err);
-            copyToClipboard(shareText);
+            console.log('Share failed, falling back to clipboard:', err);
+            // Fallback combines text + URL (but only once)
+            copyToClipboard(`${shareText}\n${appUrl}`);
         });
     } else {
-        copyToClipboard(shareText);
+        // Desktop fallback (URL appears only once)
+        copyToClipboard(`${shareText}\n${appUrl}`);
     }
 }
 
