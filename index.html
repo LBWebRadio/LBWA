@@ -1577,10 +1577,10 @@ function setTheme(themeName) {
   document.documentElement.classList.remove(...themeClasses);
   
   // Add the selected theme
-  if (themeName === 'dark' || themeName === 'light') {
+  if (themeName.startsWith('theme-')) {
     document.documentElement.classList.add(themeName);
   } else {
-    document.documentElement.classList.add(`theme-${themeName}`);
+    document.documentElement.classList.add(themeName);
   }
   
   // Update selected state
