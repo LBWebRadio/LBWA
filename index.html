@@ -374,10 +374,9 @@
             </div>
             
             <div class="flex items-center space-x-4">
-                <button id="themeToggleBtn" class="icon-btn text-gray-600 dark:text-gray-300">
-                    <i class="fas fa-moon dark:hidden"></i>
-                    <i class="fas fa-sun hidden dark:block"></i>
-                </button>
+                <button id="themePaletteBtn" class="icon-btn text-gray-600 dark:text-gray-300" aria-label="Theme options">
+    <i class="fas fa-palette"></i>
+</button>
                 
                 <button id="infoBtn" class="icon-btn text-gray-600 dark:text-gray-300" aria-label="App Info">
                     <i class="fas fa-info-circle"></i>
@@ -742,7 +741,28 @@
         </div>
     </div>
 </div>
-   
+   <!-- Theme Palette Modal -->
+<div id="themePaletteModal" class="modal fixed inset-0 bg-black bg-opacity-60 dark:bg-opacity-75 flex items-center justify-center p-4 opacity-0 invisible z-[100]">
+    <div class="modal-content bg-white dark:bg-gray-800 p-6 rounded-xl shadow-xl w-full max-w-xs border border-gray-200 dark:border-gray-700">
+        <h3 class="text-xl font-semibold mb-5 flex items-center">
+            <i class="fas fa-palette mr-2 text-blue-500"></i>
+            <span>Choose Theme</span>
+        </h3>
+        <div class="grid grid-cols-2 gap-4">
+            <button id="lightThemeBtn" class="flex flex-col items-center p-4 rounded-lg border-2 border-gray-200 dark:border-gray-600 hover:border-blue-500 dark:hover:border-blue-400 transition-colors">
+                <div class="w-16 h-16 rounded-full bg-white border-2 border-gray-300 mb-2"></div>
+                <span>Light</span>
+            </button>
+            <button id="darkThemeBtn" class="flex flex-col items-center p-4 rounded-lg border-2 border-gray-200 dark:border-gray-600 hover:border-blue-500 dark:hover:border-blue-400 transition-colors">
+                <div class="w-16 h-16 rounded-full bg-gray-900 border-2 border-gray-700 mb-2"></div>
+                <span>Dark</span>
+            </button>
+        </div>
+        <div class="mt-6 flex justify-end">
+            <button type="button" id="closeThemePaletteBtn" class="btn-secondary">Close</button>
+        </div>
+    </div>
+</div>
 
     <!-- Message Box -->
     <div id="messageBox" class="fixed top-5 right-5 p-4 rounded-lg shadow-lg text-white opacity-0 invisible z-[150] max-w-xs sm:max-w-sm text-sm border border-transparent">
@@ -1347,25 +1367,44 @@ function showMessage(message, type = 'info', duration = 3000) {
         closeMessageBtn.addEventListener('click', hideMessage);
 
         // --- Theme Management ---
-        function setLightTheme() {
-            document.documentElement.classList.remove('dark');
-            document.documentElement.classList.add('light');
-            localStorage.setItem('theme', 'light');
-        }
+   // --- Theme Management ---
+function setLightTheme() {
+    document.documentElement.classList.remove('dark');
+    document.documentElement.classList.add('light');
+    localStorage.setItem('theme', 'light');
+    closeThemePaletteModal();
+}
 
-        function setDarkTheme() {
-            document.documentElement.classList.add('dark');
-            document.documentElement.classList.remove('light');
-            localStorage.setItem('theme', 'dark');
-        }
+function setDarkTheme() {
+    document.documentElement.classList.add('dark');
+    document.documentElement.classList.remove('light');
+    localStorage.setItem('theme', 'dark');
+    closeThemePaletteModal();
+}
 
-        themeToggleBtn.addEventListener('click', () => {
-            if (document.documentElement.classList.contains('dark')) {
-                setLightTheme();
-            } else {
-                setDarkTheme();
-            }
-        });
+// Theme Palette Modal Functions
+function openThemePaletteModal() {
+    themePaletteModal.classList.remove('invisible', 'opacity-0');
+    themePaletteModal.classList.add('open');
+}
+
+function closeThemePaletteModal() {
+    themePaletteModal.classList.add('opacity-0');
+    setTimeout(() => {
+        themePaletteModal.classList.add('invisible');
+        themePaletteModal.classList.remove('open');
+    }, 200);
+}
+
+// Event Listeners
+document.getElementById('themePaletteBtn').addEventListener('click', openThemePaletteModal);
+document.getElementById('lightThemeBtn').addEventListener('click', setLightTheme);
+document.getElementById('darkThemeBtn').addEventListener('click', setDarkTheme);
+document.getElementById('closeThemePaletteBtn').addEventListener('click', closeThemePaletteModal);
+
+themePaletteModal.addEventListener('click', (e) => {
+    if (e.target === themePaletteModal) closeThemePaletteModal();
+});
 
         function loadTheme() {
             const savedTheme = localStorage.getItem('theme');
