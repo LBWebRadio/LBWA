@@ -374,10 +374,9 @@
             </div>
             
             <div class="flex items-center space-x-4">
-                <button id="themeToggleBtn" class="icon-btn text-gray-600 dark:text-gray-300">
-                    <i class="fas fa-moon dark:hidden"></i>
-                    <i class="fas fa-sun hidden dark:block"></i>
-                </button>
+            <button id="themePaletteBtn" class="icon-btn text-gray-600 dark:text-gray-300" aria-label="Color Themes">
+    <i class="fas fa-palette"></i>
+</button>
                 
                 <button id="infoBtn" class="icon-btn text-gray-600 dark:text-gray-300" aria-label="App Info">
                     <i class="fas fa-info-circle"></i>
@@ -634,6 +633,40 @@
             </div>
         </div>
     </div>
+   <div id="themeModal" class="modal fixed inset-0 bg-black bg-opacity-60 dark:bg-opacity-75 flex items-center justify-center p-4 opacity-0 invisible z-[100]">
+    <div class="modal-content bg-white dark:bg-gray-800 p-6 rounded-xl shadow-xl w-full max-w-md border border-gray-200 dark:border-gray-700">
+        <h3 class="text-xl font-semibold mb-5 flex items-center">
+            <i class="fas fa-palette mr-2 text-blue-500"></i>
+            <span>Select Theme</span>
+        </h3>
+        <div class="grid grid-cols-5 gap-4">
+            <!-- Theme color circles -->
+            <button data-theme="aliceblue" class="theme-btn w-12 h-12 rounded-full bg-[#F0F8FF] border-2 border-gray-200 dark:border-gray-600 hover:scale-110 transition-transform" title="Alice Blue"></button>
+            <button data-theme="amber" class="theme-btn w-12 h-12 rounded-full bg-[#FFBF00] border-2 border-gray-200 dark:border-gray-600 hover:scale-110 transition-transform" title="Amber"></button>
+            <button data-theme="androidgreen" class="theme-btn w-12 h-12 rounded-full bg-[#A4C639] border-2 border-gray-200 dark:border-gray-600 hover:scale-110 transition-transform" title="Android Green"></button>
+            <button data-theme="antiquefushia" class="theme-btn w-12 h-12 rounded-full bg-[#915C83] border-2 border-gray-200 dark:border-gray-600 hover:scale-110 transition-transform" title="Antique Fushia"></button>
+            <button data-theme="aqua" class="theme-btn w-12 h-12 rounded-full bg-[#00FFFF] border-2 border-gray-200 dark:border-gray-600 hover:scale-110 transition-transform" title="Aqua"></button>
+            <button data-theme="ashgrey" class="theme-btn w-12 h-12 rounded-full bg-[#B2BEB5] border-2 border-gray-200 dark:border-gray-600 hover:scale-110 transition-transform" title="Ash Grey"></button>
+            <button data-theme="atomictengerine" class="theme-btn w-12 h-12 rounded-full bg-[#FF9966] border-2 border-gray-200 dark:border-gray-600 hover:scale-110 transition-transform" title="Atomic Tengerine"></button>
+            <button data-theme="aureloin" class="theme-btn w-12 h-12 rounded-full bg-[#FDEE00] border-2 border-gray-200 dark:border-gray-600 hover:scale-110 transition-transform" title="Aureloin"></button>
+            <button data-theme="azure" class="theme-btn w-12 h-12 rounded-full bg-[#007FFF] border-2 border-gray-200 dark:border-gray-600 hover:scale-110 transition-transform" title="Azure"></button>
+            <button data-theme="babypink" class="theme-btn w-12 h-12 rounded-full bg-[#F4C2C2] border-2 border-gray-200 dark:border-gray-600 hover:scale-110 transition-transform" title="Baby Pink"></button>
+            <button data-theme="bistre" class="theme-btn w-12 h-12 rounded-full bg-[#3D2B1F] border-2 border-gray-200 dark:border-gray-600 hover:scale-110 transition-transform" title="Bistre"></button>
+            <button data-theme="black" class="theme-btn w-12 h-12 rounded-full bg-[#000000] border-2 border-gray-200 dark:border-gray-600 hover:scale-110 transition-transform" title="Black"></button>
+            <button data-theme="blond" class="theme-btn w-12 h-12 rounded-full bg-[#FAF0BE] border-2 border-gray-200 dark:border-gray-600 hover:scale-110 transition-transform" title="Blond"></button>
+            <button data-theme="bluegreen" class="theme-btn w-12 h-12 rounded-full bg-[#0D98BA] border-2 border-gray-200 dark:border-gray-600 hover:scale-110 transition-transform" title="Blue Green"></button>
+            <button data-theme="blueviolet" class="theme-btn w-12 h-12 rounded-full bg-[#8A2BE2] border-2 border-gray-200 dark:border-gray-600 hover:scale-110 transition-transform" title="Blue Violet"></button>
+            <button data-theme="bostonuniversityred" class="theme-btn w-12 h-12 rounded-full bg-[#CC0000] border-2 border-gray-200 dark:border-gray-600 hover:scale-110 transition-transform" title="Boston University Red"></button>
+            <button data-theme="carrotorange" class="theme-btn w-12 h-12 rounded-full bg-[#ED9121] border-2 border-gray-200 dark:border-gray-600 hover:scale-110 transition-transform" title="Carrot Orange"></button>
+            <button data-theme="cerise" class="theme-btn w-12 h-12 rounded-full bg-[#DE3163] border-2 border-gray-200 dark:border-gray-600 hover:scale-110 transition-transform" title="Cerise"></button>
+            <button data-theme="charcoal" class="theme-btn w-12 h-12 rounded-full bg-[#36454F] border-2 border-gray-200 dark:border-gray-600 hover:scale-110 transition-transform" title="Charcoal"></button>
+            <button data-theme="cream" class="theme-btn w-12 h-12 rounded-full bg-[#FFFDD0] border-2 border-gray-200 dark:border-gray-600 hover:scale-110 transition-transform" title="Cream"></button>
+        </div>
+        <div class="mt-6 flex justify-end">
+            <button type="button" id="closeThemeModalBtn" class="btn-secondary">Close</button>
+        </div>
+    </div>
+</div>
 
     <!-- Info Modal -->
     <div id="infoModal" class="modal fixed inset-0 bg-black bg-opacity-60 dark:bg-opacity-75 flex items-center justify-center p-4 opacity-0 invisible z-[100]">
@@ -810,7 +843,69 @@
         const cancelClearBtn = document.getElementById('cancelClearBtn');
         const confirmClearBtn = document.getElementById('confirmClearBtn');
 
+// Theme Modal Elements
+const themePaletteBtn = document.getElementById('themePaletteBtn');
+const themeModal = document.getElementById('themeModal');
+const closeThemeModalBtn = document.getElementById('closeThemeModalBtn');
+const themeButtons = document.querySelectorAll('.theme-btn');
 
+function openThemeModal() {
+    themeModal.classList.remove('invisible', 'opacity-0');
+    themeModal.classList.add('open');
+}
+
+function closeThemeModal() {
+    themeModal.classList.add('opacity-0');
+    setTimeout(() => {
+        themeModal.classList.add('invisible');
+        themeModal.classList.remove('open');
+    }, 200);
+}
+
+// Theme switching functions
+function setTheme(themeName) {
+    // Remove all theme classes
+    document.documentElement.classList.remove('light', 'dark', ...Array.from(themeButtons).map(btn => btn.dataset.theme));
+    
+    // Add the selected theme class
+    document.documentElement.classList.add(themeName);
+    localStorage.setItem('theme', themeName);
+    
+    // Special handling for light/dark themes
+    if (themeName === 'light' || themeName === 'dark') {
+        document.documentElement.classList.remove('light', 'dark');
+        document.documentElement.classList.add(themeName);
+    }
+    
+    showMessage(`Theme set to ${themeName.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}`, 'success');
+}
+
+function loadTheme() {
+    const savedTheme = localStorage.getItem('theme');
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    
+    if (savedTheme) {
+        setTheme(savedTheme);
+    } else if (prefersDark) {
+        setTheme('dark');
+    } else {
+        setTheme('light');
+    }
+}
+
+// Event listeners
+themePaletteBtn.addEventListener('click', openThemeModal);
+closeThemeModalBtn.addEventListener('click', closeThemeModal);
+themeModal.addEventListener('click', (e) => {
+    if (e.target === themeModal) closeThemeModal();
+});
+
+themeButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+        setTheme(btn.dataset.theme);
+        closeThemeModal();
+    });
+});
 
 
        // Share Modal Elements
@@ -1367,16 +1462,18 @@ function showMessage(message, type = 'info', duration = 3000) {
             }
         });
 
-        function loadTheme() {
-            const savedTheme = localStorage.getItem('theme');
-            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-            
-            if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
-                setDarkTheme();
-            } else {
-                setLightTheme();
-            }
-        }
+     function loadTheme() {
+    const savedTheme = localStorage.getItem('theme');
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    
+    if (savedTheme) {
+        setTheme(savedTheme);
+    } else if (prefersDark) {
+        setTheme('dark');
+    } else {
+        setTheme('light');
+    }
+}
 
         // --- Modal Management ---
         function openModal(mode = 'add', station = null) {
