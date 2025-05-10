@@ -74,6 +74,15 @@
             transition: background-color 0.3s ease, color 0.3s ease;
             -webkit-tap-highlight-color: transparent;
         }
+       
+           :root {
+        --color-primary-50: #f0f9ff;
+        --color-primary-900: #0c4a6e;
+    }
+    .dark {
+        --color-primary-50: #0c4a6e;
+        --color-primary-900: #f0f9ff;
+    }
         
         /* Custom scrollbar for webkit browsers */
         ::-webkit-scrollbar {
@@ -338,15 +347,7 @@
 
 .dark #radioBrowserResults {
     scrollbar-color: rgba(75, 85, 99, 0.5) transparent;
-}
-           :root {
-        --color-primary-50: #f0f9ff;
-        --color-primary-900: #0c4a6e;
-    }
-    .dark {
-        --color-primary-50: #0c4a6e;
-        --color-primary-900: #f0f9ff;
-    }
+
     .bg-primary-50 { background-color: var(--color-primary-50); }
     .text-primary-900 { color: var(--color-primary-900); }
     /* ===== END ADDED BLOCK ===== */
@@ -1455,16 +1456,30 @@ themePaletteModal.addEventListener('click', (e) => {
 // Load saved theme on startup
 loadSavedTheme();
 
-        function loadTheme() {
-            const savedTheme = localStorage.getItem('theme');
-            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-            
-            if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
-                setDarkTheme();
-            } else {
-                setLightTheme();
-            }
+    function loadTheme() {
+    // 1. Load saved color theme if exists
+    const savedColorTheme = localStorage.getItem('themeColor');
+    if (savedColorTheme) {
+        try {
+            const theme = JSON.parse(savedColorTheme);
+            applyTheme(theme.light, theme.dark, theme.name);
+        } catch (e) {
+            console.error('Error loading saved theme:', e);
+            // Fallback to default theme
+            applyTheme('#f0f9ff', '#0c4a6e', 'Default');
         }
+    }
+    
+    // 2. Handle dark/light mode
+    const savedTheme = localStorage.getItem('theme');
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    
+    if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
+        document.documentElement.classList.add('dark');
+    } else {
+        document.documentElement.classList.remove('dark');
+    }
+}
 
         // --- Modal Management ---
         function openModal(mode = 'add', station = null) {
@@ -2534,18 +2549,7 @@ document.addEventListener('DOMContentLoaded', () => {
     messageBox.classList.add('opacity-0', 'invisible', 'hidden');
 });
        
-        document.addEventListener('DOMContentLoaded', () => {
-            loadTheme();
-            loadFavorites();
-            if (audioPlayer.paused) {
-                playPauseBtn.innerHTML = '<i class="fas fa-play"></i>';
-                playPauseBtn.setAttribute('aria-label', 'Play');
-            } else {
-                playPauseBtn.innerHTML = '<i class="fas fa-pause"></i>';
-                playPauseBtn.setAttribute('aria-label', 'Pause');
-            }
-            messageBox.classList.add('opacity-0', 'invisible', 'hidden');
-        });
+
 
         // PWA Installation
         if ('serviceWorker' in navigator) {
