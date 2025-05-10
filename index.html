@@ -221,7 +221,39 @@ html.purple {
     /* Add other dark mode overrides as needed */
   }
 }
-
+ /* Theme color palettes */
+    :root {
+        /* Light theme is just default Tailwind colors */
+        --accent-color: #3b82f6; /* Tailwind blue-500 by default */
+    }
+    
+    html.dark {
+        /* Dark theme is already handled by Tailwind dark: classes */
+        --accent-color: #60a5fa; /* Tailwind blue-400 for dark mode */
+    }
+    
+    html.blue-theme {
+        /* Blue theme overrides */
+        --accent-color: #2563eb; /* Tailwind blue-600 */
+    }
+    
+    html.purple-theme {
+        /* Purple theme overrides */
+        --accent-color: #9333ea; /* Tailwind purple-600 */
+    }
+    
+    /* Apply accent color to elements that should change with theme */
+    .accent-bg {
+        background-color: var(--accent-color) !important;
+    }
+    
+    .accent-text {
+        color: var(--accent-color) !important;
+    }
+    
+    .accent-border {
+        border-color: var(--accent-color) !important;
+    }
 /* Apply these variables to your elements */
 body {
   background-color: var(--color-bg-primary);
@@ -824,11 +856,11 @@ body {
                 <span class="text-sm">Dark</span>
             </button>
             <!-- New Theme Options -->
-            <button data-theme="blue" class="theme-btn flex flex-col items-center p-2 transition-colors">
+            <button data-theme="blue-theme" class="theme-btn flex flex-col items-center p-2 transition-colors">
                 <div class="w-12 h-12 rounded-full bg-blue-600 border-2 border-blue-400 mb-1"></div>
                 <span class="text-sm">Blue</span>
             </button>
-            <button data-theme="purple" class="theme-btn flex flex-col items-center p-2 transition-colors">
+            <button data-theme="purple-theme" class="theme-btn flex flex-col items-center p-2 transition-colors">
                 <div class="w-12 h-12 rounded-full bg-purple-600 border-2 border-purple-400 mb-1"></div>
                 <span class="text-sm">Purple</span>
             </button>
@@ -940,54 +972,55 @@ const shareAppBtn = document.getElementById('shareAppBtn');
 
 
 // Theme constants
-const THEMES = {
-  LIGHT: 'light',
-  DARK: 'dark',
-  BLUE: 'blue',
-  PURPLE: 'purple'
-};
-
-// Theme Management Functions
-function setTheme(themeName) {
-  // Remove all theme classes
-  document.documentElement.classList.remove('light', 'dark', 'blue', 'purple');
-  
-  // Add the selected theme class
-  document.documentElement.classList.add(themeName);
-  
-  // Handle special case for dark-mode components with non-binary themes
-  if (themeName !== THEMES.LIGHT) {
-    // For blue/purple themes, we may need to enable some dark mode styling
-    // while using the theme's specific colors
-    if (themeName !== THEMES.DARK) {
-      document.documentElement.classList.add('dark-enable');
+ const THEMES = {
+        LIGHT: 'light',
+        DARK: 'dark',
+        BLUE: 'blue-theme',
+        PURPLE: 'purple-theme'
+    };
+    
+    // Theme Management Functions
+    function setTheme(themeName) {
+        // Remove all theme classes
+        document.documentElement.classList.remove(
+            THEMES.LIGHT, 
+            THEMES.DARK, 
+            THEMES.BLUE, 
+            THEMES.PURPLE
+        );
+        
+        // Add the selected theme class
+        document.documentElement.classList.add(themeName);
+        
+        // Special handling for non-binary themes to maintain dark mode compatibility
+        if (themeName === THEMES.BLUE || themeName === THEMES.PURPLE) {
+            // For color themes, we also add 'dark' class to maintain dark mode styles
+            // This makes all your dark: classes still work
+            document.documentElement.classList.add('dark');
+        }
+        
+        // Save to localStorage
+        localStorage.setItem('theme', themeName);
+        
+        closeThemePaletteModal();
     }
-  } else {
-    document.documentElement.classList.remove('dark-enable');
-  }
-  
-  // Save to localStorage
-  localStorage.setItem('theme', themeName);
-  
-  closeThemePaletteModal();
-}
-
-// Initialize theme
-function loadTheme() {
-  const savedTheme = localStorage.getItem('theme');
-  const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-  
-  if (savedTheme && Object.values(THEMES).includes(savedTheme)) {
-    // Use saved theme if it's valid
-    setTheme(savedTheme);
-  } else if (prefersDark) {
-    // Fall back to dark theme if user prefers dark
-    setTheme(THEMES.DARK);
-  } else {
-    // Default to light theme
-    setTheme(THEMES.LIGHT);
-  }
-}
+    
+    // Initialize theme
+    function loadTheme() {
+        const savedTheme = localStorage.getItem('theme');
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        
+        if (savedTheme && Object.values(THEMES).includes(savedTheme)) {
+            // Use saved theme if it's valid
+            setTheme(savedTheme);
+        } else if (prefersDark) {
+            // Fall back to dark theme if user prefers dark
+            setTheme(THEMES.DARK);
+        } else {
+            // Default to light theme
+            setTheme(THEMES.LIGHT);
+        }
+    }
 
 // Theme Palette Modal Functions (unchanged)
 function openThemePaletteModal() {
