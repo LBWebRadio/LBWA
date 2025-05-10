@@ -36,58 +36,36 @@
 </button>
     
     <script src="https://cdn.tailwindcss.com"></script>
-   <script>
-  tailwind.config = {
-    darkMode: 'class',
-    theme: {
-      extend: {
-        colors: {
-          primary: {
-            50: '#f0f9ff',
-            100: '#e0f2fe',
-            200: '#bae6fd',
-            300: '#7dd3fc',
-            400: '#38bdf8',
-            500: '#0ea5e9',
-            600: '#0284c7',
-            700: '#0369a1',
-            800: '#075985',
-            900: '#0c4a6e',
-          },
-          // Add new theme colors
-          theme: {
-            blue: '#3b82f6',
-            green: '#10b981',
-            yellow: '#f59e0b',
-            grey: '#6b7280',
-            black: '#000000',
-            pink: '#ec4899',
-            red: '#ef4444',
-            purple: '#8b5cf6',
-            cherry: '#991b1b',
-            brown: '#78350f',
-            cream: '#fef3c7',
-            teal: '#14b8a6',
-            indigo: '#6366f1',
-            orange: '#f97316',
-            lime: '#84cc16',
-            emerald: '#10b981',
-            cyan: '#06b6d4',
-            violet: '#7c3aed',
-            fuchsia: '#d946ef',
+    <script>
+      tailwind.config = {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            colors: {
+              primary: {
+                50: '#f0f9ff',
+                100: '#e0f2fe',
+                200: '#bae6fd',
+                300: '#7dd3fc',
+                400: '#38bdf8',
+                500: '#0ea5e9',
+                600: '#0284c7',
+                700: '#0369a1',
+                800: '#075985',
+                900: '#0c4a6e',
+              },
+            },
+            fontFamily: {
+              sans: ['Inter', 'sans-serif'],
+            },
+            animation: {
+              'spin-slow': 'spin 3s linear infinite',
+              'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+            }
           }
-        },
-        fontFamily: {
-          sans: ['Inter', 'sans-serif'],
-        },
-        animation: {
-          'spin-slow': 'spin 3s linear infinite',
-          'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
         }
       }
-    }
-  }
-</script>
+    </script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
@@ -167,170 +145,6 @@
         .dark input:focus, .dark textarea:focus, .dark select:focus, .dark button:focus-visible {
             outline-color: #60a5fa;
         }
-
-/* Theme selector styles */
-.theme-option {
-  transition: all 0.2s ease;
-  box-shadow: 0 1px 2px rgba(0,0,0,0.1);
-}
-
-.theme-option:hover {
-  transform: scale(1.1);
-  box-shadow: 0 3px 6px rgba(0,0,0,0.15);
-}
-
-.theme-option.selected {
-  outline: 2px solid currentColor;
-  outline-offset: 2px;
-}
-
-       #themeOptions {
-  transform-origin: top right;
-  animation: fadeIn 0.15s ease-out;
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; transform: scale(0.95); }
-  to { opacity: 1; transform: scale(1); }
-}
-
-/* Make sure dropdown has proper spacing */
-#themeOptions > div {
-  min-width: 100%;
-}
-
-/* Rainbow animation for the theme button */
-@keyframes rainbow {
-  0% { color: #ef4444; } /* red */
-  14% { color: #f97316; } /* orange */
-  28% { color: #f59e0b; } /* yellow */
-  42% { color: #10b981; } /* green */
-  57% { color: #3b82f6; } /* blue */
-  71% { color: #8b5cf6; } /* purple */
-  85% { color: #ec4899; } /* pink */
-  100% { color: #ef4444; } /* red */
-}
-
-#themeToggleBtn:hover i {
-        animation: rainbow 2s linear infinite;
-    }
-
-    /* Add these new rules for the theme options dropdown */
-    #themeOptions {
-        max-height: 300px;
-        overflow-y: auto;
-    }
-
-    /* Ensure it doesn't go off-screen on small devices */
-    @media (max-height: 600px) {
-        #themeOptions {
-            max-height: 200px;
-        }
-    }
-
-    /* Theme color overrides */
-    .theme-blue {
-        --tw-bg-opacity: 1;
-        --primary-500: #3b82f6;
-        --primary-600: #2563eb;
-    }
-
-       /* Theme color overrides */
-.theme-blue {
-  --tw-bg-opacity: 1;
-  --primary-500: #3b82f6;
-  --primary-600: #2563eb;
-}
-
-.theme-green {
-  --tw-bg-opacity: 1;
-  --primary-500: #10b981;
-  --primary-600: #059669;
-}
-
-.theme-yellow {
-  --tw-bg-opacity: 1;
-  --primary-500: #f59e0b;
-  --primary-600: #d97706;
-}
-
-.theme-grey {
-  --tw-bg-opacity: 1;
-  --primary-500: #6b7280;
-  --primary-600: #4b5563;
-}
-
-.theme-black {
-  --tw-bg-opacity: 1;
-  --primary-500: #000000;
-  --primary-600: #000000;
-}
-
-.theme-pink {
-  --tw-bg-opacity: 1;
-  --primary-500: #ec4899;
-  --primary-600: #db2777;
-}
-
-.theme-red {
-  --tw-bg-opacity: 1;
-  --primary-500: #ef4444;
-  --primary-600: #dc2626;
-}
-
-.theme-purple {
-  --tw-bg-opacity: 1;
-  --primary-500: #8b5cf6;
-  --primary-600: #7c3aed;
-}
-
-.theme-cherry {
-  --tw-bg-opacity: 1;
-  --primary-500: #991b1b;
-  --primary-600: #7f1d1d;
-}
-
-.theme-brown {
-  --tw-bg-opacity: 1;
-  --primary-500: #78350f;
-  --primary-600: #5a280b;
-}
-
-.theme-cream {
-  --tw-bg-opacity: 1;
-  --primary-500: #fef3c7;
-  --primary-600: #fde68a;
-}
-
-.theme-teal {
-  --tw-bg-opacity: 1;
-  --primary-500: #14b8a6;
-  --primary-600: #0d9488;
-}
-
-.theme-indigo {
-  --tw-bg-opacity: 1;
-  --primary-500: #6366f1;
-  --primary-600: #4f46e5;
-}
-       .theme-orange {
-  --tw-bg-opacity: 1;
-  --primary-500: #f97316;
-  --primary-600: #ea580c;
-}
-
-.theme-lime {
-  --tw-bg-opacity: 1;
-  --primary-500: #84cc16;
-  --primary-600: #65a30d;
-}
-
-.theme-emerald {
-  --tw-bg-opacity: 1;
-  --primary-500: #10b981;
-  --primary-600: #059669;
-}
-       
 
 
 /* Share Modal Styles */
@@ -559,39 +373,16 @@
                 </h1>
             </div>
             
-        <div class="flex items-center space-x-4">
-  <!-- Theme Selector Button -->
-<div class="relative">
-  <button id="themeToggleBtn" class="icon-btn text-gray-600 dark:text-gray-300">
-    <i class="fas fa-palette"></i>
-  </button>
-  
-<div id="themeOptions" class="hidden absolute right-0 top-full mt-2 w-56 bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 p-3 z-50">
-  <div class="grid grid-cols-5 gap-3">
-    <!-- Light/Dark -->
-    <button data-theme="light" class="theme-option w-8 h-8 rounded-full bg-white border border-gray-300 flex items-center justify-center" title="Light">
-      <i class="fas fa-sun text-gray-700"></i>
-    </button>
-    <button data-theme="dark" class="theme-option w-8 h-8 rounded-full bg-gray-900 border border-gray-700 flex items-center justify-center" title="Dark">
-      <i class="fas fa-moon text-gray-300"></i>
-    </button>
-    
-    <!-- Color themes -->
-    <button data-theme="blue" class="theme-option w-8 h-8 rounded-full bg-blue-500" title="Blue"></button>
-    <button data-theme="green" class="theme-option w-8 h-8 rounded-full bg-green-500" title="Green"></button>
-    <button data-theme="yellow" class="theme-option w-8 h-8 rounded-full bg-yellow-500" title="Yellow"></button>
-    
-    <!-- Add your other theme buttons here -->
-    <button data-theme="orange" class="theme-option w-8 h-8 rounded-full bg-orange-500" title="Orange"></button>
-    <button data-theme="lime" class="theme-option w-8 h-8 rounded-full bg-lime-500" title="Lime"></button>
-    <button data-theme="emerald" class="theme-option w-8 h-8 rounded-full bg-emerald-500" title="Emerald"></button>
-  </div>
-</div>
-  
-  <button id="infoBtn" class="icon-btn text-gray-600 dark:text-gray-300" aria-label="App Info">
-    <i class="fas fa-info-circle"></i>
-  </button>
-</div>
+            <div class="flex items-center space-x-4">
+                <button id="themeToggleBtn" class="icon-btn text-gray-600 dark:text-gray-300">
+                    <i class="fas fa-moon dark:hidden"></i>
+                    <i class="fas fa-sun hidden dark:block"></i>
+                </button>
+                
+                <button id="infoBtn" class="icon-btn text-gray-600 dark:text-gray-300" aria-label="App Info">
+                    <i class="fas fa-info-circle"></i>
+                </button>
+            </div>
         </div>
     </header>
 
@@ -1555,113 +1346,37 @@ function showMessage(message, type = 'info', duration = 3000) {
         }
         closeMessageBtn.addEventListener('click', hideMessage);
 
-   // --- Theme Management ---
-function setTheme(themeName) {
-  // Remove all theme classes
-  document.documentElement.classList.remove(
-    'light', 'dark',
-    'theme-blue', 'theme-green', 'theme-yellow', 'theme-grey',
-    'theme-black', 'theme-pink', 'theme-red', 'theme-purple',
-    'theme-cherry', 'theme-brown', 'theme-cream', 'theme-teal',
-    'theme-indigo', 'theme-orange', 'theme-lime', 'theme-emerald'
-  );
-  
-  // For light/dark themes, use Tailwind's built-in classes
-  if (themeName === 'dark' || themeName === 'light') {
-    document.documentElement.classList.add(themeName);
-  } 
-  // For color themes, apply both the theme class and light mode
-  else {
-    document.documentElement.classList.add('light', `theme-${themeName}`);
-  }
-  
-  // Update selected state
-  document.querySelectorAll('.theme-option').forEach(option => {
-    option.classList.toggle('selected', option.dataset.theme === themeName);
-  });
-  
-  // Update theme-color meta tag
-  const themeColorMeta = document.querySelector('meta[name="theme-color"]');
-  if (themeColorMeta) {
-    if (themeName === 'dark') {
-      themeColorMeta.setAttribute('content', '#111827');
-    } else if (themeName === 'light') {
-      themeColorMeta.setAttribute('content', '#ffffff');
-    } else {
-      // Get the theme color from the button's background
-      const themeBtn = document.querySelector(`.theme-option[data-theme="${themeName}"]`);
-      if (themeBtn) {
-        const bgColor = window.getComputedStyle(themeBtn).backgroundColor;
-        themeColorMeta.setAttribute('content', bgColor);
-      }
-    }
-  }
-  
-  // For debugging - log the current classes
-  console.log("Current theme classes:", document.documentElement.className);
-  
-  localStorage.setItem('theme', themeName);
-}
+        // --- Theme Management ---
+        function setLightTheme() {
+            document.documentElement.classList.remove('dark');
+            document.documentElement.classList.add('light');
+            localStorage.setItem('theme', 'light');
+        }
 
-function loadTheme() {
-  const savedTheme = localStorage.getItem('theme');
-  const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-  
-  if (savedTheme) {
-    setTheme(savedTheme);
-  } else {
-    setTheme(prefersDark ? 'dark' : 'light');
-  }
-}
+        function setDarkTheme() {
+            document.documentElement.classList.add('dark');
+            document.documentElement.classList.remove('light');
+            localStorage.setItem('theme', 'dark');
+        }
 
-// Theme dropdown functionality
-document.addEventListener('DOMContentLoaded', () => {
-  const themeToggleBtn = document.getElementById('themeToggleBtn');
-  const themeOptions = document.getElementById('themeOptions');
-  
-  if (themeToggleBtn && themeOptions) {
-    // Toggle theme options visibility
-    themeToggleBtn.addEventListener('click', (e) => {
-      e.stopPropagation();
-      themeOptions.classList.toggle('hidden');
-      
-      // Position the dropdown properly
-      const rect = themeToggleBtn.getBoundingClientRect();
-      const spaceBelow = window.innerHeight - rect.bottom;
-      const spaceAbove = rect.top;
-      
-      if (spaceBelow < 200 && spaceAbove > 300) {
-        // Not enough space below, show above
-        themeOptions.classList.remove('top-full', 'mt-2');
-        themeOptions.classList.add('bottom-full', 'mb-2');
-      } else {
-        // Default: show below
-        themeOptions.classList.remove('bottom-full', 'mb-2');
-        themeOptions.classList.add('top-full', 'mt-2');
-      }
-    });
+        themeToggleBtn.addEventListener('click', () => {
+            if (document.documentElement.classList.contains('dark')) {
+                setLightTheme();
+            } else {
+                setDarkTheme();
+            }
+        });
 
-    // Close theme options when clicking outside
-    document.addEventListener('click', (e) => {
-      if (!e.target.closest('#themeToggleBtn') && !e.target.closest('#themeOptions')) {
-        themeOptions.classList.add('hidden');
-      }
-    });
-
-    // Theme option click handlers
-    document.querySelectorAll('.theme-option').forEach(option => {
-      option.addEventListener('click', () => {
-        const theme = option.dataset.theme;
-        setTheme(theme);
-        themeOptions.classList.add('hidden');
-        showMessage(`Theme changed to ${theme}`, 'success');
-      });
-    });
-    
-    // Load initial theme
-    loadTheme();
-  }
-});
+        function loadTheme() {
+            const savedTheme = localStorage.getItem('theme');
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            
+            if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
+                setDarkTheme();
+            } else {
+                setLightTheme();
+            }
+        }
 
         // --- Modal Management ---
         function openModal(mode = 'add', station = null) {
