@@ -37,22 +37,22 @@
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
- tailwind.config = {
+      tailwind.config = {
         darkMode: 'class',
         theme: {
-            extend: {
-                colors: {
-                    primary: {
-                        50: 'var(--color-primary-50)',
-                        100: '#e0f2fe',
-                        200: '#bae6fd',
-                        300: '#7dd3fc',
-                        400: '#38bdf8',
-                        500: '#0ea5e9',
-                        600: '#0284c7',
-                        700: '#0369a1',
-                        800: '#075985',
-                        900: 'var(--color-primary-900)',
+          extend: {
+            colors: {
+              primary: {
+                50: '#f0f9ff',
+                100: '#e0f2fe',
+                200: '#bae6fd',
+                300: '#7dd3fc',
+                400: '#38bdf8',
+                500: '#0ea5e9',
+                600: '#0284c7',
+                700: '#0369a1',
+                800: '#075985',
+                900: '#0c4a6e',
               },
             },
             fontFamily: {
@@ -74,15 +74,6 @@
             transition: background-color 0.3s ease, color 0.3s ease;
             -webkit-tap-highlight-color: transparent;
         }
-       
-           :root {
-        --color-primary-50: #f0f9ff;
-        --color-primary-900: #0c4a6e;
-    }
-    .dark {
-        --color-primary-50: #0c4a6e;
-        --color-primary-900: #f0f9ff;
-    }
         
         /* Custom scrollbar for webkit browsers */
         ::-webkit-scrollbar {
@@ -347,10 +338,7 @@
 
 .dark #radioBrowserResults {
     scrollbar-color: rgba(75, 85, 99, 0.5) transparent;
-
-    .bg-primary-50 { background-color: var(--color-primary-50); }
-    .text-primary-900 { color: var(--color-primary-900); }
-    /* ===== END ADDED BLOCK ===== */
+}
 
 .popular-tag-btn {
     transition: all 0.2s ease;
@@ -386,9 +374,10 @@
             </div>
             
             <div class="flex items-center space-x-4">
-             <button id="themePaletteBtn" class="icon-btn text-gray-600 dark:text-gray-300" aria-label="Color Themes">
-    <i class="fas fa-palette"></i>
-</button>
+                <button id="themeToggleBtn" class="icon-btn text-gray-600 dark:text-gray-300">
+                    <i class="fas fa-moon dark:hidden"></i>
+                    <i class="fas fa-sun hidden dark:block"></i>
+                </button>
                 
                 <button id="infoBtn" class="icon-btn text-gray-600 dark:text-gray-300" aria-label="App Info">
                     <i class="fas fa-info-circle"></i>
@@ -1358,128 +1347,36 @@ function showMessage(message, type = 'info', duration = 3000) {
         closeMessageBtn.addEventListener('click', hideMessage);
 
         // --- Theme Management ---
-     // Theme color definitions
-const themeColors = [
-    { name: 'Alice blue', light: '#f0f8ff', dark: '#1a2a3a' },
-    { name: 'Amber', light: '#ffbf00', dark: '#994d00' },
-    { name: 'Android Green', light: '#a4c639', dark: '#4d691b' },
-    { name: 'Antique fushia', light: '#915c83', dark: '#462c3f' },
-    { name: 'Aqua', light: '#00ffff', dark: '#007777' },
-    { name: 'Ash Grey', light: '#b2beb5', dark: '#555e57' },
-    { name: 'Atomic tengerine', light: '#ff9966', dark: '#994d33' },
-    { name: 'Aureloin', light: '#fdee00', dark: '#978b00' },
-    { name: 'Azure', light: '#007fff', dark: '#003f7f' },
-    { name: 'Baby pink', light: '#f4c2c2', dark: '#7a6161' },
-    { name: 'Bistre', light: '#3d2b1f', dark: '#1e150f' },
-    { name: 'Black', light: '#000000', dark: '#000000' },
-    { name: 'Blond', light: '#faf0be', dark: '#7d7860' },
-    { name: 'Blue Green', light: '#0d98ba', dark: '#064c5d' },
-    { name: 'Blue Violet', light: '#8a2be2', dark: '#451571' },
-    { name: 'Boston University Red', light: '#cc0000', dark: '#660000' },
-    { name: 'Carrot Orange', light: '#ed9121', dark: '#764811' },
-    { name: 'Cerise', light: '#de3163', dark: '#6f1831' },
-    { name: 'Charcoal', light: '#36454f', dark: '#1a2228' },
-    { name: 'Cream', light: '#fffdd0', dark: '#7f7e68' }
-];
+        function setLightTheme() {
+            document.documentElement.classList.remove('dark');
+            document.documentElement.classList.add('light');
+            localStorage.setItem('theme', 'light');
+        }
 
-// Theme palette modal functions
-function openThemePaletteModal() {
-    const paletteGrid = document.querySelector('#themePaletteModal .grid');
-    paletteGrid.innerHTML = '';
-    
-    themeColors.forEach(color => {
-        const colorBtn = document.createElement('button');
-        colorBtn.className = 'w-12 h-12 rounded-full shadow-md hover:shadow-lg transition-all duration-200 transform hover:scale-110 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500';
-        colorBtn.style.backgroundColor = color.light;
-        colorBtn.title = color.name;
-        colorBtn.dataset.lightColor = color.light;
-        colorBtn.dataset.darkColor = color.dark;
-        colorBtn.dataset.name = color.name;
-        
-        colorBtn.addEventListener('click', () => {
-            applyTheme(color.light, color.dark, color.name);
-            closeThemePaletteModal();
-            showMessage(`Theme set to ${color.name}`, 'success');
+        function setDarkTheme() {
+            document.documentElement.classList.add('dark');
+            document.documentElement.classList.remove('light');
+            localStorage.setItem('theme', 'dark');
+        }
+
+        themeToggleBtn.addEventListener('click', () => {
+            if (document.documentElement.classList.contains('dark')) {
+                setLightTheme();
+            } else {
+                setDarkTheme();
+            }
         });
-        
-        paletteGrid.appendChild(colorBtn);
-    });
-    
-    themePaletteModal.classList.remove('invisible', 'opacity-0');
-    themePaletteModal.classList.add('open');
-}
 
-function closeThemePaletteModal() {
-    themePaletteModal.classList.add('opacity-0');
-    setTimeout(() => {
-        themePaletteModal.classList.add('invisible');
-        themePaletteModal.classList.remove('open');
-    }, 200);
-}
-
-function applyTheme(lightColor, darkColor, themeName) {
-    // Update CSS variables
-    document.documentElement.style.setProperty('--color-primary-50', lightColor);
-    document.documentElement.style.setProperty('--color-primary-900', darkColor);
-    
-    // Save to localStorage
-    localStorage.setItem('themeColor', JSON.stringify({
-        light: lightColor,
-        dark: darkColor,
-        name: themeName
-    }));
-}
-
-function loadSavedTheme() {
-    const savedTheme = localStorage.getItem('themeColor');
-    if (savedTheme) {
-        try {
-            const theme = JSON.parse(savedTheme);
-            applyTheme(theme.light, theme.dark, theme.name);
-        } catch (e) {
-            console.error('Error loading saved theme:', e);
+        function loadTheme() {
+            const savedTheme = localStorage.getItem('theme');
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            
+            if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
+                setDarkTheme();
+            } else {
+                setLightTheme();
+            }
         }
-    }
-}
-
-// Initialize theme palette modal
-const themePaletteBtn = document.getElementById('themePaletteBtn');
-const themePaletteModal = document.getElementById('themePaletteModal');
-const closeThemePaletteBtn = document.getElementById('closeThemePaletteBtn');
-
-themePaletteBtn.addEventListener('click', openThemePaletteModal);
-closeThemePaletteBtn.addEventListener('click', closeThemePaletteModal);
-themePaletteModal.addEventListener('click', (e) => {
-    if (e.target === themePaletteModal) closeThemePaletteModal();
-});
-
-// Load saved theme on startup
-loadSavedTheme();
-
-    function loadTheme() {
-    // 1. Load saved color theme if exists
-    const savedColorTheme = localStorage.getItem('themeColor');
-    if (savedColorTheme) {
-        try {
-            const theme = JSON.parse(savedColorTheme);
-            applyTheme(theme.light, theme.dark, theme.name);
-        } catch (e) {
-            console.error('Error loading saved theme:', e);
-            // Fallback to default theme
-            applyTheme('#f0f9ff', '#0c4a6e', 'Default');
-        }
-    }
-    
-    // 2. Handle dark/light mode
-    const savedTheme = localStorage.getItem('theme');
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    
-    if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
-        document.documentElement.classList.add('dark');
-    } else {
-        document.documentElement.classList.remove('dark');
-    }
-}
 
         // --- Modal Management ---
         function openModal(mode = 'add', station = null) {
@@ -2549,7 +2446,18 @@ document.addEventListener('DOMContentLoaded', () => {
     messageBox.classList.add('opacity-0', 'invisible', 'hidden');
 });
        
-
+        document.addEventListener('DOMContentLoaded', () => {
+            loadTheme();
+            loadFavorites();
+            if (audioPlayer.paused) {
+                playPauseBtn.innerHTML = '<i class="fas fa-play"></i>';
+                playPauseBtn.setAttribute('aria-label', 'Play');
+            } else {
+                playPauseBtn.innerHTML = '<i class="fas fa-pause"></i>';
+                playPauseBtn.setAttribute('aria-label', 'Pause');
+            }
+            messageBox.classList.add('opacity-0', 'invisible', 'hidden');
+        });
 
         // PWA Installation
         if ('serviceWorker' in navigator) {
@@ -2583,22 +2491,5 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     </script>
-
-<!-- Theme Palette Modal -->
-<div id="themePaletteModal" class="modal fixed inset-0 bg-black bg-opacity-60 dark:bg-opacity-75 flex items-center justify-center p-4 opacity-0 invisible z-[100]">
-    <div class="modal-content bg-white dark:bg-gray-800 p-6 rounded-xl shadow-xl w-full max-w-md border border-gray-200 dark:border-gray-700">
-        <h3 class="text-xl font-semibold mb-5 flex items-center">
-            <i class="fas fa-palette mr-2 text-blue-500"></i>
-            <span>Select Theme Color</span>
-        </h3>
-        <div class="grid grid-cols-5 gap-4">
-            <!-- Theme color circles will be added here -->
-        </div>
-        <div class="mt-6 flex justify-end">
-            <button type="button" id="closeThemePaletteBtn" class="btn-secondary">Close</button>
-        </div>
-    </div>
-</div>
-   
 </body>
 </html>
