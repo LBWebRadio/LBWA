@@ -326,6 +326,76 @@
             50% { transform: scaleY(1.2); }
         }
 
+
+/* Theme selector styles */
+.theme-selector {
+    position: relative;
+    display: inline-block;
+}
+
+.theme-options {
+    display: none;
+    position: absolute;
+    bottom: 100%;
+    right: 0;
+    background-color: rgba(255, 255, 255, 0.95);
+    border-radius: 12px;
+    padding: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    z-index: 100;
+    width: 180px;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    margin-bottom: 10px;
+}
+
+.dark .theme-options {
+    background-color: rgba(31, 41, 55, 0.95);
+}
+
+.theme-options.show {
+    display: grid;
+}
+
+.theme-color {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: transform 0.2s, border-color 0.2s;
+}
+
+.theme-color:hover {
+    transform: scale(1.1);
+}
+
+.theme-color.active {
+    border-color: currentColor;
+    transform: scale(1.1);
+}
+
+/* Rainbow theme button */
+#themeToggleBtn.rainbow {
+    background: linear-gradient(
+        45deg,
+        #ff0000, #ff8000, #ffff00, #80ff00,
+        #00ff00, #00ff80, #00ffff, #0080ff,
+        #0000ff, #8000ff, #ff00ff, #ff0080
+    );
+    background-size: 300% 300%;
+    animation: rainbow 4s linear infinite;
+    color: white;
+    border: none;
+}
+
+@keyframes rainbow {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+           
+
            /* Radio Browser Styles */
 #radioBrowserResults::-webkit-scrollbar {
     width: 6px;
@@ -373,17 +443,29 @@
                 </h1>
             </div>
             
-            <div class="flex items-center space-x-4">
-                <button id="themeToggleBtn" class="icon-btn text-gray-600 dark:text-gray-300">
-                    <i class="fas fa-moon dark:hidden"></i>
-                    <i class="fas fa-sun hidden dark:block"></i>
-                </button>
-                
-                <button id="infoBtn" class="icon-btn text-gray-600 dark:text-gray-300" aria-label="App Info">
-                    <i class="fas fa-info-circle"></i>
-                </button>
-            </div>
-        </div>
+           <div class="theme-selector">
+    <button id="themeToggleBtn" class="icon-btn rainbow" aria-label="Change theme">
+        <i class="fas fa-palette"></i>
+    </button>
+    <div class="theme-options" id="themeOptions">
+        <!-- Default themes -->
+        <div class="theme-color bg-gray-50" data-theme="light"></div>
+        <div class="theme-color bg-gray-900" data-theme="dark"></div>
+        
+        <!-- Color themes -->
+        <div class="theme-color bg-blue-50" data-theme="blue"></div>
+        <div class="theme-color bg-green-50" data-theme="green"></div>
+        <div class="theme-color bg-yellow-50" data-theme="yellow"></div>
+        <div class="theme-color bg-gray-200" data-theme="grey"></div>
+        <div class="theme-color bg-black" data-theme="black"></div>
+        <div class="theme-color bg-pink-50" data-theme="pink"></div>
+        <div class="theme-color bg-red-50" data-theme="red"></div>
+        <div class="theme-color bg-purple-50" data-theme="purple"></div>
+        <div class="theme-color bg-rose-50" data-theme="cherry"></div>
+        <div class="theme-color bg-amber-50" data-theme="brown"></div>
+        <div class="theme-color bg-amber-50" data-theme="cream"></div>
+    </div>
+</div>
     </header>
 
     <main class="container mx-auto max-w-6xl p-4 flex-grow mb-36">
@@ -1347,25 +1429,11 @@ function showMessage(message, type = 'info', duration = 3000) {
         closeMessageBtn.addEventListener('click', hideMessage);
 
         // --- Theme Management ---
-        function setLightTheme() {
-            document.documentElement.classList.remove('dark');
-            document.documentElement.classList.add('light');
-            localStorage.setItem('theme', 'light');
-        }
+   
 
-        function setDarkTheme() {
-            document.documentElement.classList.add('dark');
-            document.documentElement.classList.remove('light');
-            localStorage.setItem('theme', 'dark');
-        }
+  
 
-        themeToggleBtn.addEventListener('click', () => {
-            if (document.documentElement.classList.contains('dark')) {
-                setLightTheme();
-            } else {
-                setDarkTheme();
-            }
-        });
+     
 
         function loadTheme() {
             const savedTheme = localStorage.getItem('theme');
@@ -2490,6 +2558,86 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
             }
         });
+
+// Extended Theme Management
+const themeOptions = document.getElementById('themeOptions');
+const themeColorButtons = document.querySelectorAll('.theme-color');
+
+function setTheme(themeName) {
+    // Remove all theme classes
+    document.documentElement.classList.remove(
+        'light', 'dark', 'blue', 'green', 'yellow', 'grey', 
+        'black', 'pink', 'red', 'purple', 'cherry', 'brown', 'cream'
+    );
+    
+    // Add the selected theme
+    document.documentElement.classList.add(themeName);
+    localStorage.setItem('theme', themeName);
+    
+    // Update active state
+    themeColorButtons.forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.theme === themeName);
+    });
+    
+    // Update meta theme-color
+    updateThemeColorMeta(themeName);
+}
+
+function updateThemeColorMeta(themeName) {
+    const themeColors = {
+        light: '#f9fafb',
+        dark: '#111827',
+        blue: '#eff6ff',
+        green: '#ecfdf5',
+        yellow: '#fefce8',
+        grey: '#f3f4f6',
+        black: '#000000',
+        pink: '#fdf2f8',
+        red: '#fef2f2',
+        purple: '#f5f3ff',
+        cherry: '#fff1f2',
+        brown: '#fffbeb',
+        cream: '#fef3c7'
+    };
+    
+    const color = themeColors[themeName] || '#111827';
+    document.querySelector('meta[name="theme-color"]').content = color;
+}
+
+// Toggle theme options visibility
+themeToggleBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    themeOptions.classList.toggle('show');
+});
+
+// Close theme options when clicking outside
+document.addEventListener('click', (e) => {
+    if (!themeToggleBtn.contains(e.target) {
+        themeOptions.classList.remove('show');
+    }
+});
+
+// Handle theme color selection
+themeColorButtons.forEach(button => {
+    button.addEventListener('click', () => {
+        setTheme(button.dataset.theme);
+        themeOptions.classList.remove('show');
+    });
+});
+
+// Update loadTheme function to handle all themes
+function loadTheme() {
+    const savedTheme = localStorage.getItem('theme');
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    
+    if (savedTheme) {
+        setTheme(savedTheme);
+    } else {
+        setTheme(prefersDark ? 'dark' : 'light');
+    }
+}
+
+       
     </script>
 </body>
 </html>
