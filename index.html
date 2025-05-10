@@ -568,30 +568,23 @@
   
 <div id="themeOptions" class="hidden absolute right-0 top-full mt-2 w-56 bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 p-3 z-50">
   <div class="grid grid-cols-5 gap-3">
-    <!-- Row 1 -->
+    <!-- Light/Dark -->
     <button data-theme="light" class="theme-option w-8 h-8 rounded-full bg-white border border-gray-300 flex items-center justify-center" title="Light">
       <i class="fas fa-sun text-gray-700"></i>
     </button>
     <button data-theme="dark" class="theme-option w-8 h-8 rounded-full bg-gray-900 border border-gray-700 flex items-center justify-center" title="Dark">
       <i class="fas fa-moon text-gray-300"></i>
     </button>
+    
+    <!-- Color themes -->
     <button data-theme="blue" class="theme-option w-8 h-8 rounded-full bg-blue-500" title="Blue"></button>
     <button data-theme="green" class="theme-option w-8 h-8 rounded-full bg-green-500" title="Green"></button>
     <button data-theme="yellow" class="theme-option w-8 h-8 rounded-full bg-yellow-500" title="Yellow"></button>
     
-    <!-- Row 2 -->
-    <button data-theme="grey" class="theme-option w-8 h-8 rounded-full bg-gray-500" title="Grey"></button>
-    <button data-theme="black" class="theme-option w-8 h-8 rounded-full bg-black" title="Black"></button>
-    <button data-theme="pink" class="theme-option w-8 h-8 rounded-full bg-pink-500" title="Pink"></button>
-    <button data-theme="red" class="theme-option w-8 h-8 rounded-full bg-red-500" title="Red"></button>
-    <button data-theme="purple" class="theme-option w-8 h-8 rounded-full bg-purple-500" title="Purple"></button>
-    
-    <!-- Row 3 -->
+    <!-- Add your other theme buttons here -->
     <button data-theme="orange" class="theme-option w-8 h-8 rounded-full bg-orange-500" title="Orange"></button>
     <button data-theme="lime" class="theme-option w-8 h-8 rounded-full bg-lime-500" title="Lime"></button>
     <button data-theme="emerald" class="theme-option w-8 h-8 rounded-full bg-emerald-500" title="Emerald"></button>
-    <button data-theme="teal" class="theme-option w-8 h-8 rounded-full bg-teal-500" title="Teal"></button>
-    <button data-theme="indigo" class="theme-option w-8 h-8 rounded-full bg-indigo-500" title="Indigo"></button>
   </div>
 </div>
   
@@ -1565,28 +1558,47 @@ function showMessage(message, type = 'info', duration = 3000) {
    // --- Theme Management ---
 function setTheme(themeName) {
   // Remove all theme classes
-  const themeClasses = [
-    'light', 'dark', 
-    'theme-blue', 'theme-green', 'theme-yellow', 
-    'theme-grey', 'theme-black', 'theme-pink',
-    'theme-red', 'theme-purple', 'theme-orange',
-    'theme-lime', 'theme-emerald', 'theme-teal',
-    'theme-indigo'
-  ];
+  document.documentElement.classList.remove(
+    'light', 'dark',
+    'theme-blue', 'theme-green', 'theme-yellow', 'theme-grey',
+    'theme-black', 'theme-pink', 'theme-red', 'theme-purple',
+    'theme-cherry', 'theme-brown', 'theme-cream', 'theme-teal',
+    'theme-indigo', 'theme-orange', 'theme-lime', 'theme-emerald'
+  );
   
-  document.documentElement.classList.remove(...themeClasses);
-  
-  // Add the selected theme
-  if (themeName.startsWith('theme-')) {
+  // For light/dark themes, use Tailwind's built-in classes
+  if (themeName === 'dark' || themeName === 'light') {
     document.documentElement.classList.add(themeName);
-  } else {
-    document.documentElement.classList.add(themeName);
+  } 
+  // For color themes, apply both the theme class and light mode
+  else {
+    document.documentElement.classList.add('light', `theme-${themeName}`);
   }
   
   // Update selected state
   document.querySelectorAll('.theme-option').forEach(option => {
     option.classList.toggle('selected', option.dataset.theme === themeName);
   });
+  
+  // Update theme-color meta tag
+  const themeColorMeta = document.querySelector('meta[name="theme-color"]');
+  if (themeColorMeta) {
+    if (themeName === 'dark') {
+      themeColorMeta.setAttribute('content', '#111827');
+    } else if (themeName === 'light') {
+      themeColorMeta.setAttribute('content', '#ffffff');
+    } else {
+      // Get the theme color from the button's background
+      const themeBtn = document.querySelector(`.theme-option[data-theme="${themeName}"]`);
+      if (themeBtn) {
+        const bgColor = window.getComputedStyle(themeBtn).backgroundColor;
+        themeColorMeta.setAttribute('content', bgColor);
+      }
+    }
+  }
+  
+  // For debugging - log the current classes
+  console.log("Current theme classes:", document.documentElement.className);
   
   localStorage.setItem('theme', themeName);
 }
