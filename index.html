@@ -416,7 +416,7 @@
             </div>
             
             <div class="flex items-center space-x-4">
-            <button id="themePaletteBtn" class="icon-btn text-gray-600 dark:text-gray-300" aria-label="Color Themes">
+<button id="themePaletteBtn" class="icon-btn text-gray-600 dark:text-gray-300" aria-label="Color Themes">
     <i class="fas fa-palette"></i>
 </button>
 
@@ -902,10 +902,10 @@ const shareAppBtn = document.getElementById('shareAppBtn');
 
 
 // Theme Palette Elements
-const themePaletteBtn = document.getElementById('themePaletteBtn');
-const themePaletteModal = document.getElementById('themePaletteModal');
-const closeThemePaletteBtn = document.getElementById('closeThemePaletteBtn');
-const themeCirclesContainer = themePaletteModal.querySelector('.grid');
+let themePaletteBtn;
+let themePaletteModal;
+let closeThemePaletteBtn;
+let themeCirclesContainer;
 
 // Theme colors data
 const themeColors = [
@@ -933,6 +933,8 @@ const themeColors = [
 
 // Create theme circles
 function createThemeCircles() {
+    if (!themeCirclesContainer) return;
+    
     themeCirclesContainer.innerHTML = '';
     
     themeColors.forEach(theme => {
@@ -966,9 +968,11 @@ function setThemeColor(theme) {
     localStorage.setItem('themeColor', theme);
     
     // Update selected state in palette
-    themeCirclesContainer.querySelectorAll('.theme-circle').forEach(circle => {
-        circle.classList.toggle('selected', circle.dataset.theme === theme);
-    });
+    if (themeCirclesContainer) {
+        themeCirclesContainer.querySelectorAll('.theme-circle').forEach(circle => {
+            circle.classList.toggle('selected', circle.dataset.theme === theme);
+        });
+    }
     
     showMessage(`Theme set to ${theme.replace('-', ' ')}`, 'success');
 }
@@ -988,19 +992,23 @@ function closeThemePaletteModal() {
     }, 200);
 }
 
-// Event listeners
-themePaletteBtn.addEventListener('click', openThemePaletteModal);
-closeThemePaletteBtn.addEventListener('click', closeThemePaletteModal);
-themePaletteModal.addEventListener('click', (e) => {
-    if (e.target === themePaletteModal) closeThemePaletteModal();
-});
-
 // Load saved theme on startup
 function loadTheme() {
     const savedThemeColor = localStorage.getItem('themeColor');
     if (savedThemeColor) {
         document.documentElement.classList.add(`theme-${savedThemeColor}`);
     }
+    
+    // Keep dark/light mode functionality
+    const savedThemeMode = localStorage.getItem('themeMode');
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    
+    if (savedThemeMode === 'dark' || (!savedThemeMode && prefersDark)) {
+        document.documentElement.classList.add('dark');
+    } else {
+        document.documentElement.classList.remove('dark');
+    }
+}
     
     // Keep dark/light mode functionality
     const savedThemeMode = localStorage.getItem('themeMode');
@@ -2612,65 +2620,54 @@ if (isDirect && !isAlreadyFavorite) {
         // --- Initial Load ---
 
 document.addEventListener('DOMContentLoaded', () => {
-    loadTheme();
-    loadFavorites();
-    initializeRadioBrowser();
-    createThemeCircles();
+    // Get references to theme elements
+    themePaletteBtn = document.getElementById('themePaletteBtn');
+    themePaletteModal = document.getElementById('themePaletteModal');
+    closeThemePaletteBtn = document.getElementById('closeThemePaletteBtn');
+    themeCirclesContainer = themePaletteModal.querySelector('.grid');
     
-    if (audioPlayer.paused) {
-        playPauseBtn.innerHTML = '<i class="fas fa-play"></i>';
-        playPauseBtn.setAttribute('aria-label', 'Play');
-    } else {
-        playPauseBtn.innerHTML = '<i class="fas fa-pause"></i>';
-        playPauseBtn.setAttribute('aria-label', 'Pause');
+    // Load theme
+    loadTheme();
+    
+    // Set up event listeners for theme palette
+    if (themePaletteBtn) {
+        themePaletteBtn.addEventListener('click', openThemePaletteModal);
     }
-    messageBox.classList.add('opacity-0', 'invisible', 'hidden');
-});
-       
-        document.addEventListener('DOMContentLoaded', () => {
-            loadTheme();
-            loadFavorites();
-            if (audioPlayer.paused) {
-                playPauseBtn.innerHTML = '<i class="fas fa-play"></i>';
-                playPauseBtn.setAttribute('aria-label', 'Play');
-            } else {
-                playPauseBtn.innerHTML = '<i class="fas fa-pause"></i>';
-                playPauseBtn.setAttribute('aria-label', 'Pause');
-            }
-            messageBox.classList.add('opacity-0', 'invisible', 'hidden');
+    
+    if (closeThemePaletteBtn) {
+        closeThemePaletteBtn.addEventListener('click', closeThemePaletteModal);
+    }
+    
+    if (themePaletteModal) {
+        themePaletteModal.addEventListener('click', (e) => {
+            if (e.target === themePaletteModal) closeThemePaletteModal();
         });
-
-        // PWA Installation
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/sw.js')
-                    .then(reg => console.log('ServiceWorker registered'))
-                    .catch(err => console.log('ServiceWorker failed: ', err));
-            });
+    }
+    
+    // Call your other initialization functions - safely
+    if (typeof loadFavorites === 'function') loadFavorites();
+    if (typeof initializeRadioBrowser === 'function') initializeRadioBrowser();
+    
+    // Handle audio player state
+    const audioPlayer = document.getElementById('audioPlayer');
+    const playPauseBtn = document.getElementById('playPauseBtn');
+    
+    if (audioPlayer && playPauseBtn) {
+        if (audioPlayer.paused) {
+            playPauseBtn.innerHTML = '<i class="fas fa-play"></i>';
+            playPauseBtn.setAttribute('aria-label', 'Play');
+        } else {
+            playPauseBtn.innerHTML = '<i class="fas fa-pause"></i>';
+            playPauseBtn.setAttribute('aria-label', 'Pause');
         }
-
-        // Install Prompt Handler
-        window.addEventListener('beforeinstallprompt', (e) => {
-            e.preventDefault();
-            console.log('PWA installable');
-            window.deferredInstallPrompt = e;
-            
-            const installButton = document.getElementById('installButton');
-            if (installButton) {
-                installButton.classList.remove('hidden');
-                installButton.addEventListener('click', () => {
-                    e.prompt();
-                    e.userChoice.then((choiceResult) => {
-                        if (choiceResult.outcome === 'accepted') {
-                            console.log('User accepted install');
-                            installButton.classList.add('hidden');
-                        } else {
-                            console.log('User dismissed install');
-                        }
-                    });
-                });
-            }
-        });
-    </script>
+    }
+    
+    // Handle message box
+    const messageBox = document.getElementById('messageBox');
+    if (messageBox) {
+        messageBox.classList.add('opacity-0', 'invisible', 'hidden');
+    }
+});
+</script>
 </body>
 </html>
