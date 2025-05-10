@@ -197,8 +197,28 @@
 }
 
 #themeToggleBtn:hover i {
-  animation: rainbow 2s linear infinite;
-}
+        animation: rainbow 2s linear infinite;
+    }
+
+    /* Add these new rules for the theme options dropdown */
+    #themeOptions {
+        max-height: 300px;
+        overflow-y: auto;
+    }
+
+    /* Ensure it doesn't go off-screen on small devices */
+    @media (max-height: 600px) {
+        #themeOptions {
+            max-height: 200px;
+        }
+    }
+
+    /* Theme color overrides */
+    .theme-blue {
+        --tw-bg-opacity: 1;
+        --primary-500: #3b82f6;
+        --primary-600: #2563eb;
+    }
 
        /* Theme color overrides */
 .theme-blue {
@@ -510,9 +530,12 @@
         <div class="flex items-center space-x-4">
   <!-- Theme Selector Button -->
   <div class="relative group">
-    <button id="themeToggleBtn" class="icon-btn text-gray-600 dark:text-gray-300" aria-label="Change theme">
-      <i class="fas fa-palette"></i>
-    </button>
+  <button id="themeToggleBtn" class="icon-btn text-gray-600 dark:text-gray-300" aria-label="Change theme">
+    <i class="fas fa-palette"></i>
+  </button>
+  
+  <!-- Changed from bottom-full to top-full and adjusted margin -->
+  <div id="themeOptions" class="hidden absolute right-0 top-full mt-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 p-2 grid grid-cols-4 gap-2 z-50">
     
     <!-- Theme Options -->
     <div id="themeOptions" class="hidden absolute right-0 bottom-full mb-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 p-2 grid grid-cols-4 gap-2 z-50">
