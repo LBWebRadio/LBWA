@@ -853,13 +853,15 @@ const themeButtons = document.querySelectorAll('.theme-btn');
 function setTheme(theme) {
     document.documentElement.className = theme;
     localStorage.setItem('theme', theme);
-    showMessage(`Theme set to ${theme.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}`, 'success');
 }
 
 function loadTheme() {
     const savedTheme = localStorage.getItem('theme') || 'light';
     setTheme(savedTheme);
 }
+
+// Call this only once
+document.addEventListener('DOMContentLoaded', loadTheme);
 
 // Modal control
 function openThemeModal() {
@@ -2527,21 +2529,7 @@ if (isDirect && !isAlreadyFavorite) {
 
         // --- Initial Load ---
 
-document.addEventListener('DOMContentLoaded', () => {
-    loadTheme();
-    loadFavorites();
-    initializeRadioBrowser(); // Add this line
-    
-    if (audioPlayer.paused) {
-        playPauseBtn.innerHTML = '<i class="fas fa-play"></i>';
-        playPauseBtn.setAttribute('aria-label', 'Play');
-    } else {
-        playPauseBtn.innerHTML = '<i class="fas fa-pause"></i>';
-        playPauseBtn.setAttribute('aria-label', 'Pause');
-    }
-    messageBox.classList.add('opacity-0', 'invisible', 'hidden');
-});
-       
+  
         document.addEventListener('DOMContentLoaded', () => {
             loadTheme();
             loadFavorites();
