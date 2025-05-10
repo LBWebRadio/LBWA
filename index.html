@@ -356,48 +356,6 @@
     [onclick="toggleSection('discoverStationsSection')"] {
         cursor: pointer;
     }
-
-/* Theme Palette Styles */
-.theme-circle {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    cursor: pointer;
-    transition: transform 0.2s ease;
-    border: 2px solid transparent;
-}
-
-.theme-circle:hover {
-    transform: scale(1.1);
-}
-
-.theme-circle.selected {
-    border-color: currentColor;
-    transform: scale(1.1);
-}
-
-/* Theme color classes */
-.theme-alice-blue { background-color: #F0F8FF; color: #1a1a1a; }
-.theme-amber { background-color: #FFBF00; color: #1a1a1a; }
-.theme-android-green { background-color: #A4C639; color: #1a1a1a; }
-.theme-antique-fushia { background-color: #915C83; color: #ffffff; }
-.theme-aqua { background-color: #00FFFF; color: #1a1a1a; }
-.theme-ash-grey { background-color: #B2BEB5; color: #1a1a1a; }
-.theme-atomic-tengerine { background-color: #FF9966; color: #1a1a1a; }
-.theme-aureloin { background-color: #FDEE00; color: #1a1a1a; }
-.theme-azure { background-color: #007FFF; color: #ffffff; }
-.theme-baby-pink { background-color: #F4C2C2; color: #1a1a1a; }
-.theme-bistre { background-color: #3D2B1F; color: #ffffff; }
-.theme-black { background-color: #000000; color: #ffffff; }
-.theme-blond { background-color: #FAF0BE; color: #1a1a1a; }
-.theme-blue-green { background-color: #0D98BA; color: #ffffff; }
-.theme-blue-violet { background-color: #8A2BE2; color: #ffffff; }
-.theme-boston-university-red { background-color: #CC0000; color: #ffffff; }
-.theme-carrot-orange { background-color: #ED9121; color: #1a1a1a; }
-.theme-cerise { background-color: #DE3163; color: #ffffff; }
-.theme-charcoal { background-color: #36454F; color: #ffffff; }
-.theme-cream { background-color: #FFFDD0; color: #1a1a1a; }
-           
     </style>
 </head>
 <body class="bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-100 min-h-screen flex flex-col">
@@ -416,25 +374,10 @@
             </div>
             
             <div class="flex items-center space-x-4">
-<button id="themePaletteBtn" class="icon-btn text-gray-600 dark:text-gray-300" aria-label="Color Themes">
-    <i class="fas fa-palette"></i>
-</button>
-
-<!-- Theme Palette Modal -->
-<div id="themePaletteModal" class="modal fixed inset-0 bg-black bg-opacity-60 dark:bg-opacity-75 flex items-center justify-center p-4 opacity-0 invisible z-[100]">
-    <div class="modal-content bg-white dark:bg-gray-800 p-6 rounded-xl shadow-xl w-full max-w-md border border-gray-200 dark:border-gray-700">
-        <h3 class="text-xl font-semibold mb-5 flex items-center">
-            <i class="fas fa-palette mr-2 text-blue-500"></i>
-            <span>Select Theme Color</span>
-        </h3>
-        <div class="grid grid-cols-5 gap-4">
-            <!-- Theme color circles will be added here -->
-        </div>
-        <div class="mt-6 flex justify-end">
-            <button type="button" id="closeThemePaletteBtn" class="btn-secondary">Close</button>
-        </div>
-    </div>
-</div>
+                <button id="themeToggleBtn" class="icon-btn text-gray-600 dark:text-gray-300">
+                    <i class="fas fa-moon dark:hidden"></i>
+                    <i class="fas fa-sun hidden dark:block"></i>
+                </button>
                 
                 <button id="infoBtn" class="icon-btn text-gray-600 dark:text-gray-300" aria-label="App Info">
                     <i class="fas fa-info-circle"></i>
@@ -899,131 +842,6 @@ const shareAppBtn = document.getElementById('shareAppBtn');
         let bitrateInterval;
         let lastBytes = 0;
        // ====================
-
-
-// Theme Palette Elements
-let themePaletteBtn;
-let themePaletteModal;
-let closeThemePaletteBtn;
-let themeCirclesContainer;
-
-// Theme colors data
-const themeColors = [
-    { name: 'Alice blue', class: 'alice-blue' },
-    { name: 'Amber', class: 'amber' },
-    { name: 'Android Green', class: 'android-green' },
-    { name: 'Antique fushia', class: 'antique-fushia' },
-    { name: 'Aqua', class: 'aqua' },
-    { name: 'Ash Grey', class: 'ash-grey' },
-    { name: 'Atomic tengerine', class: 'atomic-tengerine' },
-    { name: 'Aureloin', class: 'aureloin' },
-    { name: 'Azure', class: 'azure' },
-    { name: 'Baby pink', class: 'baby-pink' },
-    { name: 'Bistre', class: 'bistre' },
-    { name: 'Black', class: 'black' },
-    { name: 'Blond', class: 'blond' },
-    { name: 'Blue Green', class: 'blue-green' },
-    { name: 'Blue Violet', class: 'blue-violet' },
-    { name: 'Boston University Red', class: 'boston-university-red' },
-    { name: 'Carrot Orange', class: 'carrot-orange' },
-    { name: 'Cerise', class: 'cerise' },
-    { name: 'Charcoal', class: 'charcoal' },
-    { name: 'Cream', class: 'cream' }
-];
-
-// Create theme circles
-function createThemeCircles() {
-    if (!themeCirclesContainer) return;
-    
-    themeCirclesContainer.innerHTML = '';
-    
-    themeColors.forEach(theme => {
-        const circle = document.createElement('div');
-        circle.className = `theme-circle theme-${theme.class}`;
-        circle.title = theme.name;
-        circle.dataset.theme = theme.class;
-        
-        // Mark as selected if it's the current theme
-        const currentTheme = localStorage.getItem('themeColor') || 'azure';
-        if (theme.class === currentTheme) {
-            circle.classList.add('selected');
-        }
-        
-        circle.addEventListener('click', () => {
-            setThemeColor(theme.class);
-            closeThemePaletteModal();
-        });
-        
-        themeCirclesContainer.appendChild(circle);
-    });
-}
-
-// Set theme color
-function setThemeColor(theme) {
-    // Remove all theme classes
-    document.documentElement.classList.remove(...themeColors.map(t => `theme-${t.class}`));
-    
-    // Add selected theme class
-    document.documentElement.classList.add(`theme-${theme}`);
-    localStorage.setItem('themeColor', theme);
-    
-    // Update selected state in palette
-    if (themeCirclesContainer) {
-        themeCirclesContainer.querySelectorAll('.theme-circle').forEach(circle => {
-            circle.classList.toggle('selected', circle.dataset.theme === theme);
-        });
-    }
-    
-    showMessage(`Theme set to ${theme.replace('-', ' ')}`, 'success');
-}
-
-// Theme palette modal functions
-function openThemePaletteModal() {
-    createThemeCircles();
-    themePaletteModal.classList.remove('invisible', 'opacity-0');
-    themePaletteModal.classList.add('open');
-}
-
-function closeThemePaletteModal() {
-    themePaletteModal.classList.add('opacity-0');
-    setTimeout(() => {
-        themePaletteModal.classList.add('invisible');
-        themePaletteModal.classList.remove('open');
-    }, 200);
-}
-
-// Load saved theme on startup
-function loadTheme() {
-    const savedThemeColor = localStorage.getItem('themeColor');
-    if (savedThemeColor) {
-        document.documentElement.classList.add(`theme-${savedThemeColor}`);
-    }
-    
-    // Keep dark/light mode functionality
-    const savedThemeMode = localStorage.getItem('themeMode');
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    
-    if (savedThemeMode === 'dark' || (!savedThemeMode && prefersDark)) {
-        document.documentElement.classList.add('dark');
-    } else {
-        document.documentElement.classList.remove('dark');
-    }
-}
-    
-    // Keep dark/light mode functionality
-    const savedThemeMode = localStorage.getItem('themeMode');
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    
-    if (savedThemeMode === 'dark' || (!savedThemeMode && prefersDark)) {
-        document.documentElement.classList.add('dark');
-    } else {
-        document.documentElement.classList.remove('dark');
-    }
-}
-
-
-
-       
 // Radio Browser Section
 // ====================
 
@@ -1549,22 +1367,16 @@ function showMessage(message, type = 'info', duration = 3000) {
             }
         });
 
- function loadTheme() {
-    const savedThemeColor = localStorage.getItem('themeColor');
-    if (savedThemeColor) {
-        document.documentElement.classList.add(`theme-${savedThemeColor}`);
-    }
-    
-    // Keep dark/light mode functionality
-    const savedThemeMode = localStorage.getItem('themeMode');
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    
-    if (savedThemeMode === 'dark' || (!savedThemeMode && prefersDark)) {
-        document.documentElement.classList.add('dark');
-    } else {
-        document.documentElement.classList.remove('dark');
-    }
-}
+        function loadTheme() {
+            const savedTheme = localStorage.getItem('theme');
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            
+            if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
+                setDarkTheme();
+            } else {
+                setLightTheme();
+            }
+        }
 
         // --- Modal Management ---
         function openModal(mode = 'add', station = null) {
@@ -2620,54 +2432,64 @@ if (isDirect && !isAlreadyFavorite) {
         // --- Initial Load ---
 
 document.addEventListener('DOMContentLoaded', () => {
-    // Get references to theme elements
-    themePaletteBtn = document.getElementById('themePaletteBtn');
-    themePaletteModal = document.getElementById('themePaletteModal');
-    closeThemePaletteBtn = document.getElementById('closeThemePaletteBtn');
-    themeCirclesContainer = themePaletteModal.querySelector('.grid');
-    
-    // Load theme
     loadTheme();
+    loadFavorites();
+    initializeRadioBrowser(); // Add this line
     
-    // Set up event listeners for theme palette
-    if (themePaletteBtn) {
-        themePaletteBtn.addEventListener('click', openThemePaletteModal);
+    if (audioPlayer.paused) {
+        playPauseBtn.innerHTML = '<i class="fas fa-play"></i>';
+        playPauseBtn.setAttribute('aria-label', 'Play');
+    } else {
+        playPauseBtn.innerHTML = '<i class="fas fa-pause"></i>';
+        playPauseBtn.setAttribute('aria-label', 'Pause');
     }
-    
-    if (closeThemePaletteBtn) {
-        closeThemePaletteBtn.addEventListener('click', closeThemePaletteModal);
-    }
-    
-    if (themePaletteModal) {
-        themePaletteModal.addEventListener('click', (e) => {
-            if (e.target === themePaletteModal) closeThemePaletteModal();
-        });
-    }
-    
-    // Call your other initialization functions - safely
-    if (typeof loadFavorites === 'function') loadFavorites();
-    if (typeof initializeRadioBrowser === 'function') initializeRadioBrowser();
-    
-    // Handle audio player state
-    const audioPlayer = document.getElementById('audioPlayer');
-    const playPauseBtn = document.getElementById('playPauseBtn');
-    
-    if (audioPlayer && playPauseBtn) {
-        if (audioPlayer.paused) {
-            playPauseBtn.innerHTML = '<i class="fas fa-play"></i>';
-            playPauseBtn.setAttribute('aria-label', 'Play');
-        } else {
-            playPauseBtn.innerHTML = '<i class="fas fa-pause"></i>';
-            playPauseBtn.setAttribute('aria-label', 'Pause');
-        }
-    }
-    
-    // Handle message box
-    const messageBox = document.getElementById('messageBox');
-    if (messageBox) {
-        messageBox.classList.add('opacity-0', 'invisible', 'hidden');
-    }
+    messageBox.classList.add('opacity-0', 'invisible', 'hidden');
 });
-</script>
+       
+        document.addEventListener('DOMContentLoaded', () => {
+            loadTheme();
+            loadFavorites();
+            if (audioPlayer.paused) {
+                playPauseBtn.innerHTML = '<i class="fas fa-play"></i>';
+                playPauseBtn.setAttribute('aria-label', 'Play');
+            } else {
+                playPauseBtn.innerHTML = '<i class="fas fa-pause"></i>';
+                playPauseBtn.setAttribute('aria-label', 'Pause');
+            }
+            messageBox.classList.add('opacity-0', 'invisible', 'hidden');
+        });
+
+        // PWA Installation
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then(reg => console.log('ServiceWorker registered'))
+                    .catch(err => console.log('ServiceWorker failed: ', err));
+            });
+        }
+
+        // Install Prompt Handler
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            console.log('PWA installable');
+            window.deferredInstallPrompt = e;
+            
+            const installButton = document.getElementById('installButton');
+            if (installButton) {
+                installButton.classList.remove('hidden');
+                installButton.addEventListener('click', () => {
+                    e.prompt();
+                    e.userChoice.then((choiceResult) => {
+                        if (choiceResult.outcome === 'accepted') {
+                            console.log('User accepted install');
+                            installButton.classList.add('hidden');
+                        } else {
+                            console.log('User dismissed install');
+                        }
+                    });
+                });
+            }
+        });
+    </script>
 </body>
 </html>
