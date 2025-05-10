@@ -37,47 +37,34 @@
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
-tailwind.config = {
-  darkMode: 'class',
-  theme: {
-    extend: {
-      colors: {
-        primary: {
-          50: '#f0f9ff',
-          100: '#e0f2fe',
-          200: '#bae6fd',
-          300: '#7dd3fc',
-          400: '#38bdf8',
-          500: '#0ea5e9',
-          600: '#0284c7',
-          700: '#0369a1',
-          800: '#075985',
-          900: '#0c4a6e',
-        },
-        // Simply add this amber color palette
-        amber: {
-          50: '#fffbeb',
-          100: '#fef3c7',
-          200: '#fde68a',
-          300: '#fcd34d',
-          400: '#fbbf24',
-          500: '#f59e0b',
-          600: '#d97706',
-          700: '#b45309',
-          800: '#92400e',
-          900: '#78350f',
+      tailwind.config = {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            colors: {
+              primary: {
+                50: '#f0f9ff',
+                100: '#e0f2fe',
+                200: '#bae6fd',
+                300: '#7dd3fc',
+                400: '#38bdf8',
+                500: '#0ea5e9',
+                600: '#0284c7',
+                700: '#0369a1',
+                800: '#075985',
+                900: '#0c4a6e',
+              },
+            },
+            fontFamily: {
+              sans: ['Inter', 'sans-serif'],
+            },
+            animation: {
+              'spin-slow': 'spin 3s linear infinite',
+              'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+            }
+          }
         }
-      },
-      fontFamily: {
-        sans: ['Inter', 'sans-serif'],
-      },
-      animation: {
-        'spin-slow': 'spin 3s linear infinite',
-        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
       }
-    }
-  }
-}
     </script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -198,36 +185,7 @@ tailwind.config = {
         .dark .btn-secondary {
             @apply bg-gray-700 hover:bg-gray-600 text-gray-200 border-gray-600;
         }
-        .amber .btn-secondary {
-        @apply bg-amber-300 hover:bg-amber-400 text-amber-900 border-amber-400;
-    }
-    
-    .amber .icon-btn:hover {
-        @apply bg-amber-100;
-    }
-    
-    .amber {
-        @apply bg-amber-50 text-amber-900;
-    }
-    
-    .amber .player-controls {
-        @apply bg-amber-100/80 border-amber-200;
-    }
-    
-    .amber ::-webkit-scrollbar-thumb {
-        @apply bg-amber-600/50;
-    }
-    
-    .amber ::-webkit-scrollbar-thumb:hover {
-        @apply bg-amber-600/80;
-    }
-    
-    .amber input:focus,
-    .amber textarea:focus,
-    .amber select:focus,
-    .amber button:focus-visible {
-        @apply outline-amber-500;
-    }
+        
         .btn-danger {
             @apply btn bg-gradient-to-r from-red-500 to-pink-500 hover:from-red-600 hover:to-pink-600 text-white hover:shadow-md hover:scale-[1.02];
         }
@@ -790,19 +748,18 @@ tailwind.config = {
             <i class="fas fa-palette mr-2 text-blue-500"></i>
             <span>Choose Theme</span>
         </h3>
-        <div class="grid grid-cols-3 gap-3">
-            <button id="lightThemeBtn" class="flex flex-col items-center p-2 transition-colors">
-                <div class="w-12 h-12 rounded-full bg-white border-2 border-gray-300 mb-1"></div>
-                <span class="text-sm">Light</span>
-            </button>
-            <button id="darkThemeBtn" class="flex flex-col items-center p-2 transition-colors">
-                <div class="w-12 h-12 rounded-full bg-gray-900 border-2 border-gray-700 mb-1"></div>
-                <span class="text-sm">Dark</span>
-            </button>
-            <button id="amberThemeBtn" class="flex flex-col items-center p-2 transition-colors">
-                <div class="w-12 h-12 rounded-full bg-amber-500 border-2 border-amber-600 mb-1"></div>
-                <span class="text-sm">Amber</span>
-            </button>
+    <div class="grid grid-cols-2 gap-3">
+    <button id="lightThemeBtn" class="flex flex-col items-center p-2 transition-colors">
+        <div class="w-12 h-12 rounded-full bg-white border-2 border-gray-300 mb-1"></div>
+        <span class="text-sm">Light</span>
+    </button>
+    <button id="darkThemeBtn" class="flex flex-col items-center p-2 transition-colors">
+        <div class="w-12 h-12 rounded-full bg-gray-900 border-2 border-gray-700 mb-1"></div>
+        <span class="text-sm">Dark</span>
+    </button>
+</div>
+        <div class="mt-6 flex justify-end">
+            <button type="button" id="closeThemePaletteBtn" class="btn-secondary">Close</button>
         </div>
     </div>
 </div>
@@ -1424,15 +1381,6 @@ function setDarkTheme() {
     localStorage.setItem('theme', 'dark');
     closeThemePaletteModal();
 }
-       function setAmberTheme() {
-    document.documentElement.classList.remove('dark', 'light');
-    document.documentElement.classList.add('amber');
-    localStorage.setItem('theme', 'amber');
-    closeThemePaletteModal();
-}
-
-// Add event listener
-document.getElementById('amberThemeBtn').addEventListener('click', setAmberTheme);
 
 // Theme Palette Modal Functions
 function openThemePaletteModal() {
@@ -1458,20 +1406,16 @@ themePaletteModal.addEventListener('click', (e) => {
     if (e.target === themePaletteModal) closeThemePaletteModal();
 });
 
- function loadTheme() {
-    const savedTheme = localStorage.getItem('theme');
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    
-    if (savedTheme === 'dark') {
-        setDarkTheme();
-    } else if (savedTheme === 'amber') {
-        setAmberTheme();
-    } else if (!savedTheme && prefersDark) {
-        setDarkTheme();
-    } else {
-        setLightTheme();
-    }
-}
+        function loadTheme() {
+            const savedTheme = localStorage.getItem('theme');
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            
+            if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
+                setDarkTheme();
+            } else {
+                setLightTheme();
+            }
+        }
 
         // --- Modal Management ---
         function openModal(mode = 'add', station = null) {
