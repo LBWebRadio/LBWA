@@ -170,105 +170,7 @@
     background-color: rgba(75, 85, 99, 0.5);
 }
 
-       :root {
-  /* Light theme variables (default) */
-  --color-bg-primary: #ffffff;
-  --color-text-primary: #1f2937;
-  --color-bg-secondary: #f3f4f6;
-  --color-border: #e5e7eb;
-  --color-accent: #3b82f6;
-}
-
-html.dark {
-  /* Dark theme variables */
-  --color-bg-primary: #1f2937;
-  --color-text-primary: #f3f4f6;
-  --color-bg-secondary: #111827;
-  --color-border: #374151;
-  --color-accent: #60a5fa;
-}
-
-html.blue {
-  /* Blue theme variables */
-  --color-bg-primary: #eff6ff;
-  --color-text-primary: #1e3a8a;
-  --color-bg-secondary: #dbeafe;
-  --color-border: #93c5fd;
-  --color-accent: #2563eb;
-  
-  /* Add this to maintain dark mode styles for elements that need it */
-  &.dark-enable {
-    .dark\:bg-gray-800 { background-color: #1e3a8a; }
-    .dark\:text-gray-300 { color: #bfdbfe; }
-    .dark\:border-gray-700 { border-color: #1d4ed8; }
-    /* Add other dark mode overrides as needed */
-  }
-}
-
-html.purple {
-  /* Purple theme variables */
-  --color-bg-primary: #faf5ff;
-  --color-text-primary: #581c87;
-  --color-bg-secondary: #f3e8ff;
-  --color-border: #d8b4fe;
-  --color-accent: #9333ea;
-  
-  /* Add this to maintain dark mode styles for elements that need it */
-  &.dark-enable {
-    .dark\:bg-gray-800 { background-color: #581c87; }
-    .dark\:text-gray-300 { color: #e9d5ff; }
-    .dark\:border-gray-700 { border-color: #9333ea; }
-    /* Add other dark mode overrides as needed */
-  }
-}
- /* Theme color palettes */
-    :root {
-        /* Light theme is just default Tailwind colors */
-        --accent-color: #3b82f6; /* Tailwind blue-500 by default */
-    }
-    
-    html.dark {
-        /* Dark theme is already handled by Tailwind dark: classes */
-        --accent-color: #60a5fa; /* Tailwind blue-400 for dark mode */
-    }
-    
-    html.blue-theme {
-        /* Blue theme overrides */
-        --accent-color: #2563eb; /* Tailwind blue-600 */
-    }
-    
-    html.purple-theme {
-        /* Purple theme overrides */
-        --accent-color: #9333ea; /* Tailwind purple-600 */
-    }
-    
-    /* Apply accent color to elements that should change with theme */
-    .accent-bg {
-        background-color: var(--accent-color) !important;
-    }
-    
-    .accent-text {
-        color: var(--accent-color) !important;
-    }
-    
-    .accent-border {
-        border-color: var(--accent-color) !important;
-    }
-/* Apply these variables to your elements */
-body {
-  background-color: var(--color-bg-primary);
-  color: var(--color-text-primary);
-}
-
-.my-card {
-  background-color: var(--color-bg-secondary);
-  border: 1px solid var(--color-border);
-}
-
-.my-button {
-  background-color: var(--color-accent);
-}
-*/
+       
 
         /* Button styles & hover effects */
         .btn {
@@ -846,25 +748,16 @@ body {
             <i class="fas fa-palette mr-2 text-blue-500"></i>
             <span>Choose Theme</span>
         </h3>
-        <div class="grid grid-cols-2 gap-3">
-            <button data-theme="light" class="theme-btn flex flex-col items-center p-2 transition-colors">
-                <div class="w-12 h-12 rounded-full bg-white border-2 border-gray-300 mb-1"></div>
-                <span class="text-sm">Light</span>
-            </button>
-            <button data-theme="dark" class="theme-btn flex flex-col items-center p-2 transition-colors">
-                <div class="w-12 h-12 rounded-full bg-gray-900 border-2 border-gray-700 mb-1"></div>
-                <span class="text-sm">Dark</span>
-            </button>
-            <!-- New Theme Options -->
-            <button data-theme="blue-theme" class="theme-btn flex flex-col items-center p-2 transition-colors">
-                <div class="w-12 h-12 rounded-full bg-blue-600 border-2 border-blue-400 mb-1"></div>
-                <span class="text-sm">Blue</span>
-            </button>
-            <button data-theme="purple-theme" class="theme-btn flex flex-col items-center p-2 transition-colors">
-                <div class="w-12 h-12 rounded-full bg-purple-600 border-2 border-purple-400 mb-1"></div>
-                <span class="text-sm">Purple</span>
-            </button>
-        </div>
+    <div class="grid grid-cols-2 gap-3">
+    <button id="lightThemeBtn" class="flex flex-col items-center p-2 transition-colors">
+        <div class="w-12 h-12 rounded-full bg-white border-2 border-gray-300 mb-1"></div>
+        <span class="text-sm">Light</span>
+    </button>
+    <button id="darkThemeBtn" class="flex flex-col items-center p-2 transition-colors">
+        <div class="w-12 h-12 rounded-full bg-gray-900 border-2 border-gray-700 mb-1"></div>
+        <span class="text-sm">Dark</span>
+    </button>
+</div>
         <div class="mt-6 flex justify-end">
             <button type="button" id="closeThemePaletteBtn" class="btn-secondary">Close</button>
         </div>
@@ -969,98 +862,6 @@ const shareAppBtn = document.getElementById('shareAppBtn');
         let bitrateInterval;
         let lastBytes = 0;
        // ====================
-
-
-// Theme constants
- const THEMES = {
-        LIGHT: 'light',
-        DARK: 'dark',
-        BLUE: 'blue-theme',
-        PURPLE: 'purple-theme'
-    };
-    
-    // Theme Management Functions
-    function setTheme(themeName) {
-        // Remove all theme classes
-        document.documentElement.classList.remove(
-            THEMES.LIGHT, 
-            THEMES.DARK, 
-            THEMES.BLUE, 
-            THEMES.PURPLE
-        );
-        
-        // Add the selected theme class
-        document.documentElement.classList.add(themeName);
-        
-        // Special handling for non-binary themes to maintain dark mode compatibility
-        if (themeName === THEMES.BLUE || themeName === THEMES.PURPLE) {
-            // For color themes, we also add 'dark' class to maintain dark mode styles
-            // This makes all your dark: classes still work
-            document.documentElement.classList.add('dark');
-        }
-        
-        // Save to localStorage
-        localStorage.setItem('theme', themeName);
-        
-        closeThemePaletteModal();
-    }
-    
-    // Initialize theme
-    function loadTheme() {
-        const savedTheme = localStorage.getItem('theme');
-        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-        
-        if (savedTheme && Object.values(THEMES).includes(savedTheme)) {
-            // Use saved theme if it's valid
-            setTheme(savedTheme);
-        } else if (prefersDark) {
-            // Fall back to dark theme if user prefers dark
-            setTheme(THEMES.DARK);
-        } else {
-            // Default to light theme
-            setTheme(THEMES.LIGHT);
-        }
-    }
-
-// Theme Palette Modal Functions (unchanged)
-function openThemePaletteModal() {
-  themePaletteModal.classList.remove('invisible', 'opacity-0');
-  themePaletteModal.classList.add('open');
-}
-
-function closeThemePaletteModal() {
-  themePaletteModal.classList.add('opacity-0');
-  setTimeout(() => {
-    themePaletteModal.classList.add('invisible');
-    themePaletteModal.classList.remove('open');
-  }, 200);
-}
-
-// Event Listeners
-document.addEventListener('DOMContentLoaded', () => {
-  loadTheme();
-  
-  // Open theme palette modal
-  document.getElementById('themePaletteBtn').addEventListener('click', openThemePaletteModal);
-  
-  // Close theme palette modal
-  document.getElementById('closeThemePaletteBtn').addEventListener('click', closeThemePaletteModal);
-  
-  // Close when clicking outside
-  themePaletteModal.addEventListener('click', (e) => {
-    if (e.target === themePaletteModal) closeThemePaletteModal();
-  });
-  
-  // Theme selection buttons
-  document.querySelectorAll('.theme-btn').forEach(button => {
-    button.addEventListener('click', () => {
-      const themeName = button.getAttribute('data-theme');
-      setTheme(themeName);
-    });
-  });
-});
-
-       
 // Radio Browser Section
 // ====================
 
