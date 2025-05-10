@@ -633,14 +633,14 @@
             </div>
         </div>
     </div>
-   <div id="themeModal" class="modal fixed inset-0 bg-black bg-opacity-60 dark:bg-opacity-75 flex items-center justify-center p-4 opacity-0 invisible z-[100]">
+  <!-- Theme Modal -->
+<div id="themeModal" class="modal fixed inset-0 bg-black bg-opacity-60 dark:bg-opacity-75 flex items-center justify-center p-4 opacity-0 invisible z-[100]">
     <div class="modal-content bg-white dark:bg-gray-800 p-6 rounded-xl shadow-xl w-full max-w-md border border-gray-200 dark:border-gray-700">
         <h3 class="text-xl font-semibold mb-5 flex items-center">
             <i class="fas fa-palette mr-2 text-blue-500"></i>
             <span>Select Theme</span>
         </h3>
         <div class="grid grid-cols-5 gap-4">
-            <!-- Theme color circles -->
             <button data-theme="aliceblue" class="theme-btn w-12 h-12 rounded-full bg-[#F0F8FF] border-2 border-gray-200 dark:border-gray-600 hover:scale-110 transition-transform" title="Alice Blue"></button>
             <button data-theme="amber" class="theme-btn w-12 h-12 rounded-full bg-[#FFBF00] border-2 border-gray-200 dark:border-gray-600 hover:scale-110 transition-transform" title="Amber"></button>
             <button data-theme="androidgreen" class="theme-btn w-12 h-12 rounded-full bg-[#A4C639] border-2 border-gray-200 dark:border-gray-600 hover:scale-110 transition-transform" title="Android Green"></button>
@@ -843,12 +843,25 @@
         const cancelClearBtn = document.getElementById('cancelClearBtn');
         const confirmClearBtn = document.getElementById('confirmClearBtn');
 
-// Theme Modal Elements
+/// Theme Elements
 const themePaletteBtn = document.getElementById('themePaletteBtn');
 const themeModal = document.getElementById('themeModal');
 const closeThemeModalBtn = document.getElementById('closeThemeModalBtn');
 const themeButtons = document.querySelectorAll('.theme-btn');
 
+// Theme control
+function setTheme(theme) {
+    document.documentElement.className = theme;
+    localStorage.setItem('theme', theme);
+    showMessage(`Theme set to ${theme.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}`, 'success');
+}
+
+function loadTheme() {
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    setTheme(savedTheme);
+}
+
+// Modal control
 function openThemeModal() {
     themeModal.classList.remove('invisible', 'opacity-0');
     themeModal.classList.add('open');
@@ -862,36 +875,22 @@ function closeThemeModal() {
     }, 200);
 }
 
-// Theme switching functions
-function setTheme(themeName) {
-    // Remove all theme classes
-    document.documentElement.classList.remove('light', 'dark', ...Array.from(themeButtons).map(btn => btn.dataset.theme));
-    
-    // Add the selected theme class
-    document.documentElement.classList.add(themeName);
-    localStorage.setItem('theme', themeName);
-    
-    // Special handling for light/dark themes
-    if (themeName === 'light' || themeName === 'dark') {
-        document.documentElement.classList.remove('light', 'dark');
-        document.documentElement.classList.add(themeName);
-    }
-    
-    showMessage(`Theme set to ${themeName.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}`, 'success');
-}
+// Event listeners
+if (themePaletteBtn) themePaletteBtn.addEventListener('click', openThemeModal);
+if (closeThemeModalBtn) closeThemeModalBtn.addEventListener('click', closeThemeModal);
+if (themeModal) themeModal.addEventListener('click', (e) => {
+    if (e.target === themeModal) closeThemeModal();
+});
 
-function loadTheme() {
-    const savedTheme = localStorage.getItem('theme');
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    
-    if (savedTheme) {
-        setTheme(savedTheme);
-    } else if (prefersDark) {
-        setTheme('dark');
-    } else {
-        setTheme('light');
-    }
-}
+themeButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+        setTheme(btn.dataset.theme);
+        closeThemeModal();
+    });
+});
+
+// Initialize
+loadTheme();
 
 // Event listeners
 themePaletteBtn.addEventListener('click', openThemeModal);
