@@ -184,6 +184,21 @@
   outline-offset: 2px;
 }
 
+       #themeOptions {
+  transform-origin: top right;
+  animation: fadeIn 0.15s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+/* Make sure dropdown has proper spacing */
+#themeOptions > div {
+  min-width: 100%;
+}
+
 /* Rainbow animation for the theme button */
 @keyframes rainbow {
   0% { color: #ef4444; } /* red */
@@ -529,16 +544,13 @@
             
         <div class="flex items-center space-x-4">
   <!-- Theme Selector Button -->
-  <div class="relative group">
-  <button id="themeToggleBtn" class="icon-btn text-gray-600 dark:text-gray-300" aria-label="Change theme">
+<div class="relative">
+  <button id="themeToggleBtn" class="icon-btn text-gray-600 dark:text-gray-300">
     <i class="fas fa-palette"></i>
   </button>
   
-  <!-- Changed from bottom-full to top-full and adjusted margin -->
-  <div id="themeOptions" class="hidden absolute right-0 top-full mt-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 p-2 grid grid-cols-4 gap-2 z-50">
-    
-    <!-- Theme Options -->
-    <div id="themeOptions" class="hidden absolute right-0 bottom-full mb-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 p-2 grid grid-cols-4 gap-2 z-50">
+  <div id="themeOptions" class="hidden absolute right-0 top-full mt-2 w-56 bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 p-3 z-50">
+    <div class="grid grid-cols-5 gap-3">
       <button data-theme="light" class="theme-option w-8 h-8 rounded-full bg-white border border-gray-300 flex items-center justify-center" title="Light">
         <i class="fas fa-sun text-gray-700"></i>
       </button>
@@ -560,6 +572,7 @@
       <button data-theme="indigo" class="theme-option w-8 h-8 rounded-full bg-indigo-500" title="Indigo"></button>
     </div>
   </div>
+</div>
   
   <button id="infoBtn" class="icon-btn text-gray-600 dark:text-gray-300" aria-label="App Info">
     <i class="fas fa-info-circle"></i>
@@ -1528,8 +1541,7 @@ function showMessage(message, type = 'info', duration = 3000) {
         }
         closeMessageBtn.addEventListener('click', hideMessage);
 
-        
-    // --- Theme Management ---
+   // --- Theme Management ---
 function setTheme(themeName) {
   // Remove all theme classes
   document.documentElement.classList.remove('dark', 'light');
@@ -1572,28 +1584,53 @@ function loadTheme() {
   }
 }
 
-// Toggle theme options visibility
-document.getElementById('themeToggleBtn').addEventListener('click', (e) => {
-  e.stopPropagation();
-  const options = document.getElementById('themeOptions');
-  options.classList.toggle('hidden');
-});
+// Theme dropdown functionality
+document.addEventListener('DOMContentLoaded', () => {
+  const themeToggleBtn = document.getElementById('themeToggleBtn');
+  const themeOptions = document.getElementById('themeOptions');
+  
+  if (themeToggleBtn && themeOptions) {
+    // Toggle theme options visibility
+    themeToggleBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      themeOptions.classList.toggle('hidden');
+      
+      // Position the dropdown properly
+      const rect = themeToggleBtn.getBoundingClientRect();
+      const spaceBelow = window.innerHeight - rect.bottom;
+      const spaceAbove = rect.top;
+      
+      if (spaceBelow < 200 && spaceAbove > 300) {
+        // Not enough space below, show above
+        themeOptions.classList.remove('top-full', 'mt-2');
+        themeOptions.classList.add('bottom-full', 'mb-2');
+      } else {
+        // Default: show below
+        themeOptions.classList.remove('bottom-full', 'mb-2');
+        themeOptions.classList.add('top-full', 'mt-2');
+      }
+    });
 
-// Close theme options when clicking outside
-document.addEventListener('click', (e) => {
-  if (!e.target.closest('#themeToggleBtn') && !e.target.closest('#themeOptions')) {
-    document.getElementById('themeOptions').classList.add('hidden');
+    // Close theme options when clicking outside
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('#themeToggleBtn') && !e.target.closest('#themeOptions')) {
+        themeOptions.classList.add('hidden');
+      }
+    });
+
+    // Theme option click handlers
+    document.querySelectorAll('.theme-option').forEach(option => {
+      option.addEventListener('click', () => {
+        const theme = option.dataset.theme;
+        setTheme(theme);
+        themeOptions.classList.add('hidden');
+        showMessage(`Theme changed to ${theme}`, 'success');
+      });
+    });
+    
+    // Load initial theme
+    loadTheme();
   }
-});
-
-// Theme option click handlers
-document.querySelectorAll('.theme-option').forEach(option => {
-  option.addEventListener('click', () => {
-    const theme = option.dataset.theme;
-    setTheme(theme);
-    document.getElementById('themeOptions').classList.add('hidden');
-    showMessage(`Theme changed to ${theme}`, 'success');
-  });
 });
 
         // --- Modal Management ---
