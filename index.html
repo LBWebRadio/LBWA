@@ -145,25 +145,6 @@
         .dark input:focus, .dark textarea:focus, .dark select:focus, .dark button:focus-visible {
             outline-color: #60a5fa;
         }
-        .banner-container {
-         text-align: center;
-         margin: 20px 0;
-      }
-      .banner-image {
-         max-width: 100%;
-         height: auto;
-      }
-      .sr-only {
-         position: absolute;
-         width: 1px;
-         height: 1px;
-         padding: 0;
-         margin: -1px;
-         overflow: hidden;
-         clip: rect(0, 0, 0, 0);
-         white-space: nowrap;
-         border-width: 0;
-      }
 
 
 /* Share Modal Styles */
@@ -381,31 +362,28 @@
 
     <audio id="audioPlayer"></audio>
 
-<header class="bg-white dark:bg-gray-800 shadow-sm py-1 sticky top-0 z-40" style="height: 60px;">
-    <div class="container mx-auto flex justify-between items-center max-w-6xl px-4 h-full">
-        <div class="flex items-center space-x-2">
-           <img src="icons/icon-48.png" 
-                alt="Live Beats Icon" 
-                class="w-8 h-8 rounded-lg">
-            <!-- Fixed-width container with proportional image -->
-            <div style="width: 600px; height: 100px; display: flex; align-items: center;">
-                <img src="https://github.com/LBWebRadio/LBWA/blob/main/lbbanner.png?raw=true" 
-                    alt="Live Beats WebRadio"
-                    style="max-width: 100%; max-height: 100%; width: auto; height: auto;">
+    <header class="bg-white dark:bg-gray-800 shadow-sm p-4 sticky top-0 z-40">
+        <div class="container mx-auto flex justify-between items-center max-w-6xl px-4">
+            <div class="flex items-center space-x-2">
+               <img src="icons/icon-48.png" 
+     alt="Live Beats Icon" 
+     class="w-8 h-8 rounded-lg">
+                <h1 class="text-xl sm:text-2xl font-bold gradient-text">
+                    Live Beats WebRadio
+                </h1>
+            </div>
+            
+            <div class="flex items-center space-x-4">
+                <button id="themePaletteBtn" class="icon-btn text-gray-600 dark:text-gray-300" aria-label="Theme options">
+    <i class="fas fa-palette"></i>
+</button>
+                
+                <button id="infoBtn" class="icon-btn text-gray-600 dark:text-gray-300" aria-label="App Info">
+                    <i class="fas fa-info-circle"></i>
+                </button>
             </div>
         </div>
-        
-        <div class="flex items-center space-x-4">
-            <button id="themePaletteBtn" class="icon-btn text-gray-600 dark:text-gray-300" aria-label="Theme options">
-                <i class="fas fa-palette"></i>
-            </button>
-            
-            <button id="infoBtn" class="icon-btn text-gray-600 dark:text-gray-300" aria-label="App Info">
-                <i class="fas fa-info-circle"></i>
-            </button>
-        </div>
-    </div>
-</header>
+    </header>
 
     <main class="container mx-auto max-w-6xl p-4 flex-grow mb-36">
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
