@@ -436,11 +436,12 @@
             </button>
         </div>
         
-        <div class="flex flex-wrap gap-2 mb-4">
-            <button class="popular-tag-btn btn-secondary text-sm px-3 py-1" data-tag="topclick">Popular</button>
-            <button class="popular-tag-btn btn-secondary text-sm px-3 py-1" data-tag="topvote">Top Rated</button>
-            <button class="popular-tag-btn btn-secondary text-sm px-3 py-1" data-tag="genre">By Genre</button>
-        </div>
+     <div class="flex flex-wrap gap-2 mb-4">
+    <button class="popular-tag-btn btn-secondary text-sm px-3 py-1" data-tag="topvote">Top Rated</button>
+    <button class="popular-tag-btn btn-secondary text-sm px-3 py-1" data-tag="country">By Country</button>
+    <button class="popular-tag-btn btn-secondary text-sm px-3 py-1" data-tag="language">By Language</button>
+    <button class="popular-tag-btn btn-secondary text-sm px-3 py-1" data-tag="genre">By Genre</button>
+</div>
         
         <div id="radioBrowserResults" class="space-y-3 max-h-[300px] overflow-y-auto pr-2 hidden">
             <!-- Results will be displayed here -->
@@ -881,6 +882,212 @@ let RADIO_BROWSER_BASE_URL = 'https://de1.api.radio-browser.info';
 let currentRadioSearch = '';
 let currentRadioResults = [];
 
+
+// Add these functions to your JavaScript
+async function fetchCountries(filter = '') {
+    try {
+        const url = filter ? 
+            `${RADIO_BROWSER_BASE_URL}/json/countries/${encodeURIComponent(filter)}` :
+            `${RADIO_BROWSER_BASE_URL}/json/countries`;
+        
+        const response = await fetch(url, {
+            headers: {
+                'User-Agent': RADIO_BROWSER_USER_AGENT
+            }
+        });
+        
+        if (!response.ok) throw new Error('Failed to fetch countries');
+        return await response.json();
+    } catch (error) {
+        console.error('Error fetching countries:', error);
+        throw error;
+    }
+}
+
+async function fetchLanguages(filter = '') {
+    try {
+        const url = filter ? 
+            `${RADIO_BROWSER_BASE_URL}/json/languages/${encodeURIComponent(filter)}` :
+            `${RADIO_BROWSER_BASE_URL}/json/languages`;
+        
+        const response = await fetch(url, {
+            headers: {
+                'User-Agent': RADIO_BROWSER_USER_AGENT
+            }
+        });
+        
+        if (!response.ok) throw new Error('Failed to fetch languages');
+        return await response.json();
+    } catch (error) {
+        console.error('Error fetching languages:', error);
+        throw error;
+    }
+}
+
+async function showCountrySelection() {
+    try {
+        const countries = await fetchCountries();
+        
+        // Create a modal for country selection
+        const modal = document.createElement('div');
+        modal.className = 'fixed inset-0 bg-black bg-opacity-60 dark:bg-opacity-75 flex items-center justify-center p-4 z-[100]';
+        
+        modal.innerHTML = `
+            <div class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-xl w-full max-w-md max-h-[80vh] flex flex-col border border-gray-200 dark:border-gray-700">
+                <h3 class="text-xl font-semibold mb-4">Select Country</h3>
+                <div class="mb-4">
+                    <input type="text" id="countrySearchInput" 
+                           class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white placeholder-gray-400 dark:placeholder-gray-500" 
+                           placeholder="Search countries...">
+                </div>
+                <div id="countryList" class="overflow-y-auto flex-grow pr-2">
+                    ${countries.map(country => `
+                        <div class="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg cursor-pointer flex justify-between items-center" data-country="${country.name}">
+                            <span>${country.name}</span>
+                            <span class="text-xs bg-gray-200 dark:bg-gray-600 px-2 py-1 rounded-full">${country.stationcount} stations</span>
+                        </div>
+                    `).join('')}
+                </div>
+                <div class="flex justify-end space-x-3 mt-4">
+                    <button id="cancelCountrySelect" class="btn-secondary">Cancel</button>
+                </div>
+            </div>
+        `;
+        
+        document.body.appendChild(modal);
+        
+        // Search functionality
+        const searchInput = modal.querySelector('#countrySearchInput');
+        const countryList = modal.querySelector('#countryList');
+        
+        searchInput.addEventListener('input', async (e) => {
+            const searchTerm = e.target.value.trim();
+            if (searchTerm.length > 1) {
+                try {
+                    const filteredCountries = await fetchCountries(searchTerm);
+                    countryList.innerHTML = filteredCountries.map(country => `
+                        <div class="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg cursor-pointer flex justify-between items-center" data-country="${country.name}">
+                            <span>${country.name}</span>
+                            <span class="text-xs bg-gray-200 dark:bg-gray-600 px-2 py-1 rounded-full">${country.stationcount} stations</span>
+                        </div>
+                    `).join('');
+                } catch (error) {
+                    console.error('Error filtering countries:', error);
+                }
+            } else if (searchTerm.length === 0) {
+                // Reset to full list
+                countryList.innerHTML = countries.map(country => `
+                    <div class="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg cursor-pointer flex justify-between items-center" data-country="${country.name}">
+                        <span>${country.name}</span>
+                        <span class="text-xs bg-gray-200 dark:bg-gray-600 px-2 py-1 rounded-full">${country.stationcount} stations</span>
+                    </div>
+                `).join('');
+            }
+        });
+        
+        // Country selection
+        countryList.addEventListener('click', (e) => {
+            const countryItem = e.target.closest('[data-country]');
+            if (countryItem) {
+                const country = countryItem.dataset.country;
+                document.body.removeChild(modal);
+                searchRadioStations(country, 'country');
+            }
+        });
+        
+        // Cancel button
+        modal.querySelector('#cancelCountrySelect').addEventListener('click', () => {
+            document.body.removeChild(modal);
+        });
+    } catch (error) {
+        console.error('Error showing country selection:', error);
+        showMessage('Failed to load countries. Please try again.', 'error');
+    }
+}
+
+async function showLanguageSelection() {
+    try {
+        const languages = await fetchLanguages();
+        
+        // Create a modal for language selection
+        const modal = document.createElement('div');
+        modal.className = 'fixed inset-0 bg-black bg-opacity-60 dark:bg-opacity-75 flex items-center justify-center p-4 z-[100]';
+        
+        modal.innerHTML = `
+            <div class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-xl w-full max-w-md max-h-[80vh] flex flex-col border border-gray-200 dark:border-gray-700">
+                <h3 class="text-xl font-semibold mb-4">Select Language</h3>
+                <div class="mb-4">
+                    <input type="text" id="languageSearchInput" 
+                           class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white placeholder-gray-400 dark:placeholder-gray-500" 
+                           placeholder="Search languages...">
+                </div>
+                <div id="languageList" class="overflow-y-auto flex-grow pr-2">
+                    ${languages.map(lang => `
+                        <div class="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg cursor-pointer flex justify-between items-center" data-language="${lang.name}">
+                            <span>${lang.name}</span>
+                            <span class="text-xs bg-gray-200 dark:bg-gray-600 px-2 py-1 rounded-full">${lang.stationcount} stations</span>
+                        </div>
+                    `).join('')}
+                </div>
+                <div class="flex justify-end space-x-3 mt-4">
+                    <button id="cancelLanguageSelect" class="btn-secondary">Cancel</button>
+                </div>
+            </div>
+        `;
+        
+        document.body.appendChild(modal);
+        
+        // Search functionality
+        const searchInput = modal.querySelector('#languageSearchInput');
+        const languageList = modal.querySelector('#languageList');
+        
+        searchInput.addEventListener('input', async (e) => {
+            const searchTerm = e.target.value.trim();
+            if (searchTerm.length > 1) {
+                try {
+                    const filteredLanguages = await fetchLanguages(searchTerm);
+                    languageList.innerHTML = filteredLanguages.map(lang => `
+                        <div class="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg cursor-pointer flex justify-between items-center" data-language="${lang.name}">
+                            <span>${lang.name}</span>
+                            <span class="text-xs bg-gray-200 dark:bg-gray-600 px-2 py-1 rounded-full">${lang.stationcount} stations</span>
+                        </div>
+                    `).join('');
+                } catch (error) {
+                    console.error('Error filtering languages:', error);
+                }
+            } else if (searchTerm.length === 0) {
+                // Reset to full list
+                languageList.innerHTML = languages.map(lang => `
+                    <div class="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg cursor-pointer flex justify-between items-center" data-language="${lang.name}">
+                        <span>${lang.name}</span>
+                        <span class="text-xs bg-gray-200 dark:bg-gray-600 px-2 py-1 rounded-full">${lang.stationcount} stations</span>
+                    </div>
+                `).join('');
+            }
+        });
+        
+        // Language selection
+        languageList.addEventListener('click', (e) => {
+            const languageItem = e.target.closest('[data-language]');
+            if (languageItem) {
+                const language = languageItem.dataset.language;
+                document.body.removeChild(modal);
+                searchRadioStations(language, 'language');
+            }
+        });
+        
+        // Cancel button
+        modal.querySelector('#cancelLanguageSelect').addEventListener('click', () => {
+            document.body.removeChild(modal);
+        });
+    } catch (error) {
+        console.error('Error showing language selection:', error);
+        showMessage('Failed to load languages. Please try again.', 'error');
+    }
+}
+
+       
+
 // Function to get a random available server
 async function getRandomRadioBrowserServer() {
     try {
@@ -942,6 +1149,8 @@ async function searchRadioStations(searchTerm = '', searchBy = 'name') {
             apiUrl = `${RADIO_BROWSER_BASE_URL}/json/stations/${searchTerm}?hidebroken=true&limit=30`;
         } else if (searchBy === 'country') {
             apiUrl = `${RADIO_BROWSER_BASE_URL}/json/stations/bycountry/${encodeURIComponent(searchTerm)}?hidebroken=true&limit=30`;
+        } else if (searchBy === 'language') {
+            apiUrl = `${RADIO_BROWSER_BASE_URL}/json/stations/bylanguage/${encodeURIComponent(searchTerm)}?hidebroken=true&limit=30`;
         } else if (searchBy === 'genre') {
             apiUrl = `${RADIO_BROWSER_BASE_URL}/json/stations/bytagexact/${encodeURIComponent(searchTerm)}?hidebroken=true&limit=30`;
         } else {
@@ -1298,8 +1507,11 @@ popularTagBtns.forEach(btn => {
         const tag = btn.dataset.tag;
         radioSearchInput.value = '';
         
-        // Remove the country case
-        if (tag === 'genre') {
+        if (tag === 'country') {
+            showCountrySelection();
+        } else if (tag === 'language') {
+            showLanguageSelection();
+        } else if (tag === 'genre') {
             const genre = prompt('Enter genre (e.g., rock, jazz, pop):');
             if (genre) {
                 searchRadioStations(genre, 'genre');
