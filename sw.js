@@ -1,4 +1,4 @@
-const CACHE_NAME = 'live-beats-v5';
+const CACHE_NAME = 'live-beats-v6';
 const ASSETS = [
   './',
   './index.html',
