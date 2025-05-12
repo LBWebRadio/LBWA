@@ -1920,16 +1920,26 @@ function closeClearConfirmModal() {
                     numberSpan.textContent = `${index + 1}.`;
                     
                     const nameSpan = document.createElement('span');
-                    nameSpan.textContent = station.name;
-                    nameSpan.className = 'font-medium cursor-pointer hover:text-blue-600 dark:hover:text-blue-400 flex-grow truncate mr-2 text-sm sm:text-base';
-                    nameSpan.title = `Play ${station.name}`;
-                    nameSpan.addEventListener('click', () => playStation(station, false));
-                    
-                    leftDiv.appendChild(numberSpan);
-                    leftDiv.appendChild(nameSpan);
-                    
-                    const controlsDiv = document.createElement('div');
-                    controlsDiv.className = 'flex items-center space-x-1 sm:space-x-2 flex-shrink-0';
+nameSpan.textContent = station.name;
+nameSpan.className = 'font-medium cursor-pointer hover:text-blue-600 dark:hover:text-blue-400 flex-grow truncate mr-2 text-sm sm:text-base';
+nameSpan.title = `Play ${station.name}`;
+nameSpan.addEventListener('click', () => {
+    // Create a complete station object with all properties
+    const stationToPlay = {
+        id: station.id,
+        name: station.name,
+        url: station.url,
+        codec: station.codec,  // Include codec if it exists
+        bitrate: station.bitrate  // Include bitrate if it exists
+    };
+    playStation(stationToPlay, false);
+});
+
+leftDiv.appendChild(numberSpan);
+leftDiv.appendChild(nameSpan);
+
+const controlsDiv = document.createElement('div');
+controlsDiv.className = 'flex items-center space-x-1 sm:space-x-2 flex-shrink-0';
                     
                     if (isPlaying) {
                         const playingIndicator = document.createElement('div');
@@ -2021,60 +2031,78 @@ function closeClearConfirmModal() {
             renderFavorites();
         }
 
-        stationForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            const id = stationIdInput.value;
-            const name = stationNameInput.value.trim();
-            const url = stationUrlInput.value.trim();
+       stationForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const id = stationIdInput.value;
+    const name = stationNameInput.value.trim();
+    const url = stationUrlInput.value.trim();
+    const codec = document.getElementById('stationCodecInput').value.trim();
+    const bitrate = document.getElementById('stationBitrateInput').value.trim();
 
-            if (!name || !url) {
-                showMessage('Station Name and URL are required.', 'error');
-                return;
-            }
+    if (!name || !url) {
+        showMessage('Station Name and URL are required.', 'error');
+        return;
+    }
 
-            try {
-                new URL(url); // Validate URL format
-            } catch (_) {
-                showMessage('Please enter a valid URL format (e.g., https://...).', 'error');
-                return;
-            }
+    try {
+        new URL(url);
+    } catch (_) {
+        showMessage('Please enter a valid URL format (e.g., https://...).', 'error');
+        return;
+    }
 
-            if (id) { // Editing existing
-                const index = favorites.findIndex(s => s.id.toString() === id);
-                if (index > -1) {
-                    favorites[index] = { ...favorites[index], name, url };
-                    showMessage('Station updated successfully!', 'success');
-                    saveFavorites();
-                    
-                    // Update current playing station if it's the one being edited
-                    if (currentPlayingStation && currentPlayingStation.id === id) {
-                        currentPlayingStation = { ...currentPlayingStation, name, url };
-                        currentStationName.textContent = name;
-                        currentStationNameCompact.textContent = name;
-                    }
-                }
-            } else { // Adding new
-                if (favorites.some(fav => fav.url === url)) {
-                    showMessage('This station URL is already in your favorites.', 'info');
-                    closeModal();
-                    return;
-                }
-                
-                const newStation = { id: Date.now().toString(), name, url };
-                favorites.push(newStation);
-                showMessage('Station added to favorites!', 'success');
-                saveFavorites();
-                
-                // If the newly added station is the one currently playing from a direct URL
-                if (currentPlayingStation && currentPlayingStation.url === url && isDirectUrlStream) {
-                    isDirectUrlStream = false;
-                    addCurrentToFavoritesBtn.classList.add('hidden');
-                    currentPlayingStation = newStation;
-                }
-            }
+    if (id) { // Editing existing
+        const index = favorites.findIndex(s => s.id.toString() === id);
+        if (index > -1) {
+            favorites[index] = { 
+                ...favorites[index], 
+                name, 
+                url, 
+                codec: codec || undefined, 
+                bitrate: bitrate || undefined 
+            };
+            showMessage('Station updated successfully!', 'success');
+            saveFavorites();
             
+            if (currentPlayingStation && currentPlayingStation.id === id) {
+                currentPlayingStation = { 
+                    ...currentPlayingStation, 
+                    name, 
+                    url, 
+                    codec: codec || undefined, 
+                    bitrate: bitrate || undefined 
+                };
+                currentStationName.textContent = name;
+                currentStationNameCompact.textContent = name;
+            }
+        }
+    } else { // Adding new
+        if (favorites.some(fav => fav.url === url)) {
+            showMessage('This station URL is already in your favorites.', 'info');
             closeModal();
-        });
+            return;
+        }
+        
+        const newStation = { 
+            id: Date.now().toString(), 
+            name, 
+            url, 
+            codec: codec || undefined, 
+            bitrate: bitrate || undefined 
+        };
+        favorites.push(newStation);
+        showMessage('Station added to favorites!', 'success');
+        saveFavorites();
+        
+        if (currentPlayingStation && currentPlayingStation.url === url && isDirectUrlStream) {
+            isDirectUrlStream = false;
+            addCurrentToFavoritesBtn.classList.add('hidden');
+            currentPlayingStation = newStation;
+        }
+    }
+    
+    closeModal();
+});
 
         function deleteFavorite(id) {
             const stationToDelete = favorites.find(s => s.id === id);
@@ -2358,7 +2386,7 @@ function confirmImport() {
         }
 
         // --- Audio Player Logic ---
-    function playStation(station, isDirect = false) {
+function playStation(station, isDirect = false) {
     try {
         if (!station || !station.url) {
             showMessage('Invalid station data.', 'error');
@@ -2386,32 +2414,36 @@ function confirmImport() {
         currentStationNameCompact.textContent = 'Loading...';
         playPauseBtn.innerHTML = '<i class="fas fa-spinner spinner"></i>';
         
-        // Add tech info below station name
-        const techInfo = document.createElement('div');
-        techInfo.className = 'flex items-center space-x-2 mt-1 text-xs';
-        
-        if (station.codec) {
-            const codecSpan = document.createElement('span');
-            codecSpan.className = 'bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 px-2 py-0.5 rounded';
-            codecSpan.textContent = station.codec;
-            techInfo.appendChild(codecSpan);
-        }
-        
-        if (station.bitrate) {
-            const bitrateSpan = document.createElement('span');
-            bitrateSpan.className = 'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 px-2 py-0.5 rounded';
-            bitrateSpan.textContent = station.bitrate;
-            techInfo.appendChild(bitrateSpan);
-        }
-        
-        // Clear previous tech info and add new one
+        // Create tech info display
         const nowPlayingInfo = document.querySelector('#nowPlayingSection .flex-grow');
+        
+        // Clear any existing tech info
         const existingTechInfo = nowPlayingInfo.querySelector('.tech-info');
         if (existingTechInfo) {
             nowPlayingInfo.removeChild(existingTechInfo);
         }
-        techInfo.classList.add('tech-info');
-        nowPlayingInfo.appendChild(techInfo);
+        
+        // Add new tech info if available
+        if (station.codec || station.bitrate) {
+            const techInfo = document.createElement('div');
+            techInfo.className = 'tech-info flex items-center space-x-2 mt-1 text-xs';
+            
+            if (station.codec) {
+                const codecSpan = document.createElement('span');
+                codecSpan.className = 'bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 px-2 py-0.5 rounded';
+                codecSpan.textContent = station.codec;
+                techInfo.appendChild(codecSpan);
+            }
+            
+            if (station.bitrate) {
+                const bitrateSpan = document.createElement('span');
+                bitrateSpan.className = 'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 px-2 py-0.5 rounded';
+                bitrateSpan.textContent = station.bitrate;
+                techInfo.appendChild(bitrateSpan);
+            }
+            
+            nowPlayingInfo.appendChild(techInfo);
+        }
         
         audioPlayer.src = streamUrl + (streamUrl.includes('?') ? '&' : '?') + 'nocache=' + Date.now();
         
