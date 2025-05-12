@@ -521,11 +521,10 @@
                             <p class="text-sm text-gray-500 dark:text-gray-400 truncate">Station</p>
                             <p id="currentStationName" class="font-bold truncate" title="No station selected">---</p>
                             <div class="flex items-center mt-1">
-                                <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200 mr-2">
-                                    <span class="w-2 h-2 rounded-full bg-red-500 mr-1 live-indicator"></span>
-                                    LIVE
-                                </span>
-                                <span id="bitrateInfo" class="text-xs text-gray-500 dark:text-gray-400"></span>
+                              <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200 mr-2">
+    <span class="w-2 h-2 rounded-full bg-red-500 mr-1 live-indicator"></span>
+    LIVE
+</span>
                             </div>
                         </div>
                     </div>
@@ -742,24 +741,25 @@
     </div>
 </div>
    <!-- Theme Palette Modal -->
+<!-- Theme Palette Modal -->
 <div id="themePaletteModal" class="modal fixed inset-0 bg-black bg-opacity-60 dark:bg-opacity-75 flex items-center justify-center p-4 opacity-0 invisible z-[100]">
-    <div class="modal-content bg-white dark:bg-gray-800 p-6 rounded-xl shadow-xl w-full max-w-xs border border-gray-200 dark:border-gray-700">
-        <h3 class="text-xl font-semibold mb-5 flex items-center">
+    <div class="modal-content bg-white dark:bg-gray-800 p-4 rounded-xl shadow-xl w-full max-w-xs border border-gray-200 dark:border-gray-700">
+        <h3 class="text-lg font-semibold mb-3 flex items-center">
             <i class="fas fa-palette mr-2 text-blue-500"></i>
-            <span>Choose Theme</span>
+            <span>Theme</span>
         </h3>
-    <div class="grid grid-cols-2 gap-3">
-    <button id="lightThemeBtn" class="flex flex-col items-center p-2 transition-colors">
-        <div class="w-12 h-12 rounded-full bg-white border-2 border-gray-300 mb-1"></div>
-        <span class="text-sm">Light</span>
-    </button>
-    <button id="darkThemeBtn" class="flex flex-col items-center p-2 transition-colors">
-        <div class="w-12 h-12 rounded-full bg-gray-900 border-2 border-gray-700 mb-1"></div>
-        <span class="text-sm">Dark</span>
-    </button>
-</div>
-        <div class="mt-6 flex justify-end">
-            <button type="button" id="closeThemePaletteBtn" class="btn-secondary">Close</button>
+        <div class="flex justify-center gap-4">
+            <button id="lightThemeBtn" class="flex flex-col items-center p-2 transition-colors rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">
+                <div class="w-10 h-10 rounded-full bg-white border-2 border-gray-300 mb-1"></div>
+                <span class="text-xs">Light</span>
+            </button>
+            <button id="darkThemeBtn" class="flex flex-col items-center p-2 transition-colors rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700">
+                <div class="w-10 h-10 rounded-full bg-gray-900 border-2 border-gray-700 mb-1"></div>
+                <span class="text-xs">Dark</span>
+            </button>
+        </div>
+        <div class="mt-4 flex justify-end">
+            <button type="button" id="closeThemePaletteBtn" class="btn-secondary px-3 py-1 text-sm">Close</button>
         </div>
     </div>
 </div>
@@ -807,7 +807,7 @@
         const currentStationName = document.getElementById('currentStationName');
         const currentStationNameCompact = document.getElementById('currentStationNameCompact');
         const nowPlayingSection = document.getElementById('nowPlayingSection');
-        const bitrateInfo = document.getElementById('bitrateInfo');
+      
         const quickAccessList = document.getElementById('quickAccessList');
         const quickAccessEditList = document.getElementById('quickAccessEditList');
         const editQuickAccessBtn = document.getElementById('editQuickAccessBtn');
@@ -859,7 +859,7 @@ const shareAppBtn = document.getElementById('shareAppBtn');
         let currentLbrxFileName = 'live_beats_favorites.lbrx';
         let audioContext;
         let analyser;
-        let bitrateInterval;
+       
         let lastBytes = 0;
        // ====================
 // Radio Browser Section
@@ -2196,8 +2196,7 @@ if (isDirect && !isAlreadyFavorite) {
     addCurrentToFavoritesBtn.classList.add('hidden');
 }
                         
-                        // Start bitrate monitoring
-                        startBitrateMonitoring();
+                
                         
                         // Update UI to show playing state
                         renderFavorites();
@@ -2217,8 +2216,7 @@ if (isDirect && !isAlreadyFavorite) {
                             playPauseBtn.innerHTML = '<i class="fas fa-pause"></i>';
                             nowPlayingSection.classList.remove('hidden');
                             
-                            // Start bitrate monitoring
-                            startBitrateMonitoring();
+                       
                             
                             // Update UI to show playing state
                             renderFavorites();
@@ -2230,7 +2228,7 @@ if (isDirect && !isAlreadyFavorite) {
                             currentStationNameCompact.textContent = "Error";
                             playPauseBtn.innerHTML = '<i class="fas fa-play"></i>';
                             nowPlayingSection.classList.add('hidden');
-                            stopBitrateMonitoring();
+                           
                         });
                     });
             } catch (error) {
@@ -2238,7 +2236,7 @@ if (isDirect && !isAlreadyFavorite) {
                 showMessage(`Error with station: ${station.name}`, 'error');
                 addCurrentToFavoritesBtn.classList.add('hidden');
                 nowPlayingSection.classList.add('hidden');
-                stopBitrateMonitoring();
+              
             }
         }
         
@@ -2258,33 +2256,8 @@ if (isDirect && !isAlreadyFavorite) {
             }
         }
         
-        function startBitrateMonitoring() {
-            stopBitrateMonitoring();
-            lastBytes = 0;
-            bitrateInterval = setInterval(updateBitrateInfo, 2000);
-        }
+       
         
-        function stopBitrateMonitoring() {
-            if (bitrateInterval) {
-                clearInterval(bitrateInterval);
-                bitrateInterval = null;
-            }
-            bitrateInfo.textContent = '';
-        }
-        
-        function updateBitrateInfo() {
-            if (audioPlayer.buffered.length > 0) {
-                const bytesLoaded = audioPlayer.buffered.end(0) * audioPlayer.duration * 1000;
-                const bytesDiff = bytesLoaded - lastBytes;
-                const bitrate = Math.round((bytesDiff * 8) / 2000); // kbps
-                
-                if (bitrate > 0) {
-                    bitrateInfo.textContent = `${bitrate} kbps`;
-                }
-                
-                lastBytes = bytesLoaded;
-            }
-        }
         
         // Event listener for playDirectUrlBtn
         playDirectUrlBtn.addEventListener('click', () => {
@@ -2335,23 +2308,22 @@ if (isDirect && !isAlreadyFavorite) {
             renderFavorites();
         }
 
-        function stopPlayback() {
-            audioPlayer.pause();
-            audioPlayer.currentTime = 0;
-            if (audioPlayer.src) audioPlayer.src = "";
-            
-            currentPlayingStation = null;
-            isDirectUrlStream = false;
-            currentStationName.textContent = '---';
-            currentStationNameCompact.textContent = '---';
-            playPauseBtn.innerHTML = '<i class="fas fa-play"></i>';
-            playPauseBtn.setAttribute('aria-label', 'Play');
-            addCurrentToFavoritesBtn.classList.add('hidden');
-            nowPlayingSection.classList.add('hidden');
-            stopBitrateMonitoring();
-            
-            renderFavorites();
-        }
+function stopPlayback() {
+    audioPlayer.pause();
+    audioPlayer.currentTime = 0;
+    if (audioPlayer.src) audioPlayer.src = "";
+    
+    currentPlayingStation = null;
+    isDirectUrlStream = false;
+    currentStationName.textContent = '---';
+    currentStationNameCompact.textContent = '---';
+    playPauseBtn.innerHTML = '<i class="fas fa-play"></i>';
+    playPauseBtn.setAttribute('aria-label', 'Play');
+    addCurrentToFavoritesBtn.classList.add('hidden');
+    nowPlayingSection.classList.add('hidden');
+    
+    renderFavorites();
+}
 
        function addCurrentToFavorites() {
     if (!currentPlayingStation || !currentPlayingStation.url) {
@@ -2408,7 +2380,7 @@ if (isDirect && !isAlreadyFavorite) {
             playPauseBtn.innerHTML = '<i class="fas fa-play"></i>';
             playPauseBtn.setAttribute('aria-label', 'Play');
             nowPlayingSection.classList.add('hidden');
-            stopBitrateMonitoring();
+          
             
             renderFavorites();
         });
@@ -2418,7 +2390,7 @@ if (isDirect && !isAlreadyFavorite) {
             playPauseBtn.setAttribute('aria-label', 'Play');
             showMessage('Stream ended or was interrupted.', 'info');
             nowPlayingSection.classList.add('hidden');
-            stopBitrateMonitoring();
+         
             
             renderFavorites();
         });
