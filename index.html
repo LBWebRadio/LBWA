@@ -586,33 +586,47 @@
     </div>
 
     <!-- Station Modal -->
-    <div id="stationModal" class="modal fixed inset-0 bg-black bg-opacity-60 dark:bg-opacity-75 flex items-center justify-center p-4 opacity-0 invisible z-[100]">
-        <div class="modal-content bg-white dark:bg-gray-800 p-6 rounded-xl shadow-xl w-full max-w-md border border-gray-200 dark:border-gray-700">
-            <h3 id="modalTitle" class="text-xl font-semibold mb-5 flex items-center">
-                <i class="fas fa-plus-circle mr-2 text-blue-500"></i>
-                <span>Add Favorite Station</span>
-            </h3>
-            <form id="stationForm">
-                <input type="hidden" id="stationId">
-                <div class="mb-4">
-                    <label for="stationNameInput" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Station Name</label>
-                    <input type="text" id="stationNameInput" required 
+<div id="stationModal" class="modal fixed inset-0 bg-black bg-opacity-60 dark:bg-opacity-75 flex items-center justify-center p-4 opacity-0 invisible z-[100]">
+    <div class="modal-content bg-white dark:bg-gray-800 p-6 rounded-xl shadow-xl w-full max-w-md border border-gray-200 dark:border-gray-700">
+        <h3 id="modalTitle" class="text-xl font-semibold mb-5 flex items-center">
+            <i class="fas fa-plus-circle mr-2 text-blue-500"></i>
+            <span>Add Favorite Station</span>
+        </h3>
+        <form id="stationForm">
+            <input type="hidden" id="stationId">
+            <div class="mb-4">
+                <label for="stationNameInput" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Station Name</label>
+                <input type="text" id="stationNameInput" required 
+                       class="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white placeholder-gray-400 dark:placeholder-gray-500" 
+                       placeholder="E.g., My Favorite Hits">
+            </div>
+            <div class="mb-4">
+                <label for="stationUrlInput" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Station Stream URL</label>
+                <input type="url" id="stationUrlInput" required 
+                       class="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white placeholder-gray-400 dark:placeholder-gray-500" 
+                       placeholder="https://stream.example.com/radio">
+            </div>
+            <div class="grid grid-cols-2 gap-4 mb-4">
+                <div>
+                    <label for="stationCodecInput" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Codec</label>
+                    <input type="text" id="stationCodecInput" 
                            class="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white placeholder-gray-400 dark:placeholder-gray-500" 
-                           placeholder="E.g., My Favorite Hits">
+                           placeholder="E.g., MP3, AAC">
                 </div>
-                <div class="mb-6">
-                    <label for="stationUrlInput" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Station Stream URL</label>
-                    <input type="url" id="stationUrlInput" required 
+                <div>
+                    <label for="stationBitrateInput" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Bitrate</label>
+                    <input type="text" id="stationBitrateInput" 
                            class="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white placeholder-gray-400 dark:placeholder-gray-500" 
-                           placeholder="https://stream.example.com/radio">
+                           placeholder="E.g., 128 kbps">
                 </div>
-                <div class="flex justify-end space-x-3">
-                    <button type="button" id="cancelModalBtn" class="btn-secondary">Cancel</button>
-                    <button type="submit" id="saveStationBtn" class="btn-primary">Save Station</button>
-                </div>
-            </form>
-        </div>
+            </div>
+            <div class="flex justify-end space-x-3">
+                <button type="button" id="cancelModalBtn" class="btn-secondary">Cancel</button>
+                <button type="submit" id="saveStationBtn" class="btn-primary">Save Station</button>
+            </div>
+        </form>
     </div>
+</div>
 
     <!-- Quick Access Edit Modal -->
     <div id="quickAccessEditModal" class="modal fixed inset-0 bg-black bg-opacity-60 dark:bg-opacity-75 flex items-center justify-center p-4 opacity-0 invisible z-[100]">
@@ -1345,23 +1359,26 @@ function renderRadioBrowserResults(stations) {
         let streamUrl = station.url_resolved || station.url;
         if (!streamUrl) return;
         
+        // Extract codec and bitrate
+        const codec = station.codec || 'Unknown';
+        const bitrate = station.bitrate ? `${station.bitrate} kbps` : 'Unknown';
+        
         const div = document.createElement('div');
         div.className = 'station-card flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg shadow-sm hover:shadow-md transition-all duration-200 border border-gray-200 dark:border-gray-600 cursor-pointer';
         
         // Make the whole card clickable to play the station
         div.addEventListener('click', (e) => {
-            // Don't trigger if clicking on buttons or links inside the card
             if (e.target.tagName === 'BUTTON' || e.target.tagName === 'A' || e.target.closest('button')) {
                 return;
             }
             
-            // Track the click first
             trackStationClick(station.stationuuid);
-            
             playStation({
                 id: `radio_browser_${station.stationuuid}`,
                 name: station.name,
-                url: streamUrl
+                url: streamUrl,
+                codec: codec,
+                bitrate: bitrate
             }, true);
             
             document.querySelector('#nowPlayingSection').scrollIntoView({
@@ -1374,21 +1391,14 @@ function renderRadioBrowserResults(stations) {
         
         const favicon = document.createElement('img');
         favicon.className = 'w-8 h-8 rounded mr-3 flex-shrink-0';
-        // Set default image first
         favicon.src = 'icons/icon-32.png';
         
-        // Only try to load station favicon if it exists and isn't empty
         if (station.favicon && station.favicon.trim() !== '') {
-            // Create a temporary image to test loading
             const tempImg = new Image();
             tempImg.onload = function() {
                 favicon.src = station.favicon;
             };
-            tempImg.onerror = function() {
-                // Keep the default image if loading fails
-                // Already set to default, so no need to do anything
-            };
-            // Start loading the image
+            tempImg.onerror = function() {};
             tempImg.src = station.favicon;
         }
         
@@ -1402,7 +1412,7 @@ function renderRadioBrowserResults(stations) {
         nameSpan.textContent = station.name;
         
         const metaDiv = document.createElement('div');
-        metaDiv.className = 'flex items-center space-x-2 text-xs text-gray-500 dark:text-gray-400 mt-1';
+        metaDiv.className = 'flex flex-col sm:flex-row sm:items-center sm:space-x-2 text-xs text-gray-500 dark:text-gray-400 mt-1';
         
         const countrySpan = document.createElement('span');
         countrySpan.textContent = station.country || 'Unknown';
@@ -1411,9 +1421,25 @@ function renderRadioBrowserResults(stations) {
         genreSpan.textContent = station.tags || station.genre || 'Various';
         genreSpan.className = 'truncate';
         
+        // Add codec and bitrate info
+        const techInfo = document.createElement('div');
+        techInfo.className = 'flex items-center space-x-2 text-xs mt-1 sm:mt-0';
+        
+        const codecSpan = document.createElement('span');
+        codecSpan.className = 'bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 px-2 py-0.5 rounded text-xs';
+        codecSpan.textContent = codec;
+        
+        const bitrateSpan = document.createElement('span');
+        bitrateSpan.className = 'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 px-2 py-0.5 rounded text-xs';
+        bitrateSpan.textContent = bitrate;
+        
+        techInfo.appendChild(codecSpan);
+        techInfo.appendChild(bitrateSpan);
+        
         metaDiv.appendChild(countrySpan);
         metaDiv.appendChild(document.createTextNode('•'));
         metaDiv.appendChild(genreSpan);
+        metaDiv.appendChild(techInfo);
         
         infoDiv.appendChild(nameSpan);
         infoDiv.appendChild(metaDiv);
@@ -1425,34 +1451,38 @@ function renderRadioBrowserResults(stations) {
         playBtn.innerHTML = '<i class="fas fa-play"></i>';
         playBtn.title = `Play ${station.name}`;
         playBtn.addEventListener('click', (e) => {
-            e.stopPropagation(); // Prevent the card click from triggering
+            e.stopPropagation();
             trackStationClick(station.stationuuid);
             playStation({
                 id: `radio_browser_${station.stationuuid}`,
                 name: station.name,
-                url: streamUrl
+                url: streamUrl,
+                codec: codec,
+                bitrate: bitrate
             }, true);
             document.querySelector('#nowPlayingSection').scrollIntoView({
                 behavior: 'smooth'
             });
         });
-        
-const addBtn = document.createElement('button');
-const isAlreadyFavorite = favorites.some(fav => fav.url === streamUrl);
-addBtn.className = `icon-btn ${isAlreadyFavorite ? 'text-green-500 dark:text-green-400' : 'text-yellow-500 dark:text-yellow-400'}`;
-addBtn.innerHTML = isAlreadyFavorite ? '<i class="fas fa-check"></i>' : '<i class="fas fa-star"></i>';
-addBtn.title = isAlreadyFavorite ? 'Already in favorites' : `Add ${station.name} to favorites`;
-addBtn.addEventListener('click', (e) => {
-    e.stopPropagation();
-    if (isAlreadyFavorite) {
-        showMessage('This station is already in your favorites!', 'info');
-    } else {
-        openModal('add', {
-            name: station.name,
-            url: streamUrl
+
+        const addBtn = document.createElement('button');
+        const isAlreadyFavorite = favorites.some(fav => fav.url === streamUrl);
+        addBtn.className = `icon-btn ${isAlreadyFavorite ? 'text-green-500 dark:text-green-400' : 'text-yellow-500 dark:text-yellow-400'}`;
+        addBtn.innerHTML = isAlreadyFavorite ? '<i class="fas fa-check"></i>' : '<i class="fas fa-star"></i>';
+        addBtn.title = isAlreadyFavorite ? 'Already in favorites' : `Add ${station.name} to favorites`;
+        addBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (isAlreadyFavorite) {
+                showMessage('This station is already in your favorites!', 'info');
+            } else {
+                openModal('add', {
+                    name: station.name,
+                    url: streamUrl,
+                    codec: codec,
+                    bitrate: bitrate
+                });
+            }
         });
-    }
-});
         
         div.appendChild(leftDiv);
         div.appendChild(playBtn);
@@ -1607,127 +1637,132 @@ themePaletteModal.addEventListener('click', (e) => {
             }
         }
 
-        // --- Modal Management ---
-        function openModal(mode = 'add', station = null) {
-            stationModal.classList.remove('invisible', 'opacity-0');
-            stationModal.classList.add('open');
-            stationForm.reset();
-            stationIdInput.value = '';
+      // --- Modal Management ---
+function openModal(mode = 'add', station = null) {
+    stationModal.classList.remove('invisible', 'opacity-0');
+    stationModal.classList.add('open');
+    stationForm.reset();
+    stationIdInput.value = '';
 
-            if (mode === 'edit' && station) {
-                modalTitle.innerHTML = '<i class="fas fa-edit mr-2 text-blue-500"></i><span>Edit Favorite Station</span>';
-                stationIdInput.value = station.id;
+    if (mode === 'edit' && station) {
+        modalTitle.innerHTML = '<i class="fas fa-edit mr-2 text-blue-500"></i><span>Edit Favorite Station</span>';
+        stationIdInput.value = station.id;
+        stationNameInput.value = station.name;
+        stationUrlInput.value = station.url;
+        document.getElementById('stationCodecInput').value = station.codec || '';
+        document.getElementById('stationBitrateInput').value = station.bitrate || '';
+    } else {
+        modalTitle.innerHTML = '<i class="fas fa-plus-circle mr-2 text-blue-500"></i><span>Add Favorite Station</span>';
+        if (station && station.url) {
+            stationUrlInput.value = station.url;
+            document.getElementById('stationCodecInput').value = station.codec || '';
+            document.getElementById('stationBitrateInput').value = station.bitrate || '';
+            
+            if (station.name && station.name !== "Direct Stream" && !station.name.startsWith("http")) {
                 stationNameInput.value = station.name;
-                stationUrlInput.value = station.url;
             } else {
-                modalTitle.innerHTML = '<i class="fas fa-plus-circle mr-2 text-blue-500"></i><span>Add Favorite Station</span>';
-                if (station && station.url) {
-                    stationUrlInput.value = station.url;
-                    if (station.name && station.name !== "Direct Stream" && !station.name.startsWith("http")) {
-                        stationNameInput.value = station.name;
-                    } else {
-                        try {
-                            const urlObj = new URL(station.url);
-                            stationNameInput.value = urlObj.hostname.replace(/^www\./, '');
-                        } catch (e) {
-                            stationNameInput.value = '';
-                        }
-                    }
+                try {
+                    const urlObj = new URL(station.url);
+                    stationNameInput.value = urlObj.hostname.replace(/^www\./, '');
+                } catch (e) {
+                    stationNameInput.value = '';
                 }
             }
-            stationNameInput.focus();
         }
+    }
+    stationNameInput.focus();
+}
 
-        function closeModal() {
-            stationModal.classList.add('opacity-0');
-            setTimeout(() => {
-                stationModal.classList.add('invisible');
-                stationModal.classList.remove('open');
-            }, 200);
-        }
+function closeModal() {
+    stationModal.classList.add('opacity-0');
+    setTimeout(() => {
+        stationModal.classList.add('invisible');
+        stationModal.classList.remove('open');
+    }, 200);
+}
 
-        function openQuickAccessEditModal() {
-            quickAccessEditList.innerHTML = '';
-            
-            // Add favorites to the edit list
-            favorites.forEach(station => {
-                const isInQuickAccess = quickAccessStations.some(q => q.url === station.url);
-                
-                const div = document.createElement('div');
-                div.className = 'flex items-center justify-between p-2 bg-gray-50 dark:bg-gray-700 rounded-lg';
-                
-                const label = document.createElement('label');
-                label.className = 'flex items-center space-x-3 cursor-pointer';
-                
-                const checkbox = document.createElement('input');
-                checkbox.type = 'checkbox';
-                checkbox.className = 'rounded text-blue-600 focus:ring-blue-500 dark:bg-gray-800 dark:border-gray-600';
-                checkbox.checked = isInQuickAccess;
-                checkbox.dataset.url = station.url;
-                checkbox.dataset.name = station.name;
-                
-                const span = document.createElement('span');
-                span.className = 'text-sm font-medium text-gray-700 dark:text-gray-300';
-                span.textContent = station.name;
-                
-                label.appendChild(checkbox);
-                label.appendChild(span);
-                div.appendChild(label);
-                
-                quickAccessEditList.appendChild(div);
-            });
-            
-            quickAccessEditModal.classList.remove('invisible', 'opacity-0');
-            quickAccessEditModal.classList.add('open');
-        }
+function openQuickAccessEditModal() {
+    quickAccessEditList.innerHTML = '';
+    
+    // Add favorites to the edit list
+    favorites.forEach(station => {
+        const isInQuickAccess = quickAccessStations.some(q => q.url === station.url);
+        
+        const div = document.createElement('div');
+        div.className = 'flex items-center justify-between p-2 bg-gray-50 dark:bg-gray-700 rounded-lg';
+        
+        const label = document.createElement('label');
+        label.className = 'flex items-center space-x-3 cursor-pointer';
+        
+        const checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.className = 'rounded text-blue-600 focus:ring-blue-500 dark:bg-gray-800 dark:border-gray-600';
+        checkbox.checked = isInQuickAccess;
+        checkbox.dataset.url = station.url;
+        checkbox.dataset.name = station.name;
+        
+        const span = document.createElement('span');
+        span.className = 'text-sm font-medium text-gray-700 dark:text-gray-300';
+        span.textContent = station.name;
+        
+        label.appendChild(checkbox);
+        label.appendChild(span);
+        div.appendChild(label);
+        
+        quickAccessEditList.appendChild(div);
+    });
+    
+    quickAccessEditModal.classList.remove('invisible', 'opacity-0');
+    quickAccessEditModal.classList.add('open');
+}
 
-        function closeQuickAccessEditModal() {
-            quickAccessEditModal.classList.add('opacity-0');
-            setTimeout(() => {
-                quickAccessEditModal.classList.add('invisible');
-                quickAccessEditModal.classList.remove('open');
-            }, 200);
-        }
+function closeQuickAccessEditModal() {
+    quickAccessEditModal.classList.add('opacity-0');
+    setTimeout(() => {
+        quickAccessEditModal.classList.add('invisible');
+        quickAccessEditModal.classList.remove('open');
+    }, 200);
+}
 
-        function openInfoModal() {
-            infoModal.classList.remove('invisible', 'opacity-0');
-            infoModal.classList.add('open');
-        }
+function openInfoModal() {
+    infoModal.classList.remove('invisible', 'opacity-0');
+    infoModal.classList.add('open');
+}
 
-        function closeInfoModal() {
-            infoModal.classList.add('opacity-0');
-            setTimeout(() => {
-                infoModal.classList.add('invisible');
-                infoModal.classList.remove('open');
-            }, 200);
-        }
+function closeInfoModal() {
+    infoModal.classList.add('opacity-0');
+    setTimeout(() => {
+        infoModal.classList.add('invisible');
+        infoModal.classList.remove('open');
+    }, 200);
+}
 
-        function openImportConfirmModal(stationCount) {
-            importConfirmText.textContent = `You're about to import ${stationCount} stations. Existing stations with the same URL will be updated.`;
-            importConfirmModal.classList.remove('invisible', 'opacity-0');
-            importConfirmModal.classList.add('open');
-        }
+function openImportConfirmModal(stationCount) {
+    importConfirmText.textContent = `You're about to import ${stationCount} stations. Existing stations with the same URL will be updated.`;
+    importConfirmModal.classList.remove('invisible', 'opacity-0');
+    importConfirmModal.classList.add('open');
+}
 
-        function closeImportConfirmModal() {
-            importConfirmModal.classList.add('opacity-0');
-            setTimeout(() => {
-                importConfirmModal.classList.add('invisible');
-                importConfirmModal.classList.remove('open');
-            }, 200);
-        }
+function closeImportConfirmModal() {
+    importConfirmModal.classList.add('opacity-0');
+    setTimeout(() => {
+        importConfirmModal.classList.add('invisible');
+        importConfirmModal.classList.remove('open');
+    }, 200);
+}
 
-        function openClearConfirmModal() {
-            clearConfirmModal.classList.remove('invisible', 'opacity-0');
-            clearConfirmModal.classList.add('open');
-        }
+function openClearConfirmModal() {
+    clearConfirmModal.classList.remove('invisible', 'opacity-0');
+    clearConfirmModal.classList.add('open');
+}
 
-        function closeClearConfirmModal() {
-            clearConfirmModal.classList.add('opacity-0');
-            setTimeout(() => {
-                clearConfirmModal.classList.add('invisible');
-                clearConfirmModal.classList.remove('open');
-            }, 200);
-        }
+function closeClearConfirmModal() {
+    clearConfirmModal.classList.add('opacity-0');
+    setTimeout(() => {
+        clearConfirmModal.classList.add('invisible');
+        clearConfirmModal.classList.remove('open');
+    }, 200);
+}
 
         openAddModalBtn.addEventListener('click', () => openModal('add'));
         editQuickAccessBtn.addEventListener('click', openQuickAccessEditModal);
@@ -2323,20 +2358,17 @@ function confirmImport() {
         }
 
         // --- Audio Player Logic ---
-       function playStation(station, isDirect = false) {
+    function playStation(station, isDirect = false) {
     try {
         if (!station || !station.url) {
             showMessage('Invalid station data.', 'error');
             return;
         }
 
-        // Stop any current playback
         stopPlayback();
         
-        // Check if station is already in favorites
         const isAlreadyFavorite = favorites.some(fav => fav.url === station.url);
         
-        // Show/hide the add to favorites button
         if (isDirect && !isAlreadyFavorite) {
             addCurrentToFavoritesBtn.classList.remove('hidden');
             addCurrentToFavoritesBtn.innerHTML = '<i class="fas fa-star"></i>';
@@ -2345,90 +2377,87 @@ function confirmImport() {
             addCurrentToFavoritesBtn.classList.add('hidden');
         }
                 
-                // Setup audio context for visualization if not already done
-                setupAudioContext();
-                
-                // Enable CORS mode
-                audioPlayer.crossOrigin = "anonymous";
-                
-                // Create a clean URL with cache busting
-                let streamUrl = station.url;
-                
-                // Show loading state
-                currentStationName.textContent = 'Loading...';
-                currentStationNameCompact.textContent = 'Loading...';
-                playPauseBtn.innerHTML = '<i class="fas fa-spinner spinner"></i>';
-                
-                // 1. First try direct play (works for CORS-enabled streams)
-                audioPlayer.src = streamUrl + (streamUrl.includes('?') ? '&' : '?') + 'nocache=' + Date.now();
-                
-                audioPlayer.play()
-                    .then(() => {
-                        // Success case
-                        currentPlayingStation = station;
-                        currentStationName.textContent = station.name;
-                        currentStationNameCompact.textContent = station.name;
-                        playPauseBtn.innerHTML = '<i class="fas fa-pause"></i>';
-                        playPauseBtn.setAttribute('aria-label', 'Pause');
-                        nowPlayingSection.classList.remove('hidden');
-
-                        isDirectUrlStream = isDirect;
-                        const isAlreadyFavorite = favorites.some(fav => fav.url === station.url);
-
-              // Show/hide the add to favorites button
-if (isDirect && !isAlreadyFavorite) {
-    addCurrentToFavoritesBtn.classList.remove('hidden');
-    addCurrentToFavoritesBtn.innerHTML = '<i class="fas fa-star"></i>';
-    addCurrentToFavoritesBtn.title = 'Add current station to favorites';
-} else if (!isDirect && isAlreadyFavorite) {
-    addCurrentToFavoritesBtn.classList.add('hidden');
-} else {
-    addCurrentToFavoritesBtn.classList.add('hidden');
-}
-                        
-                
-                        
-                        // Update UI to show playing state
-                        renderFavorites();
-                    })
-                    .catch(error => {
-                        console.error("Direct play failed, trying proxy:", error);
-                        
-                        // 2. Fallback to CORS proxy
-                        const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(streamUrl)}`;
-                        audioPlayer.src = proxyUrl;
-                        
-                        return audioPlayer.play().then(() => {
-                            // Proxy success
-                            currentPlayingStation = station;
-                            currentStationName.textContent = station.name + " (via proxy)";
-                            currentStationNameCompact.textContent = station.name + " (proxy)";
-                            playPauseBtn.innerHTML = '<i class="fas fa-pause"></i>';
-                            nowPlayingSection.classList.remove('hidden');
-                            
-                       
-                            
-                            // Update UI to show playing state
-                            renderFavorites();
-                        }).catch(proxyError => {
-                            // Final failure
-                            console.error("Proxy playback failed:", proxyError);
-                            showMessage(`Cannot play: ${station.name}. Try another stream.`, 'error');
-                            currentStationName.textContent = "Playback Error";
-                            currentStationNameCompact.textContent = "Error";
-                            playPauseBtn.innerHTML = '<i class="fas fa-play"></i>';
-                            nowPlayingSection.classList.add('hidden');
-                           
-                        });
-                    });
-            } catch (error) {
-                console.error("Setup error:", error);
-                showMessage(`Error with station: ${station.name}`, 'error');
-                addCurrentToFavoritesBtn.classList.add('hidden');
-                nowPlayingSection.classList.add('hidden');
-              
-            }
+        setupAudioContext();
+        audioPlayer.crossOrigin = "anonymous";
+        
+        let streamUrl = station.url;
+        
+        currentStationName.textContent = 'Loading...';
+        currentStationNameCompact.textContent = 'Loading...';
+        playPauseBtn.innerHTML = '<i class="fas fa-spinner spinner"></i>';
+        
+        // Add tech info below station name
+        const techInfo = document.createElement('div');
+        techInfo.className = 'flex items-center space-x-2 mt-1 text-xs';
+        
+        if (station.codec) {
+            const codecSpan = document.createElement('span');
+            codecSpan.className = 'bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 px-2 py-0.5 rounded';
+            codecSpan.textContent = station.codec;
+            techInfo.appendChild(codecSpan);
         }
+        
+        if (station.bitrate) {
+            const bitrateSpan = document.createElement('span');
+            bitrateSpan.className = 'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 px-2 py-0.5 rounded';
+            bitrateSpan.textContent = station.bitrate;
+            techInfo.appendChild(bitrateSpan);
+        }
+        
+        // Clear previous tech info and add new one
+        const nowPlayingInfo = document.querySelector('#nowPlayingSection .flex-grow');
+        const existingTechInfo = nowPlayingInfo.querySelector('.tech-info');
+        if (existingTechInfo) {
+            nowPlayingInfo.removeChild(existingTechInfo);
+        }
+        techInfo.classList.add('tech-info');
+        nowPlayingInfo.appendChild(techInfo);
+        
+        audioPlayer.src = streamUrl + (streamUrl.includes('?') ? '&' : '?') + 'nocache=' + Date.now();
+        
+        audioPlayer.play()
+            .then(() => {
+                currentPlayingStation = station;
+                currentStationName.textContent = station.name;
+                currentStationNameCompact.textContent = station.name;
+                playPauseBtn.innerHTML = '<i class="fas fa-pause"></i>';
+                playPauseBtn.setAttribute('aria-label', 'Pause');
+                nowPlayingSection.classList.remove('hidden');
+
+                isDirectUrlStream = isDirect;
+                
+                renderFavorites();
+            })
+            .catch(error => {
+                console.error("Direct play failed, trying proxy:", error);
+                
+                const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(streamUrl)}`;
+                audioPlayer.src = proxyUrl;
+                
+                return audioPlayer.play().then(() => {
+                    currentPlayingStation = station;
+                    currentStationName.textContent = station.name + " (via proxy)";
+                    currentStationNameCompact.textContent = station.name + " (proxy)";
+                    playPauseBtn.innerHTML = '<i class="fas fa-pause"></i>';
+                    nowPlayingSection.classList.remove('hidden');
+                    
+                    renderFavorites();
+                }).catch(proxyError => {
+                    console.error("Proxy playback failed:", proxyError);
+                    showMessage(`Cannot play: ${station.name}. Try another stream.`, 'error');
+                    currentStationName.textContent = "Playback Error";
+                    currentStationNameCompact.textContent = "Error";
+                    playPauseBtn.innerHTML = '<i class="fas fa-play"></i>';
+                    nowPlayingSection.classList.add('hidden');
+                });
+            });
+    } catch (error) {
+        console.error("Setup error:", error);
+        showMessage(`Error with station: ${station.name}`, 'error');
+        addCurrentToFavoritesBtn.classList.add('hidden');
+        nowPlayingSection.classList.add('hidden');
+    }
+}
         
         function setupAudioContext() {
             if (!audioContext) {
