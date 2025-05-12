@@ -926,7 +926,7 @@ async function fetchLanguages(filter = '') {
 
 async function showCountrySelection() {
     try {
-        const countries = await fetchCountries();
+        let countries = await fetchCountries();
         
         // Create a modal for country selection
         const modal = document.createElement('div');
@@ -960,29 +960,18 @@ async function showCountrySelection() {
         const searchInput = modal.querySelector('#countrySearchInput');
         const countryList = modal.querySelector('#countryList');
         
-        searchInput.addEventListener('input', async (e) => {
-            const searchTerm = e.target.value.trim();
-            if (searchTerm.length > 1) {
-                try {
-                    const filteredCountries = await fetchCountries(searchTerm);
-                    countryList.innerHTML = filteredCountries.map(country => `
-                        <div class="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg cursor-pointer flex justify-between items-center" data-country="${country.name}">
-                            <span>${country.name}</span>
-                            <span class="text-xs bg-gray-200 dark:bg-gray-600 px-2 py-1 rounded-full">${country.stationcount} stations</span>
-                        </div>
-                    `).join('');
-                } catch (error) {
-                    console.error('Error filtering countries:', error);
+        searchInput.addEventListener('input', (e) => {
+            const searchTerm = e.target.value.trim().toLowerCase();
+            const allCountryItems = countryList.querySelectorAll('[data-country]');
+            
+            allCountryItems.forEach(item => {
+                const countryName = item.dataset.country.toLowerCase();
+                if (countryName.includes(searchTerm)) {
+                    item.style.display = 'flex';
+                } else {
+                    item.style.display = 'none';
                 }
-            } else if (searchTerm.length === 0) {
-                // Reset to full list
-                countryList.innerHTML = countries.map(country => `
-                    <div class="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg cursor-pointer flex justify-between items-center" data-country="${country.name}">
-                        <span>${country.name}</span>
-                        <span class="text-xs bg-gray-200 dark:bg-gray-600 px-2 py-1 rounded-full">${country.stationcount} stations</span>
-                    </div>
-                `).join('');
-            }
+            });
         });
         
         // Country selection
@@ -1007,7 +996,7 @@ async function showCountrySelection() {
 
 async function showLanguageSelection() {
     try {
-        const languages = await fetchLanguages();
+        let languages = await fetchLanguages();
         
         // Create a modal for language selection
         const modal = document.createElement('div');
@@ -1041,29 +1030,18 @@ async function showLanguageSelection() {
         const searchInput = modal.querySelector('#languageSearchInput');
         const languageList = modal.querySelector('#languageList');
         
-        searchInput.addEventListener('input', async (e) => {
-            const searchTerm = e.target.value.trim();
-            if (searchTerm.length > 1) {
-                try {
-                    const filteredLanguages = await fetchLanguages(searchTerm);
-                    languageList.innerHTML = filteredLanguages.map(lang => `
-                        <div class="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg cursor-pointer flex justify-between items-center" data-language="${lang.name}">
-                            <span>${lang.name}</span>
-                            <span class="text-xs bg-gray-200 dark:bg-gray-600 px-2 py-1 rounded-full">${lang.stationcount} stations</span>
-                        </div>
-                    `).join('');
-                } catch (error) {
-                    console.error('Error filtering languages:', error);
+        searchInput.addEventListener('input', (e) => {
+            const searchTerm = e.target.value.trim().toLowerCase();
+            const allLanguageItems = languageList.querySelectorAll('[data-language]');
+            
+            allLanguageItems.forEach(item => {
+                const languageName = item.dataset.language.toLowerCase();
+                if (languageName.includes(searchTerm)) {
+                    item.style.display = 'flex';
+                } else {
+                    item.style.display = 'none';
                 }
-            } else if (searchTerm.length === 0) {
-                // Reset to full list
-                languageList.innerHTML = languages.map(lang => `
-                    <div class="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg cursor-pointer flex justify-between items-center" data-language="${lang.name}">
-                        <span>${lang.name}</span>
-                        <span class="text-xs bg-gray-200 dark:bg-gray-600 px-2 py-1 rounded-full">${lang.stationcount} stations</span>
-                    </div>
-                `).join('');
-            }
+            });
         });
         
         // Language selection
