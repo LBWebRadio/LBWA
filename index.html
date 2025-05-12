@@ -2454,7 +2454,7 @@ function playStation(station, isDirect = false) {
             return;
         }
 
-        stopPlayback();
+        stopPlayback(); // This already clears the timer via stopPlayback()
         
         const isAlreadyFavorite = favorites.some(fav => fav.url === station.url);
         
@@ -2517,35 +2517,46 @@ function playStation(station, isDirect = false) {
                 playPauseBtn.setAttribute('aria-label', 'Pause');
                 nowPlayingSection.classList.remove('hidden');
 
+                // Start the timer when playback succeeds
+                startPlayTimer();
+
                 isDirectUrlStream = isDirect;
                 
                 renderFavorites();
             })
             .catch(error => {
                 console.error("Direct play failed, trying proxy:", error);
+                clearPlayTimer(); // Clear timer if direct play fails
                 
                 const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(streamUrl)}`;
                 audioPlayer.src = proxyUrl;
                 
-                return audioPlayer.play().then(() => {
-                    currentPlayingStation = station;
-                    currentStationName.textContent = station.name + " (via proxy)";
-                    currentStationNameCompact.textContent = station.name + " (proxy)";
-                    playPauseBtn.innerHTML = '<i class="fas fa-pause"></i>';
-                    nowPlayingSection.classList.remove('hidden');
-                    
-                    renderFavorites();
-                }).catch(proxyError => {
-                    console.error("Proxy playback failed:", proxyError);
-                    showMessage(`Cannot play: ${station.name}. Try another stream.`, 'error');
-                    currentStationName.textContent = "Playback Error";
-                    currentStationNameCompact.textContent = "Error";
-                    playPauseBtn.innerHTML = '<i class="fas fa-play"></i>';
-                    nowPlayingSection.classList.add('hidden');
-                });
+                return audioPlayer.play()
+                    .then(() => {
+                        currentPlayingStation = station;
+                        currentStationName.textContent = station.name + " (via proxy)";
+                        currentStationNameCompact.textContent = station.name + " (proxy)";
+                        playPauseBtn.innerHTML = '<i class="fas fa-pause"></i>';
+                        nowPlayingSection.classList.remove('hidden');
+                        
+                        // Start timer for proxy playback
+                        startPlayTimer();
+                        
+                        renderFavorites();
+                    })
+                    .catch(proxyError => {
+                        console.error("Proxy playback failed:", proxyError);
+                        clearPlayTimer(); // Clear timer if proxy play also fails
+                        showMessage(`Cannot play: ${station.name}. Try another stream.`, 'error');
+                        currentStationName.textContent = "Playback Error";
+                        currentStationNameCompact.textContent = "Error";
+                        playPauseBtn.innerHTML = '<i class="fas fa-play"></i>';
+                        nowPlayingSection.classList.add('hidden');
+                    });
             });
     } catch (error) {
         console.error("Setup error:", error);
+        clearPlayTimer(); // Clear timer if setup fails
         showMessage(`Error with station: ${station.name}`, 'error');
         addCurrentToFavoritesBtn.classList.add('hidden');
         nowPlayingSection.classList.add('hidden');
@@ -2624,6 +2635,9 @@ function stopPlayback() {
     audioPlayer.pause();
     audioPlayer.currentTime = 0;
     if (audioPlayer.src) audioPlayer.src = "";
+    
+    // Clear the play timer here
+    clearPlayTimer();
     
     currentPlayingStation = null;
     isDirectUrlStream = false;
