@@ -2370,7 +2370,7 @@ function stopPlayback() {
 
         audioPlayer.addEventListener('error', (e) => {
             console.error('Audio Player Error Event:', e);
-            let errorMessage = "Error playing audio.";
+           
             if (currentPlayingStation) {
                 errorMessage = `Playback error for: ${currentPlayingStation.name}. The stream might be offline or the URL incorrect.`;
             }
