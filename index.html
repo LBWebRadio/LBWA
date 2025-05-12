@@ -1792,29 +1792,40 @@ function closeClearConfirmModal() {
         });
 
         // Save quick access changes
-        saveQuickAccessEditBtn.addEventListener('click', () => {
-            const checkboxes = quickAccessEditList.querySelectorAll('input[type="checkbox"]:checked');
-            const newQuickAccess = [];
-            
-            checkboxes.forEach(checkbox => {
-                newQuickAccess.push({
-                    name: checkbox.dataset.name,
-                    url: checkbox.dataset.url
-                });
-            });
-            
-            // If no stations selected, keep at least one default
-            if (newQuickAccess.length === 0) {
-                newQuickAccess.push(defaultQuickAccessStations[0]);
-                showMessage('At least one station must be in Quick Access. Kept first default station.', 'info');
-            }
-            
-            quickAccessStations = newQuickAccess;
-            localStorage.setItem('quickAccessStations', JSON.stringify(quickAccessStations));
-            renderQuickAccess();
-            closeQuickAccessEditModal();
-            showMessage('Quick Access updated!', 'success');
+   saveQuickAccessEditBtn.addEventListener('click', () => {
+    const checkboxes = quickAccessEditList.querySelectorAll('input[type="checkbox"]:checked');
+    const newQuickAccess = [];
+    
+    checkboxes.forEach(checkbox => {
+        // Find the full station info from favorites
+        const fullStation = favorites.find(fav => fav.url === checkbox.dataset.url) || {
+            name: checkbox.dataset.name,
+            url: checkbox.dataset.url
+        };
+        
+        newQuickAccess.push({
+            name: fullStation.name,
+            url: fullStation.url,
+            codec: fullStation.codec,
+            bitrate: fullStation.bitrate
         });
+    });
+    
+    if (newQuickAccess.length === 0) {
+        newQuickAccess.push({
+            ...defaultQuickAccessStations[0],
+            codec: favorites.find(fav => fav.url === defaultQuickAccessStations[0].url)?.codec,
+            bitrate: favorites.find(fav => fav.url === defaultQuickAccessStations[0].url)?.bitrate
+        });
+        showMessage('At least one station must be in Quick Access. Kept first default station.', 'info');
+    }
+    
+    quickAccessStations = newQuickAccess;
+    localStorage.setItem('quickAccessStations', JSON.stringify(quickAccessStations));
+    renderQuickAccess();
+    closeQuickAccessEditModal();
+    showMessage('Quick Access updated!', 'success');
+});
 
         // --- Favorites Management ---
         function loadFavorites() {
@@ -1865,36 +1876,42 @@ function closeClearConfirmModal() {
     return content;
 }
 
-        function renderQuickAccess() {
-            quickAccessList.innerHTML = '';
-            
-            quickAccessStations.forEach(station => {
-                const button = document.createElement('button');
-                button.className = 'quick-access-btn btn-secondary text-left truncate';
-                button.dataset.url = station.url;
-                button.dataset.name = station.name;
-                
-                // Try to find icon from default stations
-                const defaultStation = defaultQuickAccessStations.find(s => s.url === station.url);
-                const iconClass = defaultStation ? defaultStation.icon : 'fas fa-radio';
-                
-                button.innerHTML = `
-                    <i class="${iconClass} mr-2"></i>
-                    <span class="truncate">${station.name}</span>
-                `;
-                
-                button.addEventListener('click', () => {
-                    directUrlInput.value = station.url;
-                    playStation({ 
-                        id: 'quick_' + Date.now(), 
-                        name: station.name, 
-                        url: station.url 
-                    }, true);
-                });
-                
-                quickAccessList.appendChild(button);
-            });
-        }
+       function renderQuickAccess() {
+    quickAccessList.innerHTML = '';
+    
+    quickAccessStations.forEach(station => {
+        // Find the full station info from favorites (including codec/bitrate)
+        const fullStationInfo = favorites.find(fav => fav.url === station.url) || station;
+        
+        const button = document.createElement('button');
+        button.className = 'quick-access-btn btn-secondary text-left truncate';
+        button.dataset.url = station.url;
+        button.dataset.name = station.name;
+        
+        // Try to find icon from default stations
+        const defaultStation = defaultQuickAccessStations.find(s => s.url === station.url);
+        const iconClass = defaultStation ? defaultStation.icon : 'fas fa-radio';
+        
+        button.innerHTML = `
+            <i class="${iconClass} mr-2"></i>
+            <span class="truncate">${station.name}</span>
+        `;
+        
+        button.addEventListener('click', () => {
+            directUrlInput.value = station.url;
+            // Play with complete station info including codec/bitrate
+            playStation({
+                id: fullStationInfo.id || 'quick_' + Date.now(),
+                name: fullStationInfo.name,
+                url: fullStationInfo.url,
+                codec: fullStationInfo.codec,
+                bitrate: fullStationInfo.bitrate
+            }, true);
+        });
+        
+        quickAccessList.appendChild(button);
+    });
+}
 
         function renderFavorites() {
            console.log('Rendering favorites:', favorites); 
