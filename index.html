@@ -2527,10 +2527,10 @@ let bufferSetting = localStorage.getItem('bufferSetting') || 'default';
 
 // Buffering options
 const bufferOptions = {
-    default: { preload: 'auto', bufferTime: 0 },
-    low: { preload: 'auto', bufferTime: 2 },
-    medium: { preload: 'auto', bufferTime: 5 },
-    high: { preload: 'auto', bufferTime: 10 }
+    default: { preload: 'auto', targetBuffer: 0 },
+    low: { preload: 'auto', targetBuffer: 256 * 1024 }, // 256KB
+    medium: { preload: 'auto', targetBuffer: 512 * 1024 }, // 512KB
+    high: { preload: 'auto', targetBuffer: 1024 * 1024 } // 1MB
 };
 
 // Update UI to show current setting
@@ -2569,7 +2569,7 @@ document.addEventListener('click', function(e) {
 
 
 
-        // --- Audio Player Logic ---
+      // --- Audio Player Logic ---
 function playStation(station, isDirect = false) {
     try {
         if (!station || !station.url) {
@@ -2596,17 +2596,12 @@ function playStation(station, isDirect = false) {
         
         // Get buffer settings
         const bufferConfig = bufferOptions[bufferSetting];
-        audioPlayer.preload = 'auto'; // Always preload for streaming
+        audioPlayer.preload = 'auto'; // Force preload for streaming
         
-        currentStationName.textContent = 'Buffering...';
-        currentStationNameCompact.textContent = 'Buffering...';
+        currentStationName.textContent = 'Connecting...';
+        currentStationNameCompact.textContent = 'Connecting...';
         playPauseBtn.innerHTML = '<i class="fas fa-spinner spinner"></i>';
         
-        // Show buffering progress if high buffer selected
-        if (bufferConfig.bufferTime > 0) {
-            showMessage(`Buffering ${bufferConfig.bufferTime} seconds...`, 'info');
-        }
-
         // Create tech info display
         const nowPlayingInfo = document.querySelector('#nowPlayingSection .flex-grow');
         
@@ -2642,66 +2637,120 @@ function playStation(station, isDirect = false) {
         const finalUrl = streamUrl + (streamUrl.includes('?') ? '&' : '?') + 'nocache=' + Date.now();
         audioPlayer.src = finalUrl;
         
-        // Load the audio without playing immediately
-        audioPlayer.load();
+        // REAL BUFFERING IMPLEMENTATION
+        let bufferCheckInterval;
+        let lastBufferedSec = 0;
+        let stableCount = 0;
         
-        // Buffer monitoring
-        let bufferTimer;
-        let bufferStartTime = Date.now();
+        const updateBufferDisplay = (bufferedSec) => {
+            const displayText = bufferConfig.targetBufferSec > 0 ?
+                `Buffering... (${Math.min(bufferedSec, bufferConfig.targetBufferSec).toFixed(1)}/${bufferConfig.targetBufferSec}s)` :
+                'Loading...';
+            
+            currentStationName.textContent = displayText;
+            currentStationNameCompact.textContent = displayText;
+        };
         
         const checkBuffer = () => {
-            const elapsed = (Date.now() - bufferStartTime) / 1000;
-            const remaining = bufferConfig.bufferTime - elapsed;
-            
-            if (remaining > 0) {
-                currentStationName.textContent = `Buffering... (${remaining.toFixed(1)}s)`;
-                currentStationNameCompact.textContent = `Buffering (${remaining.toFixed(1)}s)`;
-                bufferTimer = setTimeout(checkBuffer, 100);
-            } else {
-                // Buffer time complete - start playback
-                audioPlayer.play()
-                    .then(() => {
-                        currentPlayingStation = station;
-                        currentStationName.textContent = station.name;
-                        currentStationNameCompact.textContent = station.name;
-                        playPauseBtn.innerHTML = '<i class="fas fa-pause"></i>';
-                        playPauseBtn.setAttribute('aria-label', 'Pause');
-                        nowPlayingSection.classList.remove('hidden');
-
-                        startPlayTimer();
-                        isDirectUrlStream = isDirect;
-                        renderFavorites();
-                    })
-                    .catch(error => {
-                        console.error("Direct play failed, trying proxy:", error);
-                        clearPlayTimer();
-                        
-                        const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(streamUrl)}`;
-                        audioPlayer.src = proxyUrl;
-                        
-                        audioPlayer.play()
-                            .then(() => {
-                                currentPlayingStation = station;
-                                currentStationName.textContent = station.name + " (via proxy)";
-                                currentStationNameCompact.textContent = station.name + " (proxy)";
-                                playPauseBtn.innerHTML = '<i class="fas fa-pause"></i>';
-                                nowPlayingSection.classList.remove('hidden');
-                                
-                                startPlayTimer();
-                                renderFavorites();
-                            })
-                            .catch(proxyError => {
-                                console.error("Proxy playback failed:", proxyError);
-                                clearPlayTimer();
-                                showMessage(`Cannot play: ${station.name}. Try another stream.`, 'error');
-                                currentStationName.textContent = "Playback Error";
-                                currentStationNameCompact.textContent = "Error";
-                                playPauseBtn.innerHTML = '<i class="fas fa-play"></i>';
-                                nowPlayingSection.classList.add('hidden');
-                            });
-                    });
+            try {
+                if (!audioPlayer.buffered.length) {
+                    updateBufferDisplay(0);
+                    return;
+                }
+                
+                // Calculate current buffered amount in seconds
+                const bufferedSec = audioPlayer.buffered.end(0) - audioPlayer.currentTime;
+                
+                // Detect if buffer is growing
+                if (Math.abs(bufferedSec - lastBufferedSec) < 0.1) {
+                    stableCount++;
+                } else {
+                    stableCount = 0;
+                }
+                lastBufferedSec = bufferedSec;
+                
+                updateBufferDisplay(bufferedSec);
+                
+                // Start playback when either:
+                // 1. We have enough buffered content OR
+                // 2. Buffer hasn't grown for 3 checks (stalled) OR
+                // 3. Audio is already playable
+                if (bufferedSec >= bufferConfig.targetBufferSec ||
+                    stableCount >= 3 ||
+                    audioPlayer.readyState >= 3) {
+                    
+                    clearInterval(bufferCheckInterval);
+                    startPlayback();
+                }
+            } catch (e) {
+                console.error("Buffer check error:", e);
+                clearInterval(bufferCheckInterval);
+                startPlayback(); // Fallback to immediate playback
             }
         };
+        
+        const startPlayback = () => {
+            audioPlayer.play()
+                .then(() => {
+                    currentPlayingStation = station;
+                    currentStationName.textContent = station.name;
+                    currentStationNameCompact.textContent = station.name;
+                    playPauseBtn.innerHTML = '<i class="fas fa-pause"></i>';
+                    playPauseBtn.setAttribute('aria-label', 'Pause');
+                    nowPlayingSection.classList.remove('hidden');
+
+                    startPlayTimer();
+                    isDirectUrlStream = isDirect;
+                    renderFavorites();
+                })
+                .catch(error => {
+                    console.error("Direct play failed, trying proxy:", error);
+                    clearPlayTimer();
+                    
+                    const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(streamUrl)}`;
+                    audioPlayer.src = proxyUrl;
+                    
+                    audioPlayer.play()
+                        .then(() => {
+                            currentPlayingStation = station;
+                            currentStationName.textContent = station.name + " (via proxy)";
+                            currentStationNameCompact.textContent = station.name + " (proxy)";
+                            playPauseBtn.innerHTML = '<i class="fas fa-pause"></i>';
+                            nowPlayingSection.classList.remove('hidden');
+                            
+                            startPlayTimer();
+                            renderFavorites();
+                        })
+                        .catch(proxyError => {
+                            console.error("Proxy playback failed:", proxyError);
+                            clearPlayTimer();
+                            showMessage(`Cannot play: ${station.name}. Try another stream.`, 'error');
+                            currentStationName.textContent = "Playback Error";
+                            currentStationNameCompact.textContent = "Error";
+                            playPauseBtn.innerHTML = '<i class="fas fa-play"></i>';
+                            nowPlayingSection.classList.add('hidden');
+                        });
+                });
+        };
+        
+        // Start loading and buffering
+        audioPlayer.load();
+        
+        if (bufferConfig.targetBufferSec > 0) {
+            // Start checking buffer status every 200ms
+            bufferCheckInterval = setInterval(checkBuffer, 200);
+        } else {
+            // No buffering needed
+            startPlayback();
+        }
+    } catch (error) {
+        console.error("Setup error:", error);
+        clearPlayTimer();
+        showMessage(`Error with station: ${station.name}`, 'error');
+        addCurrentToFavoritesBtn.classList.add('hidden');
+        nowPlayingSection.classList.add('hidden');
+    }
+}
         
         // Start checking buffer status
         if (bufferConfig.bufferTime > 0) {
