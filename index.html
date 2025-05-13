@@ -2569,7 +2569,7 @@ document.addEventListener('click', function(e) {
 
 
 
-      // --- Audio Player Logic ---
+// --- Audio Player Logic ---
 function playStation(station, isDirect = false) {
     try {
         if (!station || !station.url) {
@@ -2716,9 +2716,11 @@ function playStation(station, isDirect = false) {
                             currentStationName.textContent = station.name + " (via proxy)";
                             currentStationNameCompact.textContent = station.name + " (proxy)";
                             playPauseBtn.innerHTML = '<i class="fas fa-pause"></i>';
+                            playPauseBtn.setAttribute('aria-label', 'Pause');
                             nowPlayingSection.classList.remove('hidden');
                             
                             startPlayTimer();
+                            isDirectUrlStream = isDirect;
                             renderFavorites();
                         })
                         .catch(proxyError => {
@@ -2728,6 +2730,7 @@ function playStation(station, isDirect = false) {
                             currentStationName.textContent = "Playback Error";
                             currentStationNameCompact.textContent = "Error";
                             playPauseBtn.innerHTML = '<i class="fas fa-play"></i>';
+                            playPauseBtn.setAttribute('aria-label', 'Play');
                             nowPlayingSection.classList.add('hidden');
                         });
                 });
@@ -2742,38 +2745,6 @@ function playStation(station, isDirect = false) {
         } else {
             // No buffering needed
             startPlayback();
-        }
-    } catch (error) {
-        console.error("Setup error:", error);
-        clearPlayTimer();
-        showMessage(`Error with station: ${station.name}`, 'error');
-        addCurrentToFavoritesBtn.classList.add('hidden');
-        nowPlayingSection.classList.add('hidden');
-    }
-}
-        
-        // Start checking buffer status
-        if (bufferConfig.bufferTime > 0) {
-            checkBuffer();
-        } else {
-            // No buffer delay - play immediately
-            audioPlayer.play()
-                .then(() => {
-                    currentPlayingStation = station;
-                    currentStationName.textContent = station.name;
-                    currentStationNameCompact.textContent = station.name;
-                    playPauseBtn.innerHTML = '<i class="fas fa-pause"></i>';
-                    playPauseBtn.setAttribute('aria-label', 'Pause');
-                    nowPlayingSection.classList.remove('hidden');
-
-                    startPlayTimer();
-                    isDirectUrlStream = isDirect;
-                    renderFavorites();
-                })
-                .catch(error => {
-                    console.error("Play error:", error);
-                    // [Keep existing error handling...]
-                });
         }
     } catch (error) {
         console.error("Setup error:", error);
