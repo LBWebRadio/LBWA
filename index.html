@@ -922,6 +922,20 @@ const memoryCache = new Map();
 
 
        // ========================
+// CACHING CONFIGURATION
+// ========================
+const CACHE_CONFIG = {
+  PREFIX: 'radioBrowserCache_',
+  LONG_TTL: 12 * 60 * 60 * 1000,    // 12 hours for important data
+  SHORT_TTL: 2 * 60 * 60 * 1000,    // 2 hours for searches
+  MAX_ITEMS: 30,                    // Only for long-term cache
+  MAX_SIZE_KB: 512,                 // Only for long-term cache (0.5MB)
+  CLEANUP_INTERVAL: 10 * 60 * 1000  // 10 minutes (battery-optimized)
+};
+
+// Memory cache for short-lived search results
+const memoryCache = new Map();
+
 // PERSISTENT CACHE (localStorage)
 // ========================
 const persistentCache = {
@@ -1001,6 +1015,54 @@ const persistentCache = {
     }
   }
 };
+
+// MEMORY CACHE MANAGEMENT
+// ========================
+function cleanMemoryCache() {
+  const now = Date.now();
+  for (const [key, value] of memoryCache.entries()) {
+    if (now - value.timestamp > CACHE_CONFIG.SHORT_TTL) {
+      memoryCache.delete(key);
+    }
+  }
+}
+
+// CACHE MAINTENANCE SCHEDULER
+// ========================
+function startCacheMaintenance() {
+  // Combine both cache cleanups in one function
+  function performCleanup() {
+    cleanMemoryCache();
+    persistentCache.cleanExpired();
+  }
+
+  // Use the most battery-efficient method available
+  if ('requestIdleCallback' in window) {
+    function scheduleCleanup() {
+      requestIdleCallback(() => {
+        performCleanup();
+        scheduleCleanup(); // Reschedule
+      }, { timeout: CACHE_CONFIG.CLEANUP_INTERVAL });
+    }
+    scheduleCleanup();
+  } else {
+    // Fallback to regular interval
+    setInterval(performCleanup, CACHE_CONFIG.CLEANUP_INTERVAL);
+  }
+
+  // Additional cleanup when app becomes visible
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible') {
+      performCleanup();
+    }
+  });
+}
+
+// Initialize when DOM is ready
+document.addEventListener('DOMContentLoaded', () => {
+  persistentCache.cleanExpired(); // Initial cleanup
+  startCacheMaintenance();
+});
 
 // Current search state
 let currentRadioSearch = '';
