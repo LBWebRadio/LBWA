@@ -903,167 +903,6 @@ const popularTagBtns = document.querySelectorAll('.popular-tag-btn');
 const RADIO_BROWSER_USER_AGENT = 'Live Beats WebRadio PWA/1.4.0';
 let RADIO_BROWSER_BASE_URL = 'https://de1.api.radio-browser.info';
 
-
-
-       // ========================
-// CACHING CONFIGURATION
-// ========================
-const CACHE_CONFIG = {
-  PREFIX: 'radioBrowserCache_',
-  LONG_TTL: 12 * 60 * 60 * 1000,    // 12 hours for important data
-  SHORT_TTL: 2 * 60 * 60 * 1000,    // 2 hours for searches
-  MAX_ITEMS: 30,                    // Only for long-term cache
-  MAX_SIZE_KB: 512,                 // Only for long-term cache (0.5MB)
-};
-
-// Memory cache for short-lived search results
-const memoryCache = new Map();
-
-
-
-       // ========================
-// CACHING CONFIGURATION
-// ========================
-const CACHE_CONFIG = {
-  PREFIX: 'radioBrowserCache_',
-  LONG_TTL: 12 * 60 * 60 * 1000,    // 12 hours for important data
-  SHORT_TTL: 2 * 60 * 60 * 1000,    // 2 hours for searches
-  MAX_ITEMS: 30,                    // Only for long-term cache
-  MAX_SIZE_KB: 512,                 // Only for long-term cache (0.5MB)
-  CLEANUP_INTERVAL: 10 * 60 * 1000  // 10 minutes (battery-optimized)
-};
-
-// Memory cache for short-lived search results
-const memoryCache = new Map();
-
-// PERSISTENT CACHE (localStorage)
-// ========================
-const persistentCache = {
-  get: function(key) {
-    const fullKey = CACHE_CONFIG.PREFIX + key;
-    const item = localStorage.getItem(fullKey);
-    
-    if (!item) return null;
-    
-    try {
-      const cached = JSON.parse(item);
-      if (Date.now() - cached.timestamp > CACHE_CONFIG.LONG_TTL) {
-        localStorage.removeItem(fullKey);
-        return null;
-      }
-      return cached.data;
-    } catch {
-      localStorage.removeItem(fullKey);
-      return null;
-    }
-  },
-
-  set: function(key, data) {
-    this.cleanExpired();
-    if (this.isFull()) this.pruneCache();
-    
-    const fullKey = CACHE_CONFIG.PREFIX + key;
-    localStorage.setItem(fullKey, JSON.stringify({
-      data: data,
-      timestamp: Date.now()
-    }));
-  },
-
-  cleanExpired: function() {
-    const now = Date.now();
-    Object.keys(localStorage).forEach(key => {
-      if (key.startsWith(CACHE_CONFIG.PREFIX)) {
-        try {
-          const cached = JSON.parse(localStorage.getItem(key));
-          if (now - cached.timestamp > CACHE_CONFIG.LONG_TTL) {
-            localStorage.removeItem(key);
-          }
-        } catch {
-          localStorage.removeItem(key);
-        }
-      }
-    });
-  },
-
-  isFull: function() {
-    const keys = Object.keys(localStorage)
-      .filter(k => k.startsWith(CACHE_CONFIG.PREFIX));
-    return keys.length >= CACHE_CONFIG.MAX_ITEMS || 
-           this.getSizeKB() >= CACHE_CONFIG.MAX_SIZE_KB;
-  },
-
-  getSizeKB: function() {
-    return Object.keys(localStorage)
-      .filter(k => k.startsWith(CACHE_CONFIG.PREFIX))
-      .reduce((total, key) => total + (localStorage.getItem(key)?.length || 0), 0) 
-      / 1024;
-  },
-
-  pruneCache: function() {
-    const keys = Object.keys(localStorage)
-      .filter(k => k.startsWith(CACHE_CONFIG.PREFIX))
-      .sort((a, b) => {
-        const itemA = JSON.parse(localStorage.getItem(a));
-        const itemB = JSON.parse(localStorage.getItem(b));
-        return (itemA?.timestamp || 0) - (itemB?.timestamp || 0);
-      });
-    
-    // Remove 20% of oldest items
-    const toRemove = Math.max(1, Math.floor(keys.length * 0.2));
-    for (let i = 0; i < toRemove; i++) {
-      localStorage.removeItem(keys[i]);
-    }
-  }
-};
-
-// MEMORY CACHE MANAGEMENT
-// ========================
-function cleanMemoryCache() {
-  const now = Date.now();
-  for (const [key, value] of memoryCache.entries()) {
-    if (now - value.timestamp > CACHE_CONFIG.SHORT_TTL) {
-      memoryCache.delete(key);
-    }
-  }
-}
-
-// CACHE MAINTENANCE SCHEDULER
-// ========================
-function startCacheMaintenance() {
-  // Combine both cache cleanups in one function
-  function performCleanup() {
-    cleanMemoryCache();
-    persistentCache.cleanExpired();
-  }
-
-  // Use the most battery-efficient method available
-  if ('requestIdleCallback' in window) {
-    function scheduleCleanup() {
-      requestIdleCallback(() => {
-        performCleanup();
-        scheduleCleanup(); // Reschedule
-      }, { timeout: CACHE_CONFIG.CLEANUP_INTERVAL });
-    }
-    scheduleCleanup();
-  } else {
-    // Fallback to regular interval
-    setInterval(performCleanup, CACHE_CONFIG.CLEANUP_INTERVAL);
-  }
-
-  // Additional cleanup when app becomes visible
-  document.addEventListener('visibilitychange', () => {
-    if (document.visibilityState === 'visible') {
-      performCleanup();
-    }
-  });
-}
-
-// Initialize when DOM is ready
-document.addEventListener('DOMContentLoaded', () => {
-  persistentCache.cleanExpired(); // Initial cleanup
-  startCacheMaintenance();
-});
-
 // Current search state
 let currentRadioSearch = '';
 let currentRadioResults = [];
@@ -1104,71 +943,43 @@ function updatePlayTimeDisplay() {
 }
 // JavaScript
 async function fetchCountries(filter = '') {
-  const cacheKey = 'countries_' + (filter || 'all');
-  const cached = persistentCache.get(cacheKey);
-  if (cached) {
-    console.log('Returning countries from cache');
-    return cached;
-  }
-
-  try {
-    const url = `${RADIO_BROWSER_BASE_URL}/json/countries`;
-    const response = await fetch(url, {
-      headers: { 'User-Agent': RADIO_BROWSER_USER_AGENT }
-    });
-    
-    if (!response.ok) throw new Error('Failed to fetch countries');
-    
-    let data = await response.json();
-    
-    // Filter if needed
-    if (filter) {
-      data = data.filter(c => 
-        c.name.toLowerCase().includes(filter.toLowerCase()));
+    try {
+        const url = filter ? 
+            `${RADIO_BROWSER_BASE_URL}/json/countries/${encodeURIComponent(filter)}` :
+            `${RADIO_BROWSER_BASE_URL}/json/countries`;
+        
+        const response = await fetch(url, {
+            headers: {
+                'User-Agent': RADIO_BROWSER_USER_AGENT
+            }
+        });
+        
+        if (!response.ok) throw new Error('Failed to fetch countries');
+        return await response.json();
+    } catch (error) {
+        console.error('Error fetching countries:', error);
+        throw error;
     }
-    
-    // Update cache
-    persistentCache.set(cacheKey, data);
-    
-    return data;
-  } catch (error) {
-    console.error('Error fetching countries:', error);
-    throw error;
-  }
 }
 
 async function fetchLanguages(filter = '') {
-  const cacheKey = 'languages_' + (filter || 'all');
-  const cached = persistentCache.get(cacheKey);
-  if (cached) {
-    console.log('Returning languages from cache');
-    return cached;
-  }
-
-  try {
-    const url = `${RADIO_BROWSER_BASE_URL}/json/languages`;
-    const response = await fetch(url, {
-      headers: { 'User-Agent': RADIO_BROWSER_USER_AGENT }
-    });
-    
-    if (!response.ok) throw new Error('Failed to fetch languages');
-    
-    let data = await response.json();
-    
-    // Filter if needed
-    if (filter) {
-      data = data.filter(l => 
-        l.name.toLowerCase().includes(filter.toLowerCase()));
+    try {
+        const url = filter ? 
+            `${RADIO_BROWSER_BASE_URL}/json/languages/${encodeURIComponent(filter)}` :
+            `${RADIO_BROWSER_BASE_URL}/json/languages`;
+        
+        const response = await fetch(url, {
+            headers: {
+                'User-Agent': RADIO_BROWSER_USER_AGENT
+            }
+        });
+        
+        if (!response.ok) throw new Error('Failed to fetch languages');
+        return await response.json();
+    } catch (error) {
+        console.error('Error fetching languages:', error);
+        throw error;
     }
-    
-    // Update cache
-    persistentCache.set(cacheKey, data);
-    
-    return data;
-  } catch (error) {
-    console.error('Error fetching languages:', error);
-    throw error;
-  }
 }
 
 async function showCountrySelection() {
@@ -1362,86 +1173,65 @@ async function trackStationClick(stationUuid) {
 
 // Search radio stations
 async function searchRadioStations(searchTerm = '', searchBy = 'name') {
-  try {
-    // Show loading state
-    radioBrowserResults.classList.add('hidden');
-    radioBrowserEmpty.classList.add('hidden');
-    radioBrowserLoading.classList.remove('hidden');
-    
-    const cacheKey = `search_${searchBy}:${searchTerm}`;
-    const cachedData = memoryCache.get(cacheKey);
-    
-    if (cachedData && Date.now() - cachedData.timestamp <= CACHE_CONFIG.SHORT_TTL) {
-      console.log('Returning search results from memory cache');
-      renderRadioBrowserResults(cachedData.data);
-      
-      radioBrowserLoading.classList.add('hidden');
-      if (cachedData.data.length > 0) {
-        radioBrowserResults.classList.remove('hidden');
-      } else {
+    try {
+        // Show loading state
+        radioBrowserResults.classList.add('hidden');
+        radioBrowserEmpty.classList.add('hidden');
+        radioBrowserLoading.classList.remove('hidden');
+        
+        let apiUrl;
+        
+        if (searchBy === 'tag') {
+            apiUrl = `${RADIO_BROWSER_BASE_URL}/json/stations/${searchTerm}?hidebroken=true&limit=30`;
+        } else if (searchBy === 'country') {
+            apiUrl = `${RADIO_BROWSER_BASE_URL}/json/stations/bycountry/${encodeURIComponent(searchTerm)}?hidebroken=true&limit=30`;
+        } else if (searchBy === 'language') {
+            apiUrl = `${RADIO_BROWSER_BASE_URL}/json/stations/bylanguage/${encodeURIComponent(searchTerm)}?hidebroken=true&limit=30`;
+        } else if (searchBy === 'genre') {
+            apiUrl = `${RADIO_BROWSER_BASE_URL}/json/stations/bytagexact/${encodeURIComponent(searchTerm)}?hidebroken=true&limit=30`;
+        } else {
+            apiUrl = `${RADIO_BROWSER_BASE_URL}/json/stations/search?name=${encodeURIComponent(searchTerm)}&hidebroken=true&limit=30`;
+        }
+        
+        const response = await fetch(apiUrl, {
+            headers: {
+                'User-Agent': RADIO_BROWSER_USER_AGENT
+            }
+        });
+        
+        if (!response.ok) throw new Error(`API request failed with status ${response.status}`);
+        
+        const data = await response.json();
+        currentRadioResults = data;
+        renderRadioBrowserResults(data);
+        
+        radioBrowserLoading.classList.add('hidden');
+        
+        if (data.length > 0) {
+            radioBrowserResults.classList.remove('hidden');
+            radioBrowserEmpty.classList.add('hidden');
+        } else {
+            radioBrowserResults.classList.add('hidden');
+            radioBrowserEmpty.classList.remove('hidden');
+            radioBrowserEmpty.innerHTML = `
+                <i class="fas fa-exclamation-circle text-3xl text-gray-300 dark:text-gray-600 mb-3"></i>
+                <p class="text-gray-500 dark:text-gray-400">No stations found</p>
+            `;
+        }
+    } catch (error) {
+        console.error('Radio Browser API error:', error);
+        radioBrowserLoading.classList.add('hidden');
+        radioBrowserResults.classList.add('hidden');
         radioBrowserEmpty.classList.remove('hidden');
-      }
-      return;
+        radioBrowserEmpty.innerHTML = `
+            <i class="fas fa-exclamation-triangle text-3xl text-red-300 dark:text-red-600 mb-3"></i>
+            <p class="text-gray-500 dark:text-gray-400">Failed to load stations</p>
+            <p class="text-sm text-gray-400 dark:text-gray-500 mt-1">${error.message}</p>
+        `;
+        
+        // Try to recover by getting a new server
+        RADIO_BROWSER_BASE_URL = await getRandomRadioBrowserServer();
     }
-
-    let apiUrl;
-    
-    if (searchBy === 'tag') {
-      apiUrl = `${RADIO_BROWSER_BASE_URL}/json/stations/${searchTerm}?hidebroken=true&limit=30`;
-    } else if (searchBy === 'country') {
-      apiUrl = `${RADIO_BROWSER_BASE_URL}/json/stations/bycountry/${encodeURIComponent(searchTerm)}?hidebroken=true&limit=30`;
-    } else if (searchBy === 'language') {
-      apiUrl = `${RADIO_BROWSER_BASE_URL}/json/stations/bylanguage/${encodeURIComponent(searchTerm)}?hidebroken=true&limit=30`;
-    } else if (searchBy === 'genre') {
-      apiUrl = `${RADIO_BROWSER_BASE_URL}/json/stations/bytagexact/${encodeURIComponent(searchTerm)}?hidebroken=true&limit=30`;
-    } else {
-      apiUrl = `${RADIO_BROWSER_BASE_URL}/json/stations/search?name=${encodeURIComponent(searchTerm)}&hidebroken=true&limit=30`;
-    }
-    
-    const response = await fetch(apiUrl, {
-      headers: { 'User-Agent': RADIO_BROWSER_USER_AGENT }
-    });
-    
-    if (!response.ok) throw new Error(`API request failed with status ${response.status}`);
-    
-    const data = await response.json();
-    
-    // Update memory cache
-    memoryCache.set(cacheKey, {
-      data: data,
-      timestamp: Date.now()
-    });
-    
-    currentRadioResults = data;
-    renderRadioBrowserResults(data);
-    
-    radioBrowserLoading.classList.add('hidden');
-    
-    if (data.length > 0) {
-      radioBrowserResults.classList.remove('hidden');
-      radioBrowserEmpty.classList.add('hidden');
-    } else {
-      radioBrowserResults.classList.add('hidden');
-      radioBrowserEmpty.classList.remove('hidden');
-      radioBrowserEmpty.innerHTML = `
-        <i class="fas fa-exclamation-circle text-3xl text-gray-300 dark:text-gray-600 mb-3"></i>
-        <p class="text-gray-500 dark:text-gray-400">No stations found</p>
-      `;
-    }
-  } catch (error) {
-    console.error('Radio Browser API error:', error);
-    radioBrowserLoading.classList.add('hidden');
-    radioBrowserResults.classList.add('hidden');
-    radioBrowserEmpty.classList.remove('hidden');
-    radioBrowserEmpty.innerHTML = `
-      <i class="fas fa-exclamation-triangle text-3xl text-red-300 dark:text-red-600 mb-3"></i>
-      <p class="text-gray-500 dark:text-gray-400">Failed to load stations</p>
-      <p class="text-sm text-gray-400 dark:text-gray-500 mt-1">${error.message}</p>
-    `;
-    
-    // Try to recover by getting a new server
-    RADIO_BROWSER_BASE_URL = await getRandomRadioBrowserServer();
-  }
 }
 
 
@@ -2976,28 +2766,13 @@ function stopPlayback() {
             }
         });
 
-        // ========================
-// ========================
-// INITIALIZATION
-// ========================
+        // --- Initial Load ---
+
 document.addEventListener('DOMContentLoaded', () => {
-    // 1. Initialize cache and clean expired items
-    persistentCache.cleanExpired();
-    
-    // 2. Load UI state
     loadTheme();
     loadFavorites();
+    initializeRadioBrowser(); // Add this line
     
-    // 3. Initialize radio browser and load top stations
-    initializeRadioBrowser(); // This will call searchRadioStations('topclick', 'tag')
-    
-    // 4. Pre-cache important data (countries and languages)
-    Promise.all([
-        fetchCountries(),
-        fetchLanguages()
-    ]).catch(e => console.error('Prefetch error:', e));
-    
-    // 5. Set up player UI state
     if (audioPlayer.paused) {
         playPauseBtn.innerHTML = '<i class="fas fa-play"></i>';
         playPauseBtn.setAttribute('aria-label', 'Play');
@@ -3005,19 +2780,31 @@ document.addEventListener('DOMContentLoaded', () => {
         playPauseBtn.innerHTML = '<i class="fas fa-pause"></i>';
         playPauseBtn.setAttribute('aria-label', 'Pause');
     }
-    
-    // 6. Initialize message box
     messageBox.classList.add('opacity-0', 'invisible', 'hidden');
 });
+       
+        document.addEventListener('DOMContentLoaded', () => {
+            loadTheme();
+            loadFavorites();
+            if (audioPlayer.paused) {
+                playPauseBtn.innerHTML = '<i class="fas fa-play"></i>';
+                playPauseBtn.setAttribute('aria-label', 'Play');
+            } else {
+                playPauseBtn.innerHTML = '<i class="fas fa-pause"></i>';
+                playPauseBtn.setAttribute('aria-label', 'Pause');
+            }
+            messageBox.classList.add('opacity-0', 'invisible', 'hidden');
+        });
 
-// PWA Installation (keep this separate)
-if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/sw.js')
-            .then(reg => console.log('ServiceWorker registered'))
-            .catch(err => console.log('ServiceWorker failed: ', err));
-    });
-}
+        // PWA Installation
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then(reg => console.log('ServiceWorker registered'))
+                    .catch(err => console.log('ServiceWorker failed: ', err));
+            });
+        }
+
         // Install Prompt Handler
         window.addEventListener('beforeinstallprompt', (e) => {
             e.preventDefault();
