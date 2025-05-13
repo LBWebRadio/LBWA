@@ -100,25 +100,6 @@
             background-color: rgba(75, 85, 99, 0.8);
         }
 
-       .draggable-section {
-    cursor: move;
-    transition: transform 0.2s ease;
-}
-
-.draggable-section.dragging {
-    opacity: 0.5;
-    transform: scale(0.98);
-    box-shadow: 0 0 10px rgba(0,0,0,0.2);
-}
-
-.dark .draggable-section.dragging {
-    box-shadow: 0 0 10px rgba(255,255,255,0.1);
-}
-
-.collapsible-header {
-    cursor: pointer;
-    user-select: none;
-}
         /* Player controls fixed at bottom */
         .player-controls {
             position: fixed;
@@ -404,187 +385,56 @@
         </div>
     </header>
 
-    <main class="container mx-auto max-w-6xl p-4 flex-grow mb-36" id="mainContent">
-        <!-- Play from URL section -->
-        <div class="draggable-section bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700" data-section="playFromUrl">
-            <div class="flex items-center justify-between p-5 cursor-pointer collapsible-header" onclick="toggleSection('playFromUrlSection')">
-                <h2 class="text-xl font-semibold flex items-center">
-                    <i class="fas fa-link mr-2 text-blue-500"></i>
-                    Play from URL
-                </h2>
-                <button class="icon-btn text-gray-500 dark:text-gray-400">
-                    <i id="playFromUrlToggleIcon" class="fas fa-plus"></i>
-                </button>
-            </div>
-            <div id="playFromUrlSection" class="px-5 pb-5 hidden">
-                <div class="flex flex-col sm:flex-row items-stretch gap-3">
-                    <input type="url" id="directUrlInput" 
-                           class="flex-grow w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white placeholder-gray-400 dark:placeholder-gray-500" 
-                           placeholder="https://example.com/stream.mp3">
-                    <button id="playDirectUrlBtn" class="btn-primary whitespace-nowrap">
-                        <i class="fas fa-play mr-2"></i>Play
-                    </button>
-                </div>
-                <div class="mt-3 text-sm text-gray-500 dark:text-gray-400">
-                    Tip: If the station will not play it likely doesn't support CORS
-                </div>
-            </div>
+    <main class="container mx-auto max-w-6xl p-4 flex-grow mb-36">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <!-- Left column -->
+            <div class="lg:col-span-2 space-y-6">
+                <!-- Play from URL section -->
+             <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
+    <div class="flex items-center justify-between p-5 cursor-pointer" onclick="toggleSection('playFromUrlSection')">
+        <h2 class="text-xl font-semibold flex items-center">
+            <i class="fas fa-link mr-2 text-blue-500"></i>
+            Play from URL
+        </h2>
+        <button class="icon-btn text-gray-500 dark:text-gray-400">
+            <i id="playFromUrlToggleIcon" class="fas fa-plus"></i>
+        </button>
+    </div>
+    <div id="playFromUrlSection" class="px-5 pb-5 hidden">
+        <div class="flex flex-col sm:flex-row items-stretch gap-3">
+            <input type="url" id="directUrlInput" 
+                   class="flex-grow w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white placeholder-gray-400 dark:placeholder-gray-500" 
+                   placeholder="https://example.com/stream.mp3">
+            <button id="playDirectUrlBtn" class="btn-primary whitespace-nowrap">
+                <i class="fas fa-play mr-2"></i>Play
+            </button>
         </div>
+        <div class="mt-3 text-sm text-gray-500 dark:text-gray-400">
+            Tip: If the station will not play it likely doesn't support CORS
+        </div>
+    </div>
+</div>
 
-        <!-- Radio Browser section -->
-        <div class="draggable-section bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700" data-section="discoverStations">
-            <div class="flex items-center justify-between p-5 cursor-pointer collapsible-header" onclick="toggleSection('discoverStationsSection')">
-                <h2 class="text-xl font-semibold flex items-center">
-                    <i class="fas fa-search mr-2 text-blue-500"></i>
-                    Discover Stations
-                </h2>
-                <button class="icon-btn text-gray-500 dark:text-gray-400">
-                    <i id="discoverStationsToggleIcon" class="fas fa-plus"></i>
-                </button>
-            </div>
-            <div id="discoverStationsSection" class="px-5 pb-5 hidden">
-                <div class="flex flex-col sm:flex-row items-stretch gap-3 mb-4">
-                    <input type="text" id="radioSearchInput" 
-                           class="flex-grow w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white placeholder-gray-400 dark:placeholder-gray-500" 
-                           placeholder="Search for stations...">
-                    <button id="radioSearchBtn" class="btn-primary whitespace-nowrap">
-                        <i class="fas fa-search mr-2"></i>Search
-                    </button>
-                </div>
-                
-                <div class="flex flex-wrap gap-2 mb-4">
-                    <button class="popular-tag-btn btn-secondary text-sm px-3 py-1" data-tag="topvote">Top Rated</button>
-                    <button class="popular-tag-btn btn-secondary text-sm px-3 py-1" data-tag="country">By Country</button>
-                    <button class="popular-tag-btn btn-secondary text-sm px-3 py-1" data-tag="language">By Language</button>
-                    <button class="popular-tag-btn btn-secondary text-sm px-3 py-1" data-tag="genre">By Genre</button>
-                </div>
-                
-                <div id="radioBrowserResults" class="space-y-3 max-h-[300px] overflow-y-auto pr-2 hidden">
-                    <!-- Results will be displayed here -->
-                </div>
-                
-                <div id="radioBrowserLoading" class="text-center py-4 hidden">
-                    <i class="fas fa-spinner spinner text-blue-500 text-2xl"></i>
-                    <p class="text-gray-500 dark:text-gray-400 mt-2">Loading stations...</p>
-                </div>
-                
-                <div id="radioBrowserEmpty" class="text-center py-4">
-                    <i class="fas fa-radio text-3xl text-gray-300 dark:text-gray-600 mb-3"></i>
-                    <p class="text-gray-500 dark:text-gray-400">Search for radio stations to discover</p>
-                </div>
-            </div>
+               <!-- Radio Browser section -->
+<div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
+    <div class="flex items-center justify-between p-5 cursor-pointer" onclick="toggleSection('discoverStationsSection')">
+        <h2 class="text-xl font-semibold flex items-center">
+            <i class="fas fa-search mr-2 text-blue-500"></i>
+            Discover Stations
+        </h2>
+        <button class="icon-btn text-gray-500 dark:text-gray-400">
+            <i id="discoverStationsToggleIcon" class="fas fa-plus"></i>
+        </button>
+    </div>
+    <div id="discoverStationsSection" class="px-5 pb-5 hidden">
+        <div class="flex flex-col sm:flex-row items-stretch gap-3 mb-4">
+            <input type="text" id="radioSearchInput" 
+                   class="flex-grow w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white placeholder-gray-400 dark:placeholder-gray-500" 
+                   placeholder="Search for stations...">
+            <button id="radioSearchBtn" class="btn-primary whitespace-nowrap">
+                <i class="fas fa-search mr-2"></i>Search
+            </button>
         </div>
-        
-        <!-- Quick Access section -->
-        <div class="draggable-section bg-white dark:bg-gray-800 p-5 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700" data-section="quickAccess">
-            <div class="flex items-center justify-between mb-4">
-                <h2 class="text-xl font-semibold flex items-center">
-                    <i class="fas fa-bolt mr-2 text-amber-500"></i>
-                    Quick Access
-                </h2>
-                <button id="editQuickAccessBtn" class="icon-btn text-gray-500 dark:text-gray-400 hover:text-blue-500 dark:hover:text-blue-400">
-                    <i class="fas fa-edit"></i>
-                </button>
-            </div>
-            <div id="quickAccessList" class="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                <!-- Quick access buttons will be generated here -->
-            </div>
-        </div>
-        
-        <!-- Actions section -->
-        <div class="draggable-section bg-white dark:bg-gray-800 p-5 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700" data-section="actions">
-            <div class="flex items-center justify-between mb-4 collapsible-header" onclick="toggleSection('actionsSection')">
-                <h2 class="text-xl font-semibold flex items-center">
-                    <i class="fas fa-cog mr-2 text-gray-500"></i>
-                    Actions
-                </h2>
-                <button class="icon-btn text-gray-500 dark:text-gray-400">
-                    <i id="actionsToggleIcon" class="fas fa-plus"></i>
-                </button>
-            </div>
-            <div id="actionsSection" class="hidden">
-                <div class="grid grid-cols-2 gap-3">
-                    <button id="openAddModalBtn" class="btn-primary">
-                        <i class="fas fa-plus mr-2"></i>Add Fav
-                    </button>
-                    <button id="importFavoritesBtn" class="btn-warning">
-                        <i class="fas fa-file-import mr-2"></i>Import
-                    </button>
-                    <button id="exportFavoritesBtn" class="btn-success">
-                        <i class="fas fa-file-export mr-2"></i>Export
-                    </button>
-                    <button id="clearFavoritesBtn" class="btn-danger">
-                        <i class="fas fa-trash mr-2"></i>Clear
-                    </button>
-                    <button id="shareBtn" class="btn-secondary">
-                        <i class="fas fa-share-alt mr-2"></i>Share
-                    </button>
-                    <button id="refreshBtn" class="btn-secondary">
-                        <i class="fas fa-sync-alt mr-2"></i>Refresh
-                    </button>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Now Playing section -->
-        <div id="nowPlayingSection" class="draggable-section bg-white dark:bg-gray-800 p-5 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 hidden" data-section="nowPlaying">
-            <h2 class="text-xl font-semibold mb-4 flex items-center">
-                <i class="fas fa-headphones mr-2 text-purple-500"></i>
-                Now Playing
-            </h2>
-            <div class="flex items-center space-x-4">
-                <div class="flex-shrink-0">
-                    <div class="w-16 h-16 rounded-lg bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white">
-                        <i class="fas fa-music text-2xl"></i>
-                    </div>
-                </div>
-                <div class="flex-grow min-w-0">
-                    <p class="text-sm text-gray-500 dark:text-gray-400 truncate">Station</p>
-                    <p id="currentStationName" class="font-bold truncate" title="No station selected">---</p>
-                    <div class="flex items-center mt-1">
-                        <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200 mr-2">
-                            <span class="w-2 h-2 rounded-full bg-red-500 mr-1 live-indicator"></span>
-                            LIVE
-                        </span>
-                        <span id="playTime" class="text-gray-500 dark:text-gray-400 ml-2 flex items-center">
-                            <i class="fas fa-clock mr-1.5 text-[0.95rem]"></i> 
-                            <span class="text-[0.95rem] font-mono">00:00:00</span> 
-                        </span>
-                    </div>
-                    <div id="techInfoContainer" class="flex flex-wrap gap-1 mt-2">
-                        <!-- Will be populated dynamically -->
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Favorites section -->
-        <div class="draggable-section bg-white dark:bg-gray-800 p-5 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700" data-section="favorites">
-            <div class="flex items-center justify-between mb-4 collapsible-header" onclick="toggleSection('favoritesSection')">
-                <h2 class="text-xl font-semibold flex items-center">
-                    <i class="fas fa-star mr-2 text-yellow-500"></i>
-                    My Favorite Stations
-                </h2>
-                <div class="flex items-center">
-                    <span id="favoritesCount" class="text-sm bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 px-2.5 py-0.5 rounded-full mr-2">
-                        0 stations
-                    </span>
-                    <button class="icon-btn text-gray-500 dark:text-gray-400">
-                        <i id="favoritesToggleIcon" class="fas fa-plus"></i>
-                    </button>
-                </div>
-            </div>
-            <div id="favoritesSection" class="hidden">
-                <div id="favoritesList" class="space-y-3 max-h-[50vh] overflow-y-auto pr-2">
-                    <div id="noFavoritesMsg" class="text-center py-8">
-                        <i class="fas fa-radio text-4xl text-gray-300 dark:text-gray-600 mb-3"></i>
-                        <p class="text-gray-500 dark:text-gray-400">No favorite stations yet.</p>
-                        <p class="text-sm text-gray-400 dark:text-gray-500 mt-1">Add some stations or try the quick access links!</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </main>
         
      <div class="flex flex-wrap gap-2 mb-4">
     <button class="popular-tag-btn btn-secondary text-sm px-3 py-1" data-tag="topvote">Top Rated</button>
@@ -1038,200 +888,6 @@ const shareAppBtn = document.getElementById('shareAppBtn');
        
         let lastBytes = 0;
        // ====================
-
-
-// Add this to your existing JavaScript code
-
-// Section management
-let sectionOrder = ['playFromUrl', 'discoverStations', 'quickAccess', 'actions', 'nowPlaying', 'favorites'];
-let draggedSection = null;
-
-// Load section order from localStorage
-function loadSectionOrder() {
-    const savedOrder = localStorage.getItem('sectionOrder');
-    if (savedOrder) {
-        sectionOrder = JSON.parse(savedOrder);
-        arrangeSections();
-    }
-}
-
-// Save section order to localStorage
-function saveSectionOrder() {
-    localStorage.setItem('sectionOrder', JSON.stringify(sectionOrder));
-}
-
-// Arrange sections based on the current order
-function arrangeSections() {
-    const mainContent = document.getElementById('mainContent');
-    const sections = Array.from(document.querySelectorAll('.draggable-section'));
-    
-    // Sort sections based on the saved order
-    sections.sort((a, b) => {
-        const aIndex = sectionOrder.indexOf(a.dataset.section);
-        const bIndex = sectionOrder.indexOf(b.dataset.section);
-        return aIndex - bIndex;
-    });
-    
-    // Re-append sections in the new order
-    sections.forEach(section => {
-        mainContent.appendChild(section);
-    });
-}
-
-// Initialize drag and drop for sections
-function initDragAndDrop() {
-    const sections = document.querySelectorAll('.draggable-section');
-    
-    sections.forEach(section => {
-        section.draggable = true;
-        
-        section.addEventListener('dragstart', (e) => {
-            draggedSection = section;
-            setTimeout(() => {
-                section.classList.add('dragging');
-            }, 0);
-        });
-        
-        section.addEventListener('dragend', () => {
-            section.classList.remove('dragging');
-            draggedSection = null;
-        });
-    });
-    
-    const mainContent = document.getElementById('mainContent');
-    
-    mainContent.addEventListener('dragover', (e) => {
-        e.preventDefault();
-        const afterElement = getDragAfterElement(mainContent, e.clientY);
-        if (afterElement == null) {
-            mainContent.appendChild(draggedSection);
-        } else {
-            mainContent.insertBefore(draggedSection, afterElement);
-        }
-    });
-    
-    mainContent.addEventListener('drop', () => {
-        // Update section order based on new DOM order
-        const sections = Array.from(document.querySelectorAll('.draggable-section'));
-        sectionOrder = sections.map(section => section.dataset.section);
-        saveSectionOrder();
-    });
-}
-
-function getDragAfterElement(container, y) {
-    const draggableElements = [...container.querySelectorAll('.draggable-section:not(.dragging)')];
-    
-    return draggableElements.reduce((closest, child) => {
-        const box = child.getBoundingClientRect();
-        const offset = y - box.top - box.height / 2;
-        
-        if (offset < 0 && offset > closest.offset) {
-            return { offset: offset, element: child };
-        } else {
-            return closest;
-        }
-    }, { offset: Number.NEGATIVE_INFINITY }).element;
-}
-
-// Modified toggleSection function to handle collapsible sections
-function toggleSection(sectionId) {
-    const section = document.getElementById(sectionId);
-    const icon = document.getElementById(`${sectionId}ToggleIcon`) || 
-                 document.querySelector(`#${sectionId.replace('Section', '')} .collapsible-header i`);
-    
-    if (section.classList.contains('hidden')) {
-        section.classList.remove('hidden');
-        if (icon) {
-            icon.classList.remove('fa-plus');
-            icon.classList.add('fa-minus');
-        }
-    } else {
-        section.classList.add('hidden');
-        if (icon) {
-            icon.classList.remove('fa-minus');
-            icon.classList.add('fa-plus');
-        }
-    }
-}
-
-// Load section collapsed states from localStorage
-function loadCollapsedStates() {
-    const collapsedStates = JSON.parse(localStorage.getItem('collapsedSections') || {};
-    
-    Object.keys(collapsedStates).forEach(sectionId => {
-        if (collapsedStates[sectionId]) {
-            const section = document.getElementById(sectionId);
-            const icon = document.getElementById(`${sectionId}ToggleIcon`) || 
-                         document.querySelector(`#${sectionId.replace('Section', '')} .collapsible-header i`);
-            
-            if (section) {
-                section.classList.add('hidden');
-                if (icon) {
-                    icon.classList.remove('fa-minus');
-                    icon.classList.add('fa-plus');
-                }
-            }
-        }
-    });
-}
-
-// Save collapsed states to localStorage
-function saveCollapsedState(sectionId, isCollapsed) {
-    const collapsedStates = JSON.parse(localStorage.getItem('collapsedSections') || {};
-    collapsedStates[sectionId] = isCollapsed;
-    localStorage.setItem('collapsedSections', JSON.stringify(collapsedStates));
-}
-
-// Update toggleSection to save state
-function toggleSection(sectionId) {
-    const section = document.getElementById(sectionId);
-    const icon = document.getElementById(`${sectionId}ToggleIcon`) || 
-                 document.querySelector(`#${sectionId.replace('Section', '')} .collapsible-header i`);
-    
-    if (section.classList.contains('hidden')) {
-        section.classList.remove('hidden');
-        if (icon) {
-            icon.classList.remove('fa-plus');
-            icon.classList.add('fa-minus');
-        }
-        saveCollapsedState(sectionId, false);
-    } else {
-        section.classList.add('hidden');
-        if (icon) {
-            icon.classList.remove('fa-minus');
-            icon.classList.add('fa-plus');
-        }
-        saveCollapsedState(sectionId, true);
-    }
-}
-
-// Initialize section management
-function initSectionManagement() {
-    loadSectionOrder();
-    loadCollapsedStates();
-    initDragAndDrop();
-}
-
-// Update the DOMContentLoaded event listener to include section management
-document.addEventListener('DOMContentLoaded', () => {
-    loadTheme();
-    loadFavorites();
-    initializeRadioBrowser();
-    initSectionManagement();
-    
-    if (audioPlayer.paused) {
-        playPauseBtn.innerHTML = '<i class="fas fa-play"></i>';
-        playPauseBtn.setAttribute('aria-label', 'Play');
-    } else {
-        playPauseBtn.innerHTML = '<i class="fas fa-pause"></i>';
-        playPauseBtn.setAttribute('aria-label', 'Pause');
-    }
-    messageBox.classList.add('opacity-0', 'invisible', 'hidden');
-});
-
-
-
-       
 // Radio Browser Section
 // ====================
 
