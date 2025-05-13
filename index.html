@@ -2527,10 +2527,10 @@ let bufferSetting = localStorage.getItem('bufferSetting') || 'default';
 
 // Buffering options
 const bufferOptions = {
-    default: { preload: 'auto', targetBuffer: 0 },
-    low: { preload: 'auto', targetBuffer: 256 * 1024 }, // 256KB
-    medium: { preload: 'auto', targetBuffer: 512 * 1024 }, // 512KB
-    high: { preload: 'auto', targetBuffer: 1024 * 1024 } // 1MB
+    default: { preload: 'auto', targetBufferSec: 0 },
+    low: { preload: 'auto', targetBufferSec: 2 },     // 2 seconds
+    medium: { preload: 'auto', targetBufferSec: 5 },  // 5 seconds
+    high: { preload: 'auto', targetBufferSec: 10 }    // 10 seconds
 };
 
 // Update UI to show current setting
