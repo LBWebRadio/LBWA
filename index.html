@@ -356,66 +356,6 @@
     [onclick="toggleSection('discoverStationsSection')"] {
         cursor: pointer;
     }
-
-/* Buffering Options Dropdown Styles */
-#bufferingOptionsMenu {
-    transition: all 0.2s ease;
-    transform-origin: top;
-}
-
-#bufferingOptionsMenu:not(.hidden) {
-    animation: fadeInScale 0.2s ease-out forwards;
-}
-
-@keyframes fadeInScale {
-    0% {
-        opacity: 0;
-        transform: scale(0.95);
-    }
-    100% {
-        opacity: 1;
-        transform: scale(1);
-    }
-}
-
-.buffer-option {
-    transition: background-color 0.2s ease;
-    font-size: 0.875rem;
-    color: #374151; /* gray-700 */
-    padding: 0.5rem 1rem;
-}
-
-.dark .buffer-option {
-    color: #e5e7eb; /* gray-200 */
-}
-
-.buffer-option:hover {
-    background-color: #f3f4f6; /* gray-100 */
-}
-
-.dark .buffer-option:hover {
-    background-color: #4b5563; /* gray-600 */
-}
-
-.buffer-option:first-child {
-    border-top-left-radius: 0.375rem;
-    border-top-right-radius: 0.375rem;
-}
-
-.buffer-option:last-child {
-    border-bottom-left-radius: 0.375rem;
-    border-bottom-right-radius: 0.375rem;
-}
-
-/* Dropdown arrow animation */
-#bufferingOptionsBtn i {
-    transition: transform 0.2s ease;
-}
-
-#bufferingOptionsBtn[aria-expanded="true"] i {
-    transform: rotate(180deg);
-}
-           
     </style>
 </head>
 <body class="bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-100 min-h-screen flex flex-col">
@@ -563,19 +503,6 @@
         <button id="refreshBtn" class="btn-secondary">
             <i class="fas fa-sync-alt mr-2"></i>Refresh
         </button>
-        <!-- Add Buffering Options Dropdown -->
-        <div class="relative col-span-2">
-            <button id="bufferingOptionsBtn" class="btn-secondary w-full text-left">
-                <i class="fas fa-network-wired mr-2"></i>Buffering: <span id="currentBufferSetting">Default</span>
-                <i class="fas fa-chevron-down ml-2 float-right mt-1"></i>
-            </button>
-            <div id="bufferingOptionsMenu" class="hidden absolute z-10 w-full mt-1 bg-white dark:bg-gray-800 rounded-md shadow-lg border border-gray-200 dark:border-gray-700">
-                <button class="buffer-option w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700" data-value="default">Default</button>
-                <button class="buffer-option w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700" data-value="low">Low (2s)</button>
-                <button class="buffer-option w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700" data-value="medium">Medium (5s)</button>
-                <button class="buffer-option w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700" data-value="high">High (10s)</button>
-            </div>
-        </div>
     </div>
 </div>
                 
@@ -2519,57 +2446,7 @@ function confirmImport() {
             showMessage(message.trim(), 'success', 5000);
         }
 
-       // ====================
-// Buffering Configuration
-// ====================
-
-let bufferSetting = localStorage.getItem('bufferSetting') || 'default';
-
-// Buffering options
-const bufferOptions = {
-    default: { preload: 'auto', targetBufferSec: 0 },
-    low: { preload: 'auto', targetBufferSec: 2 },     // 2 seconds
-    medium: { preload: 'auto', targetBufferSec: 5 },  // 5 seconds
-    high: { preload: 'auto', targetBufferSec: 10 }    // 10 seconds
-};
-
-// Update UI to show current setting
-document.getElementById('currentBufferSetting').textContent = 
-    bufferSetting.charAt(0).toUpperCase() + bufferSetting.slice(1);
-
-// Toggle buffering options menu
-document.getElementById('bufferingOptionsBtn').addEventListener('click', function() {
-    const menu = document.getElementById('bufferingOptionsMenu');
-    menu.classList.toggle('hidden');
-});
-
-// Handle buffer option selection
-document.querySelectorAll('.buffer-option').forEach(option => {
-    option.addEventListener('click', function() {
-        const value = this.dataset.value;
-        bufferSetting = value;
-        localStorage.setItem('bufferSetting', value);
-        document.getElementById('currentBufferSetting').textContent = 
-            value.charAt(0).toUpperCase() + value.slice(1);
-        document.getElementById('bufferingOptionsMenu').classList.add('hidden');
-        
-        // If currently playing, restart with new buffer settings
-        if (currentPlayingStation) {
-            playStation(currentPlayingStation, isDirectUrlStream);
-        }
-    });
-});
-
-// Close menu when clicking outside
-document.addEventListener('click', function(e) {
-    if (!e.target.closest('#bufferingOptionsBtn')) {
-        document.getElementById('bufferingOptionsMenu').classList.add('hidden');
-    }
-});
-
-
-
-// --- Audio Player Logic ---
+        // --- Audio Player Logic ---
 function playStation(station, isDirect = false) {
     try {
         if (!station || !station.url) {
@@ -2577,7 +2454,7 @@ function playStation(station, isDirect = false) {
             return;
         }
 
-        stopPlayback();
+        stopPlayback(); // This already clears the timer via stopPlayback()
         
         const isAlreadyFavorite = favorites.some(fav => fav.url === station.url);
         
@@ -2594,12 +2471,8 @@ function playStation(station, isDirect = false) {
         
         let streamUrl = station.url;
         
-        // Get buffer settings
-        const bufferConfig = bufferOptions[bufferSetting];
-        audioPlayer.preload = 'auto'; // Force preload for streaming
-        
-        currentStationName.textContent = 'Connecting...';
-        currentStationNameCompact.textContent = 'Connecting...';
+        currentStationName.textContent = 'Loading...';
+        currentStationNameCompact.textContent = 'Loading...';
         playPauseBtn.innerHTML = '<i class="fas fa-spinner spinner"></i>';
         
         // Create tech info display
@@ -2633,122 +2506,57 @@ function playStation(station, isDirect = false) {
             nowPlayingInfo.appendChild(techInfo);
         }
         
-        // Add nocache parameter
-        const finalUrl = streamUrl + (streamUrl.includes('?') ? '&' : '?') + 'nocache=' + Date.now();
-        audioPlayer.src = finalUrl;
+        audioPlayer.src = streamUrl + (streamUrl.includes('?') ? '&' : '?') + 'nocache=' + Date.now();
         
-        // REAL BUFFERING IMPLEMENTATION
-        let bufferCheckInterval;
-        let lastBufferedSec = 0;
-        let stableCount = 0;
-        
-        const updateBufferDisplay = (bufferedSec) => {
-            const displayText = bufferConfig.targetBufferSec > 0 ?
-                `Buffering... (${Math.min(bufferedSec, bufferConfig.targetBufferSec).toFixed(1)}/${bufferConfig.targetBufferSec}s)` :
-                'Loading...';
-            
-            currentStationName.textContent = displayText;
-            currentStationNameCompact.textContent = displayText;
-        };
-        
-        const checkBuffer = () => {
-            try {
-                if (!audioPlayer.buffered.length) {
-                    updateBufferDisplay(0);
-                    return;
-                }
-                
-                // Calculate current buffered amount in seconds
-                const bufferedSec = audioPlayer.buffered.end(0) - audioPlayer.currentTime;
-                
-                // Detect if buffer is growing
-                if (Math.abs(bufferedSec - lastBufferedSec) < 0.1) {
-                    stableCount++;
-                } else {
-                    stableCount = 0;
-                }
-                lastBufferedSec = bufferedSec;
-                
-                updateBufferDisplay(bufferedSec);
-                
-                // Start playback when either:
-                // 1. We have enough buffered content OR
-                // 2. Buffer hasn't grown for 3 checks (stalled) OR
-                // 3. Audio is already playable
-                if (bufferedSec >= bufferConfig.targetBufferSec ||
-                    stableCount >= 3 ||
-                    audioPlayer.readyState >= 3) {
-                    
-                    clearInterval(bufferCheckInterval);
-                    startPlayback();
-                }
-            } catch (e) {
-                console.error("Buffer check error:", e);
-                clearInterval(bufferCheckInterval);
-                startPlayback(); // Fallback to immediate playback
-            }
-        };
-        
-        const startPlayback = () => {
-            audioPlayer.play()
-                .then(() => {
-                    currentPlayingStation = station;
-                    currentStationName.textContent = station.name;
-                    currentStationNameCompact.textContent = station.name;
-                    playPauseBtn.innerHTML = '<i class="fas fa-pause"></i>';
-                    playPauseBtn.setAttribute('aria-label', 'Pause');
-                    nowPlayingSection.classList.remove('hidden');
+        audioPlayer.play()
+            .then(() => {
+                currentPlayingStation = station;
+                currentStationName.textContent = station.name;
+                currentStationNameCompact.textContent = station.name;
+                playPauseBtn.innerHTML = '<i class="fas fa-pause"></i>';
+                playPauseBtn.setAttribute('aria-label', 'Pause');
+                nowPlayingSection.classList.remove('hidden');
 
-                    startPlayTimer();
-                    isDirectUrlStream = isDirect;
-                    renderFavorites();
-                })
-                .catch(error => {
-                    console.error("Direct play failed, trying proxy:", error);
-                    clearPlayTimer();
-                    
-                    const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(streamUrl)}`;
-                    audioPlayer.src = proxyUrl;
-                    
-                    audioPlayer.play()
-                        .then(() => {
-                            currentPlayingStation = station;
-                            currentStationName.textContent = station.name + " (via proxy)";
-                            currentStationNameCompact.textContent = station.name + " (proxy)";
-                            playPauseBtn.innerHTML = '<i class="fas fa-pause"></i>';
-                            playPauseBtn.setAttribute('aria-label', 'Pause');
-                            nowPlayingSection.classList.remove('hidden');
-                            
-                            startPlayTimer();
-                            isDirectUrlStream = isDirect;
-                            renderFavorites();
-                        })
-                        .catch(proxyError => {
-                            console.error("Proxy playback failed:", proxyError);
-                            clearPlayTimer();
-                            showMessage(`Cannot play: ${station.name}. Try another stream.`, 'error');
-                            currentStationName.textContent = "Playback Error";
-                            currentStationNameCompact.textContent = "Error";
-                            playPauseBtn.innerHTML = '<i class="fas fa-play"></i>';
-                            playPauseBtn.setAttribute('aria-label', 'Play');
-                            nowPlayingSection.classList.add('hidden');
-                        });
-                });
-        };
-        
-        // Start loading and buffering
-        audioPlayer.load();
-        
-        if (bufferConfig.targetBufferSec > 0) {
-            // Start checking buffer status every 200ms
-            bufferCheckInterval = setInterval(checkBuffer, 200);
-        } else {
-            // No buffering needed
-            startPlayback();
-        }
+                // Start the timer when playback succeeds
+                startPlayTimer();
+
+                isDirectUrlStream = isDirect;
+                
+                renderFavorites();
+            })
+            .catch(error => {
+                console.error("Direct play failed, trying proxy:", error);
+                clearPlayTimer(); // Clear timer if direct play fails
+                
+                const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(streamUrl)}`;
+                audioPlayer.src = proxyUrl;
+                
+                return audioPlayer.play()
+                    .then(() => {
+                        currentPlayingStation = station;
+                        currentStationName.textContent = station.name + " (via proxy)";
+                        currentStationNameCompact.textContent = station.name + " (proxy)";
+                        playPauseBtn.innerHTML = '<i class="fas fa-pause"></i>';
+                        nowPlayingSection.classList.remove('hidden');
+                        
+                        // Start timer for proxy playback
+                        startPlayTimer();
+                        
+                        renderFavorites();
+                    })
+                    .catch(proxyError => {
+                        console.error("Proxy playback failed:", proxyError);
+                        clearPlayTimer(); // Clear timer if proxy play also fails
+                        showMessage(`Cannot play: ${station.name}. Try another stream.`, 'error');
+                        currentStationName.textContent = "Playback Error";
+                        currentStationNameCompact.textContent = "Error";
+                        playPauseBtn.innerHTML = '<i class="fas fa-play"></i>';
+                        nowPlayingSection.classList.add('hidden');
+                    });
+            });
     } catch (error) {
         console.error("Setup error:", error);
-        clearPlayTimer();
+        clearPlayTimer(); // Clear timer if setup fails
         showMessage(`Error with station: ${station.name}`, 'error');
         addCurrentToFavoritesBtn.classList.add('hidden');
         nowPlayingSection.classList.add('hidden');
